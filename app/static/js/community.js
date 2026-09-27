@@ -15,7 +15,9 @@ const STATE = {
   activeTab: "matchmaking",
   chatPollTimer: null,
   regInterests: new Set(),
-  activeSkillFilter: "all"
+  activeSkillFilter: "all",
+  mentionMatches: [],
+  mentionIndex: -1
 };
 
 // ==========================================
@@ -789,11 +791,14 @@ function renderActiveSquadWorkspace(squad) {
           </div>
 
           <form class="chat-compose-form" onsubmit="handleSendChatMessage(event, ${squad.id})">
+            <!-- Autocomplete dropdown for @mentions -->
+            <div class="mention-dropdown" id="mentionDropdown"></div>
+
             <button type="button" class="tool-link-card" onclick="openProgressUploadModal(${squad.id})" title="Attach progress image or video (Max 300MB)" style="padding: 0 10px; height: 38px; border-radius: 8px; flex-shrink: 0; background: #f1f5f9; display: flex; align-items: center; justify-content: center; gap: 4px; border: 1px solid var(--comm-border);">
               ${ICONS.upload}
               <span style="font-size: 13px; font-weight: 600;">Media</span>
             </button>
-            <input type="text" id="squadChatInput" placeholder="Message teammates..." required />
+            <input type="text" id="squadChatInput" placeholder="Message teammates (type @ to tag someone)..." autocomplete="off" required oninput="handleChatInput(event, ${squad.id})" onkeydown="handleChatKeyDown(event, ${squad.id})" />
             <button type="submit" class="btn-send-message">
               <span>Send</span>
               ${ICONS.send}
@@ -906,17 +911,20 @@ function renderChatMessages(messages) {
       }
     }
 
+    const isMentioned = STATE.currentUser && m.message && new RegExp(`@${STATE.currentUser.username}\\b`, "i").test(m.message);
+    const bubbleClass = `chat-msg-bubble${isMentioned ? " chat-bubble-mentioned" : ""}`;
+
     return `
       <div class="chat-msg-row">
         <div class="chat-sender-avatar" style="background-color: ${color};">
           ${initials}
         </div>
-        <div class="chat-msg-bubble">
+        <div class="${bubbleClass}">
           <div class="chat-meta-row">
             <span class="chat-sender-name">${escapeHtml(m.sender_name)}</span>
             <span class="chat-timestamp">${formatTime(m.created_at)}</span>
           </div>
-          <div class="chat-text">${escapeHtml(m.message)}</div>
+          <div class="chat-text">${formatChatMessage(m.message)}</div>
           ${mediaSnippet}
         </div>
       </div>
@@ -930,6 +938,7 @@ function renderChatMessages(messages) {
 
 async function handleSendChatMessage(e, squadId) {
   e.preventDefault();
+  closeMentionDropdown();
   if (!STATE.token) {
     openAuthModal("signin");
     showToast("Please sign in to participate in squad chat.", "error");
@@ -957,6 +966,181 @@ async function handleSendChatMessage(e, squadId) {
     showToast("Error sending message.", "error");
   }
 }
+
+// ==========================================
+// CHAT MENTIONS & AUTOCOMPLETE ENGINE
+// ==========================================
+function formatChatMessage(text) {
+  if (!text) return "";
+  const escaped = escapeHtml(text);
+  // Match @username (letters, digits, underscores, dashes)
+  return escaped.replace(/@([a-zA-Z0-9_-]+)/g, (match, username) => {
+    const isMe = STATE.currentUser && STATE.currentUser.username.toLowerCase() === username.toLowerCase();
+    const cls = isMe ? "chat-mention mention-me" : "chat-mention";
+    return `<span class="${cls}" onclick="handleMentionClick('${escapeHtml(username)}')" title="View @${escapeHtml(username)}'s profile">@${username}</span>`;
+  });
+}
+
+async function handleMentionClick(username) {
+  if (!username) return;
+  // If in current squad members:
+  if (STATE.currentSquad && STATE.currentSquad.members) {
+    const m = STATE.currentSquad.members.find(x => x.username.toLowerCase() === username.toLowerCase());
+    if (m) {
+      openPeerModal(m.user_id);
+      return;
+    }
+  }
+
+  // Lookup user by username from peers search
+  try {
+    const res = await fetch(`/api/community/peers?search=${encodeURIComponent(username)}`, { headers: getAuthHeaders() });
+    const data = await res.json();
+    if (data.success && data.peers && data.peers.length > 0) {
+      const match = data.peers.find(p => p.username.toLowerCase() === username.toLowerCase()) || data.peers[0];
+      openPeerModal(match.id);
+    } else {
+      showToast(`User @${username}`);
+    }
+  } catch (err) {
+    showToast(`User @${username}`);
+  }
+}
+
+function handleChatInput(e, squadId) {
+  const input = e.target;
+  const val = input.value;
+  const cursor = input.selectionStart;
+  const textBeforeCursor = val.slice(0, cursor);
+
+  // Look for @tag right before cursor
+  const match = textBeforeCursor.match(/(?:^|\s)@([a-zA-Z0-9_-]*)$/);
+  if (!match) {
+    closeMentionDropdown();
+    return;
+  }
+
+  const query = match[1].toLowerCase();
+  const members = (STATE.currentSquad && STATE.currentSquad.members) ? STATE.currentSquad.members : [];
+  
+  // Filter squad members matching query
+  const matches = members.filter(m => {
+    return m.username.toLowerCase().includes(query) || m.full_name.toLowerCase().includes(query);
+  });
+
+  if (matches.length === 0) {
+    closeMentionDropdown();
+    return;
+  }
+
+  STATE.mentionMatches = matches;
+  STATE.mentionIndex = 0;
+  renderMentionDropdown(matches);
+}
+
+function handleChatKeyDown(e, squadId) {
+  const dropdown = document.getElementById("mentionDropdown");
+  if (!dropdown || !dropdown.classList.contains("open")) return;
+
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    if (STATE.mentionMatches && STATE.mentionMatches.length > 0) {
+      STATE.mentionIndex = (STATE.mentionIndex + 1) % STATE.mentionMatches.length;
+      updateActiveMentionItem();
+    }
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    if (STATE.mentionMatches && STATE.mentionMatches.length > 0) {
+      STATE.mentionIndex = (STATE.mentionIndex - 1 + STATE.mentionMatches.length) % STATE.mentionMatches.length;
+      updateActiveMentionItem();
+    }
+  } else if (e.key === "Enter" || e.key === "Tab") {
+    if (STATE.mentionMatches && STATE.mentionMatches.length > 0) {
+      e.preventDefault();
+      const selected = STATE.mentionMatches[STATE.mentionIndex] || STATE.mentionMatches[0];
+      selectMention(selected.username);
+    }
+  } else if (e.key === "Escape") {
+    closeMentionDropdown();
+  }
+}
+
+function selectMention(username) {
+  const input = document.getElementById("squadChatInput");
+  if (!input) return;
+
+  const val = input.value;
+  const cursor = input.selectionStart;
+  const textBeforeCursor = val.slice(0, cursor);
+  const textAfterCursor = val.slice(cursor);
+
+  // Replace @query immediately before cursor with @username + ' '
+  const replacedBefore = textBeforeCursor.replace(/(?:^|\s)@([a-zA-Z0-9_-]*)$/, (match) => {
+    const leading = match.startsWith(" ") ? " " : "";
+    return `${leading}@${username} `;
+  });
+
+  input.value = replacedBefore + textAfterCursor;
+  const newPos = replacedBefore.length;
+  input.focus();
+  input.setSelectionRange(newPos, newPos);
+
+  closeMentionDropdown();
+}
+
+function renderMentionDropdown(matches) {
+  const dropdown = document.getElementById("mentionDropdown");
+  if (!dropdown) return;
+
+  dropdown.innerHTML = `
+    <div class="mention-dropdown-header">
+      <span>Tag Teammate</span>
+      <span style="font-size: 11px; font-weight: 500; color: #94a3b8;">Tab or &crarr; to select</span>
+    </div>
+    <div style="max-height: 180px; overflow-y: auto;">
+      ${matches.map((m, idx) => {
+        const initials = getInitials(m.full_name);
+        const color = getAvatarColor(m.full_name, m.avatar_color);
+        const isActive = idx === STATE.mentionIndex;
+        return `
+          <div class="mention-item ${isActive ? 'active' : ''}" data-idx="${idx}" onclick="selectMention('${escapeHtml(m.username)}')">
+            <div class="mention-avatar" style="background-color: ${color};">
+              ${initials}
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <div class="mention-name">${escapeHtml(m.full_name)}</div>
+              <div class="mention-username">@${escapeHtml(m.username)}</div>
+            </div>
+            <span style="font-size: 11px; padding: 2px 7px; border-radius: 999px; background: ${m.role === 'leader' ? '#fef3c7; color: #b45309;' : '#f1f5f9; color: #64748b;'} font-weight: 600;">
+              ${m.role === 'leader' ? 'Leader' : 'Pod'}
+            </span>
+          </div>
+        `;
+      }).join("")}
+    </div>
+  `;
+
+  dropdown.classList.add("open");
+}
+
+function updateActiveMentionItem() {
+  document.querySelectorAll(".mention-item").forEach((item, idx) => {
+    item.classList.toggle("active", idx === STATE.mentionIndex);
+  });
+}
+
+function closeMentionDropdown() {
+  const dropdown = document.getElementById("mentionDropdown");
+  if (dropdown) dropdown.classList.remove("open");
+  STATE.mentionMatches = [];
+  STATE.mentionIndex = -1;
+}
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".chat-compose-form")) {
+    closeMentionDropdown();
+  }
+});
 
 function startChatPolling(squadId) {
   stopChatPolling();

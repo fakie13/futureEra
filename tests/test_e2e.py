@@ -182,12 +182,13 @@ def main():
     assert st_overflow == 400, f'Expected 400 for squad overflow, got {st_overflow}'
     print(f'[PASS] 5th member correctly rejected by Rule of 4: {r_overflow.get("detail")}')
 
-    # 7. Post and read chat message
-    st_msg, r_msg = post_json(f'/api/squads/{squad_id}/messages', {'message': 'Hello squad mates! Ready for sprint 1.'}, token=token1)
+    # 7. Post and read chat message with @mention
+    st_msg, r_msg = post_json(f'/api/squads/{squad_id}/messages', {'message': f'Hello squad mates! @member_2_{ts} ready for sprint 1.'}, token=token1)
     assert st_msg == 200
     st_msgs, r_msgs = get_json(f'/api/squads/{squad_id}/messages')
     assert st_msgs == 200 and len(r_msgs['messages']) >= 1
-    print('[PASS] Squad chat message posted and retrieved successfully')
+    assert any(f'@member_2_{ts}' in m['message'] for m in r_msgs['messages'])
+    print('[PASS] Squad chat message with @mention posted and retrieved successfully')
 
     # 8. Update sprint goal
     st_goal, r_goal = post_json(f'/api/squads/{squad_id}/sprint-goal', {'message': 'Sprint 2: Kubernetes Orchestration'}, token=token1)
@@ -455,12 +456,22 @@ def main():
         assert 'tab-friends' in html_src
         assert 'addFriendUsernameInput' in html_src
         assert 'tabFriendsBadge' in html_src
-    assert 'handleToggleFriendFromModal' in comm_js_src
-    assert 'handleAddFriendSubmit' in comm_js_src
-    assert 'handleRemoveFriendFromList' in comm_js_src
-    assert 'loadUserFriends' in comm_js_src
-    assert 'modalFriendActionBtn' in comm_js_src
-    print(f"[PASS] Frontend HTML and community.js verified with Friends tab, forms, and modal actions")
+        assert 'chat-mention' in html_src
+        assert 'mention-dropdown' in html_src
+
+    req_comm_js_latest = urllib.request.Request(base + '/static/js/community.js')
+    with urllib.request.urlopen(req_comm_js_latest) as resp:
+        comm_js_latest = resp.read().decode('utf-8')
+        assert 'handleToggleFriendFromModal' in comm_js_latest
+        assert 'handleAddFriendSubmit' in comm_js_latest
+        assert 'handleRemoveFriendFromList' in comm_js_latest
+        assert 'loadUserFriends' in comm_js_latest
+        assert 'modalFriendActionBtn' in comm_js_latest
+        assert 'formatChatMessage' in comm_js_latest
+        assert 'handleChatInput' in comm_js_latest
+        assert 'selectMention' in comm_js_latest
+        assert 'mentionDropdown' in comm_js_latest
+    print(f"[PASS] Frontend HTML and community.js verified with Friends tab, forms, modal actions, and @mention autocomplete")
 
     # Clean up ephemeral test users and test squad so DB remains at pristine 10 peers & 10 squads
     cleanup_test_data()

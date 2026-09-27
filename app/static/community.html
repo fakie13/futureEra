@@ -1228,10 +1228,126 @@
       word-break: break-word;
     }
 
+    .chat-msg-bubble.chat-bubble-mentioned {
+      border-left: 3px solid #0f766e;
+      background: #f0fdfa;
+    }
+
+    .chat-mention {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 6px;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-weight: 600;
+      font-size: 0.95em;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+
+    .chat-mention:hover {
+      background: #0284c7;
+      color: #ffffff;
+    }
+
+    .chat-mention.mention-me {
+      background: #ccfbf1;
+      color: #0f766e;
+      font-weight: 700;
+      border: 1px solid #99f6e4;
+    }
+
+    .chat-mention.mention-me:hover {
+      background: #0f766e;
+      color: #ffffff;
+    }
+
     .chat-compose-form {
       display: flex;
       gap: 8px;
       margin-top: auto;
+      position: relative;
+    }
+
+    /* Mention Autocomplete Dropdown */
+    .mention-dropdown {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      max-width: 380px;
+      background: #ffffff;
+      border: 1px solid var(--comm-border-strong);
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
+      z-index: 100;
+      overflow: hidden;
+      display: none;
+      animation: fadeIn 0.15s ease;
+    }
+
+    .mention-dropdown.open {
+      display: block;
+    }
+
+    .mention-dropdown-header {
+      padding: 8px 12px;
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--comm-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .mention-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: background 0.12s ease;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .mention-item:last-child {
+      border-bottom: none;
+    }
+
+    .mention-item:hover,
+    .mention-item.active {
+      background: #f0fdfa;
+    }
+
+    .mention-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #ffffff;
+      flex-shrink: 0;
+    }
+
+    .mention-name {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #0f172a;
+      line-height: 1.2;
+    }
+
+    .mention-username {
+      font-size: 12px;
+      color: #0f766e;
+      font-weight: 500;
     }
 
     .chat-compose-form input {
@@ -2645,6 +2761,6 @@
     <span id="toastText" style="font-size: 14px;">Action completed successfully.</span>
   </div>
 
-  <script src="/static/js/community.js?v=41"></script>
+  <script src="/static/js/community.js?v=42"></script>
 </body>
 </html>

@@ -259,10 +259,10 @@ a {
     gap: 6px;
     background: #ffffff;
     border: 1.5px solid #e2e8f0;
-    color: #475569;
+    color: #334155;
     border-radius: 999px;
-    padding: 5px 13px;
-    font-size: 12px;
+    padding: 6px 15px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
@@ -280,11 +280,11 @@ a {
 }
 
 .nav-signin-link {
-    font-size: 13px;
+    font-size: 14.5px;
     font-weight: 600;
-    color: #475569;
+    color: #334155;
     text-decoration: none;
-    padding: 6px 12px;
+    padding: 7px 15px;
     border-radius: 8px;
     transition: all 0.15s ease;
     white-space: nowrap;

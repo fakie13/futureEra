@@ -7,7 +7,7 @@
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/css/style.css?v=27" />
   <style>
     /* ===================================================
@@ -26,8 +26,8 @@
       --comm-sky-light: #f0f9ff;
       --comm-sky-border: #e0f2fe;
       --comm-text-dark: #0f172a;
-      --comm-text-body: #334155;
-      --comm-text-muted: #64748b;
+      --comm-text-body: #1e293b;
+      --comm-text-muted: #475569;
       --comm-border: #e2e8f0;
       --comm-border-strong: #cbd5e1;
       --comm-card-bg: #ffffff;
@@ -48,8 +48,9 @@
       background-attachment: fixed;
       color: var(--comm-text-body);
       min-height: 100vh;
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      line-height: 1.55;
+      font-family: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 15.5px;
+      line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -78,12 +79,12 @@
     .nav-link {
       color: var(--comm-text-muted);
       text-decoration: none;
-      font-size: 13.5px;
+      font-size: 15px;
       font-weight: 500;
       transition: all 0.18s ease;
       display: inline-flex;
       align-items: center;
-      padding: 6px 14px;
+      padding: 7px 16px;
       border-radius: 999px;
     }
 
@@ -115,8 +116,8 @@
         -webkit-overflow-scrolling: touch;
       }
       .nav-link {
-        font-size: 12px;
-        padding: 5px 10px;
+        font-size: 13.5px;
+        padding: 6px 12px;
         white-space: nowrap;
       }
     }
@@ -132,12 +133,12 @@
       border: 1px solid var(--comm-border-strong);
       color: var(--comm-text-dark);
       border-radius: 999px;
-      padding: 4px 12px 4px 5px;
-      font-size: 13px;
+      padding: 5px 14px 5px 6px;
+      font-size: 14.5px;
       font-weight: 600;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 9px;
       cursor: pointer;
       box-shadow: var(--comm-shadow-sm);
       transition: all 0.18s ease;
@@ -149,13 +150,13 @@
     }
 
     .user-avatar-initials-sm {
-      width: 26px;
-      height: 26px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 11px;
+      font-size: 12.5px;
       font-weight: 700;
       color: #ffffff;
       letter-spacing: -0.02em;
@@ -171,7 +172,7 @@
 
     .comm-title {
       font-family: 'Space Grotesk', -apple-system, sans-serif;
-      font-size: clamp(30px, 4vw, 44px);
+      font-size: clamp(32px, 4.5vw, 46px);
       font-weight: 700;
       line-height: 1.18;
       letter-spacing: -0.025em;
@@ -180,10 +181,10 @@
     }
 
     .comm-subtitle {
-      font-size: clamp(15px, 1.8vw, 17px);
+      font-size: clamp(16.5px, 2vw, 18.5px);
       color: var(--comm-text-muted);
-      max-width: 700px;
-      margin: 0 auto 24px;
+      max-width: 720px;
+      margin: 0 auto 26px;
       line-height: 1.6;
     }
 
@@ -193,12 +194,12 @@
       align-items: center;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 12px;
+      gap: 16px;
       background: #ffffff;
       border: 1px solid var(--comm-border);
       border-radius: 999px;
-      padding: 6px 20px;
-      font-size: 13px;
+      padding: 8px 24px;
+      font-size: 14.5px;
       color: var(--comm-text-muted);
       box-shadow: var(--comm-shadow-sm);
       margin-bottom: 30px;
@@ -268,15 +269,15 @@
       background: transparent;
       border: none;
       color: var(--comm-text-muted);
-      font-size: 13.5px;
+      font-size: 15.5px;
       font-weight: 600;
-      padding: 8px 18px;
-      border-radius: 8px;
+      padding: 10px 22px;
+      border-radius: 9px;
       cursor: pointer;
       transition: all 0.18s ease;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 9px;
     }
 
     .comm-tab-btn:hover {
@@ -291,16 +292,16 @@
     }
 
     .tab-badge {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 2px 7px;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 2px 8px;
       border-radius: 999px;
       background: #f1f5f9;
-      color: #475569;
+      color: #334155;
     }
 
     .comm-tab-btn.active .tab-badge {
-      background: rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.25);
       color: #ffffff;
     }
 
@@ -326,7 +327,7 @@
       background: #ffffff;
       border: 1px solid var(--comm-border);
       border-radius: 14px;
-      padding: 16px 20px;
+      padding: 18px 22px;
       margin-bottom: 24px;
       box-shadow: var(--comm-shadow-card);
       display: flex;
@@ -353,9 +354,9 @@
       background: #f8fafc;
       border: 1px solid var(--comm-border-strong);
       border-radius: 9px;
-      padding: 10px 36px 10px 38px;
+      padding: 11px 38px 11px 40px;
       color: var(--comm-text-dark);
-      font-size: 13.5px;
+      font-size: 15px;
       font-family: inherit;
       transition: all 0.18s ease;
       box-sizing: border-box;
@@ -370,7 +371,7 @@
 
     .search-icon {
       position: absolute;
-      left: 13px;
+      left: 14px;
       top: 50%;
       transform: translateY(-50%);
       color: #94a3b8;
@@ -379,13 +380,13 @@
 
     .clear-search-btn {
       position: absolute;
-      right: 10px;
+      right: 12px;
       top: 50%;
       transform: translateY(-50%);
       background: transparent;
       border: none;
       color: #94a3b8;
-      font-size: 16px;
+      font-size: 18px;
       cursor: pointer;
       padding: 2px 6px;
       border-radius: 4px;
@@ -396,7 +397,7 @@
     .filter-selects {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
@@ -404,9 +405,9 @@
       background: #ffffff;
       border: 1px solid var(--comm-border-strong);
       border-radius: 9px;
-      padding: 9px 14px;
+      padding: 11px 16px;
       color: var(--comm-text-dark);
-      font-size: 13px;
+      font-size: 14.5px;
       font-weight: 500;
       font-family: inherit;
       cursor: pointer;
@@ -422,14 +423,14 @@
     .filter-tags-row {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
-      padding-top: 10px;
+      padding-top: 12px;
       border-top: 1px solid #f1f5f9;
     }
 
     .filter-tags-label {
-      font-size: 12px;
+      font-size: 13.5px;
       font-weight: 600;
       color: var(--comm-text-muted);
       white-space: nowrap;
@@ -438,7 +439,7 @@
     .filter-pills-list {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       flex-wrap: wrap;
       overflow-x: auto;
     }
@@ -446,11 +447,11 @@
     .skill-pill-btn {
       background: #f8fafc;
       border: 1px solid var(--comm-border);
-      color: #475569;
-      font-size: 12px;
+      color: #334155;
+      font-size: 13px;
       font-weight: 500;
       font-family: inherit;
-      padding: 4px 12px;
+      padding: 5px 14px;
       border-radius: 999px;
       cursor: pointer;
       transition: all 0.15s ease;
@@ -516,13 +517,13 @@
     }
 
     .peer-avatar-initials {
-      width: 44px;
-      height: 44px;
+      width: 48px;
+      height: 48px;
       border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 15px;
+      font-size: 17px;
       font-weight: 700;
       color: #ffffff;
       letter-spacing: -0.01em;
@@ -548,33 +549,33 @@
     }
 
     .peer-full-name {
-      font-size: 15.5px;
+      font-size: 18px;
       font-weight: 700;
       color: var(--comm-text-dark);
-      line-height: 1.25;
+      line-height: 1.3;
     }
 
     .peer-meta-sub {
-      font-size: 12.5px;
+      font-size: 14px;
       color: var(--comm-text-muted);
-      margin-top: 2px;
+      margin-top: 3px;
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
     .peer-stage-tag {
-      font-size: 11px;
+      font-size: 12.5px;
       font-weight: 600;
       background: #f1f5f9;
-      color: #475569;
-      padding: 1px 6px;
+      color: #334155;
+      padding: 2px 8px;
       border-radius: 4px;
     }
 
     /* Match Pill */
     .peer-match-pill {
-      font-size: 11.5px;
+      font-size: 12px;
       font-weight: 600;
       padding: 3px 9px;
       border-radius: 999px;
@@ -608,17 +609,17 @@
     .peer-detail-line {
       display: flex;
       align-items: baseline;
-      gap: 6px;
-      font-size: 13px;
-      margin-bottom: 6px;
+      gap: 8px;
+      font-size: 14.5px;
+      margin-bottom: 7px;
       color: var(--comm-text-body);
     }
 
     .peer-detail-label {
       color: var(--comm-text-muted);
-      font-weight: 500;
-      font-size: 12px;
-      min-width: 48px;
+      font-weight: 600;
+      font-size: 13.5px;
+      min-width: 54px;
     }
 
     .peer-role-text {
@@ -632,10 +633,10 @@
     }
 
     .peer-bio-text {
-      font-size: 13px;
-      color: #475569;
-      line-height: 1.5;
-      margin: 10px 0 16px;
+      font-size: 14.5px;
+      color: #334155;
+      line-height: 1.6;
+      margin: 12px 0 18px;
       flex: 1;
     }
 
@@ -644,17 +645,17 @@
       background: #f8fafc;
       border: 1px solid #f1f5f9;
       border-radius: 10px;
-      padding: 10px 12px;
+      padding: 12px 14px;
       margin-bottom: 16px;
     }
 
     .peer-skills-header {
-      font-size: 11px;
-      font-weight: 600;
+      font-size: 12.5px;
+      font-weight: 700;
       color: var(--comm-text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 6px;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
       display: flex;
       justify-content: space-between;
     }
@@ -662,13 +663,13 @@
     .peer-skills-tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 5px;
+      gap: 6px;
     }
 
     .tag-shared {
-      font-size: 11px;
+      font-size: 12.5px;
       font-weight: 600;
-      padding: 3px 8px;
+      padding: 4px 10px;
       border-radius: 6px;
       background: #f0fdfa;
       border: 1px solid #ccfbf1;
@@ -683,13 +684,13 @@
     }
 
     .tag-other {
-      font-size: 11px;
+      font-size: 12.5px;
       font-weight: 500;
-      padding: 3px 8px;
+      padding: 4px 10px;
       border-radius: 6px;
       background: #ffffff;
       border: 1px solid var(--comm-border);
-      color: #475569;
+      color: #334155;
       cursor: pointer;
       transition: all 0.15s ease;
     }
@@ -712,9 +713,9 @@
       background: #ffffff;
       border: 1px solid var(--comm-border-strong);
       color: var(--comm-text-dark);
-      padding: 8px 12px;
+      padding: 10px 16px;
       border-radius: 8px;
-      font-size: 12.5px;
+      font-size: 14px;
       font-weight: 600;
       font-family: inherit;
       cursor: pointer;
@@ -732,16 +733,16 @@
       background: var(--comm-teal);
       border: 1px solid var(--comm-teal);
       color: #ffffff;
-      padding: 8px 14px;
+      padding: 10px 18px;
       border-radius: 8px;
-      font-size: 12.5px;
+      font-size: 14px;
       font-weight: 600;
       font-family: inherit;
       cursor: pointer;
       transition: all 0.18s ease;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
     }
 
     .btn-primary-action:hover {
@@ -781,16 +782,16 @@
 
     .squad-title-row h2 {
       font-family: 'Space Grotesk', -apple-system, sans-serif;
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 700;
       color: var(--comm-text-dark);
       margin: 0;
     }
 
     .squad-status-badge {
-      font-size: 12px;
+      font-size: 13.5px;
       font-weight: 600;
-      padding: 3px 10px;
+      padding: 4px 12px;
       border-radius: 999px;
       display: inline-flex;
       align-items: center;
@@ -810,12 +811,12 @@
     }
 
     .squad-tag-pill {
-      font-size: 12.5px;
+      font-size: 13.5px;
       font-weight: 600;
       color: var(--comm-teal);
       background: var(--comm-teal-light);
       border: 1px solid var(--comm-teal-border);
-      padding: 3px 10px;
+      padding: 4px 12px;
       border-radius: 6px;
       display: inline-block;
     }
@@ -833,12 +834,12 @@
 
     .squad-code-val {
       font-family: 'Space Grotesk', monospace;
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 700;
       letter-spacing: 0.08em;
       color: var(--comm-teal);
       background: #ffffff;
-      padding: 3px 8px;
+      padding: 4px 10px;
       border-radius: 6px;
       border: 1px solid #ccfbf1;
     }
@@ -847,16 +848,16 @@
       background: #ffffff;
       border: 1px solid var(--comm-border-strong);
       color: var(--comm-text-dark);
-      padding: 5px 10px;
+      padding: 6px 12px;
       border-radius: 6px;
-      font-size: 12px;
+      font-size: 13.5px;
       font-weight: 600;
       font-family: inherit;
       cursor: pointer;
       transition: all 0.15s ease;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
     }
 
     .btn-icon-subtle:hover {
@@ -897,11 +898,11 @@
     }
 
     .seat-role-badge {
-      font-size: 10.5px;
+      font-size: 12px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      padding: 2px 7px;
+      padding: 3px 8px;
       border-radius: 4px;
       width: fit-content;
       margin-bottom: 12px;
@@ -925,32 +926,32 @@
     }
 
     .seat-avatar-circle {
-      width: 38px;
-      height: 38px;
+      width: 42px;
+      height: 42px;
       border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 700;
       color: #ffffff;
       flex-shrink: 0;
     }
 
     .seat-name-text {
-      font-size: 14.5px;
+      font-size: 16.5px;
       font-weight: 700;
       color: var(--comm-text-dark);
-      line-height: 1.2;
+      line-height: 1.25;
     }
 
     .seat-handle-text {
-      font-size: 12px;
+      font-size: 13.5px;
       color: var(--comm-text-muted);
     }
 
     .seat-role-focus {
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 600;
       color: #0284c7;
       margin: 6px 0 10px;
@@ -965,12 +966,12 @@
     }
 
     .seat-skill-item {
-      font-size: 10.5px;
-      padding: 2px 6px;
+      font-size: 12px;
+      padding: 3px 8px;
       border-radius: 4px;
       background: #ffffff;
       border: 1px solid var(--comm-border);
-      color: #475569;
+      color: #334155;
     }
 
     /* Open Seat Card */
@@ -1012,14 +1013,14 @@
     }
 
     .open-seat-title {
-      font-size: 14.5px;
+      font-size: 16.5px;
       font-weight: 700;
       color: var(--comm-text-dark);
       margin-bottom: 4px;
     }
 
     .open-seat-sub {
-      font-size: 12px;
+      font-size: 13.5px;
       color: var(--comm-text-muted);
       margin-bottom: 12px;
       padding: 0 8px;
@@ -1029,9 +1030,9 @@
       background: var(--comm-teal);
       color: #ffffff;
       border: none;
-      padding: 6px 14px;
+      padding: 8px 16px;
       border-radius: 6px;
-      font-size: 12px;
+      font-size: 13.5px;
       font-weight: 600;
       font-family: inherit;
       cursor: pointer;
@@ -1137,13 +1138,13 @@
     }
 
     .chat-sender-avatar {
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 700;
       color: #ffffff;
       flex-shrink: 0;
@@ -1165,20 +1166,20 @@
     }
 
     .chat-sender-name {
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--comm-text-dark);
     }
 
     .chat-timestamp {
-      font-size: 11px;
+      font-size: 12px;
       color: #94a3b8;
     }
 
     .chat-text {
-      font-size: 13px;
-      color: #334155;
-      line-height: 1.45;
+      font-size: 15px;
+      color: #1e293b;
+      line-height: 1.55;
       word-break: break-word;
     }
 
@@ -1193,9 +1194,9 @@
       background: #f8fafc;
       border: 1px solid var(--comm-border-strong);
       border-radius: 8px;
-      padding: 9px 12px;
+      padding: 10px 14px;
       color: var(--comm-text-dark);
-      font-size: 13px;
+      font-size: 15px;
       font-family: inherit;
     }
 
@@ -1210,14 +1211,14 @@
       color: #ffffff;
       border: none;
       border-radius: 8px;
-      padding: 0 14px;
+      padding: 0 16px;
       font-weight: 600;
-      font-size: 12.5px;
+      font-size: 14px;
       font-family: inherit;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
     }
 
     .btn-send-message:hover {
@@ -1270,17 +1271,17 @@
     }
 
     .action-join-title {
-      font-size: 17px;
+      font-size: 19px;
       font-weight: 700;
       color: var(--comm-text-dark);
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     .action-join-desc {
-      font-size: 13px;
+      font-size: 14.5px;
       color: var(--comm-text-muted);
-      line-height: 1.5;
-      margin-bottom: 20px;
+      line-height: 1.6;
+      margin-bottom: 22px;
     }
 
     /* TAB 3: SQUAD DIRECTORY */
@@ -1315,16 +1316,16 @@
     }
 
     .squad-dir-name {
-      font-size: 17px;
+      font-size: 19px;
       font-weight: 700;
       color: var(--comm-text-dark);
     }
 
     .squad-dir-track {
-      font-size: 13px;
+      font-size: 14.5px;
       color: #0284c7;
       font-weight: 600;
-      margin-top: 2px;
+      margin-top: 3px;
     }
 
     .seats-progress-bar {
@@ -1344,21 +1345,21 @@
     .seats-status-text {
       display: flex;
       justify-content: space-between;
-      font-size: 11.5px;
+      font-size: 13.5px;
       color: var(--comm-text-muted);
-      font-weight: 500;
+      font-weight: 600;
       margin-bottom: 14px;
     }
 
     .squad-goal-snippet {
-      font-size: 12.5px;
+      font-size: 14px;
       color: #78350f;
       background: #fffdf5;
-      padding: 8px 12px;
+      padding: 10px 14px;
       border-radius: 6px;
-      border-left: 2px solid #d97706;
+      border-left: 3px solid #d97706;
       margin-bottom: 16px;
-      line-height: 1.45;
+      line-height: 1.55;
     }
 
     /* MODALS */
@@ -1417,10 +1418,10 @@
 
     .form-label {
       display: block;
-      font-size: 13px;
+      font-size: 14.5px;
       font-weight: 600;
       color: var(--comm-text-dark);
-      margin-bottom: 5px;
+      margin-bottom: 6px;
       text-transform: none !important;
       letter-spacing: normal !important;
     }
@@ -1435,9 +1436,9 @@
       background: #f8fafc;
       border: 1px solid var(--comm-border-strong);
       border-radius: 8px;
-      padding: 9px 12px;
+      padding: 10px 14px;
       color: var(--comm-text-dark);
-      font-size: 13.5px;
+      font-size: 15px;
       font-family: inherit;
       transition: all 0.15s ease;
       box-sizing: border-box;
@@ -1464,9 +1465,9 @@
       background: transparent;
       border: none;
       color: #64748b;
-      font-size: 13px;
+      font-size: 14.5px;
       font-weight: 600;
-      padding: 7px 12px;
+      padding: 8px 14px;
       border-radius: 6px;
       cursor: pointer;
       transition: all 0.15s ease;
@@ -1593,18 +1594,18 @@
 
     .modal-btn-demo {
       width: 100%;
-      padding: 8px 14px;
+      padding: 10px 16px;
       margin-top: 8px;
       background: #f5f2fb;
       border: 1px dashed #d8b4fe;
       border-radius: 8px;
-      font-size: 12.5px;
+      font-size: 14px;
       font-weight: 600;
       color: #5e3fae;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 7px;
       cursor: pointer;
       transition: all 0.15s ease;
     }
@@ -1617,50 +1618,50 @@
     .demo-user-meta {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .demo-avatar {
-      width: 34px;
-      height: 34px;
+      width: 38px;
+      height: 38px;
       border-radius: 8px;
       background: #0f766e;
       color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12.5px;
+      font-size: 14px;
       font-weight: 700;
       flex-shrink: 0;
     }
 
     .demo-name-text {
-      font-size: 12.5px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--comm-text-dark);
-      line-height: 1.2;
+      line-height: 1.25;
     }
 
     .demo-role-text {
-      font-size: 11px;
+      font-size: 12.5px;
       color: var(--comm-text-muted);
-      margin-top: 1px;
+      margin-top: 2px;
     }
 
     .btn-fill-demo {
       background: #ffffff;
       border: 1px solid var(--comm-border-strong);
       color: var(--comm-teal);
-      font-size: 11.5px;
+      font-size: 13px;
       font-weight: 700;
-      padding: 5px 10px;
+      padding: 6px 12px;
       border-radius: 6px;
       cursor: pointer;
       transition: all 0.15s ease;
       white-space: nowrap;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
     }
 
     .btn-fill-demo:hover {
@@ -1671,7 +1672,7 @@
     .interest-chips-matrix {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 7px;
+      gap: 8px;
       margin-top: 6px;
     }
 
@@ -1679,13 +1680,13 @@
       background: #f8fafc;
       border: 1px solid var(--comm-border);
       border-radius: 8px;
-      padding: 7px 10px;
+      padding: 8px 12px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 9px;
       cursor: pointer;
       transition: all 0.16s ease;
-      font-size: 12px;
+      font-size: 13.5px;
       font-weight: 600;
       color: #334155;
       user-select: none;
@@ -1704,8 +1705,8 @@
     }
 
     .interest-icon-svg {
-      width: 14px;
-      height: 14px;
+      width: 16px;
+      height: 16px;
       color: inherit;
       flex-shrink: 0;
     }
@@ -2053,22 +2054,22 @@
           <span style="font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; color: #111827;">Future<span style="color: #5e3fae;">Era</span></span>
         </div>
 
-        <h3 id="modalAuthTitle" style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 24px; font-weight: 700; color: #111827; margin: 0 0 4px; letter-spacing: -0.02em;">
+        <h3 id="modalAuthTitle" style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 25px; font-weight: 700; color: #111827; margin: 0 0 4px; letter-spacing: -0.02em;">
           Welcome back
         </h3>
-        <p id="modalAuthSub" style="font-size: 13.5px; color: #6b7280; margin: 0 0 18px;">
+        <p id="modalAuthSub" style="font-size: 15px; color: #6b7280; margin: 0 0 18px;">
           Please enter your details
         </p>
 
         <!-- FORM 1: SIGN IN -->
         <form id="signInForm" onsubmit="handleSignInSubmit(event)">
           <div class="form-group" style="margin-bottom: 12px;">
-            <label class="form-label" style="font-size: 13px; font-weight: 500; color: #374151; margin-bottom: 4px; display: block;">Email address</label>
+            <label class="form-label" style="font-size: 14.5px; font-weight: 500; color: #374151; margin-bottom: 5px; display: block;">Email address</label>
             <input type="text" id="loginUsername" class="modal-input-field" required placeholder="Enter your email or username" />
           </div>
 
           <div class="form-group" style="margin-bottom: 12px;">
-            <label class="form-label" style="font-size: 13px; font-weight: 500; color: #374151; margin-bottom: 4px; display: block;">Password</label>
+            <label class="form-label" style="font-size: 14.5px; font-weight: 500; color: #374151; margin-bottom: 5px; display: block;">Password</label>
             <div style="position: relative;">
               <input type="password" id="loginPassword" class="modal-input-field" style="padding-right: 36px;" required placeholder="••••••••" />
               <button type="button" onclick="toggleModalPasswordView('loginPassword')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #9ca3af; padding: 4px;">
@@ -2078,7 +2079,7 @@
           </div>
 
           <!-- Options row -->
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-size: 13px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-size: 14px;">
             <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; color: #374151;">
               <input type="checkbox" id="modalRememberMe" checked style="accent-color: #5e3fae; border-radius: 4px;" />
               <span>Remember me</span>
@@ -2109,7 +2110,7 @@
           </button>
 
           <!-- Switch to sign up -->
-          <p style="text-align: center; font-size: 13px; color: #6b7280; margin-top: 14px;">
+          <p style="text-align: center; font-size: 14px; color: #6b7280; margin-top: 14px;">
             Don't have an account? 
             <button type="button" onclick="switchAuthTab('signup')" style="background: none; border: none; color: #5e3fae; text-decoration: underline; font-weight: 600; cursor: pointer; font-family: inherit; font-size: inherit;">Sign up</button>
           </p>
@@ -2119,22 +2120,22 @@
         <form id="signUpForm" style="display: none;" onsubmit="handleSignUpSubmit(event)">
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
             <div class="form-group">
-              <label class="form-label" style="font-size: 12.5px; font-weight: 500; color: #374151; margin-bottom: 3px; display: block;">Full Name</label>
+              <label class="form-label" style="font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 4px; display: block;">Full Name</label>
               <input type="text" id="regFullName" class="modal-input-field" required placeholder="Aarav Sharma" />
             </div>
             <div class="form-group">
-              <label class="form-label" style="font-size: 12.5px; font-weight: 500; color: #374151; margin-bottom: 3px; display: block;">Username</label>
+              <label class="form-label" style="font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 4px; display: block;">Username</label>
               <input type="text" id="regUsername" class="modal-input-field" required placeholder="aarav_dev" />
             </div>
           </div>
 
           <div class="form-group" style="margin-bottom: 10px;">
-            <label class="form-label" style="font-size: 12.5px; font-weight: 500; color: #374151; margin-bottom: 3px; display: block;">Email Address</label>
+            <label class="form-label" style="font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 4px; display: block;">Email Address</label>
             <input type="email" id="regEmail" class="modal-input-field" required placeholder="aarav@example.com" />
           </div>
 
           <div class="form-group" style="margin-bottom: 10px;">
-            <label class="form-label" style="font-size: 12.5px; font-weight: 500; color: #374151; margin-bottom: 3px; display: block;">Password (Min 6 Characters)</label>
+            <label class="form-label" style="font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 4px; display: block;">Password (Min 6 Characters)</label>
             <div style="position: relative;">
               <input type="password" id="regPassword" class="modal-input-field" minlength="6" style="padding-right: 36px;" required placeholder="••••••••" />
               <button type="button" onclick="toggleModalPasswordView('regPassword')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #9ca3af; padding: 4px;">
@@ -2145,51 +2146,51 @@
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
             <div class="form-group">
-              <label class="form-label" style="font-size: 12.5px; font-weight: 500; color: #374151; margin-bottom: 3px; display: block;">Career Stage</label>
+              <label class="form-label" style="font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 4px; display: block;">Career Stage</label>
               <select id="regStage" class="modal-input-field" style="background-color: #fff; cursor: pointer;">
                 <option value="final_year" selected>Final Year Student</option>
                 <option value="12th_pass">Class 12th Pass</option>
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label" style="font-size: 12.5px; font-weight: 500; color: #374151; margin-bottom: 3px; display: block;">Degree or Stream</label>
+              <label class="form-label" style="font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 4px; display: block;">Degree or Stream</label>
               <input type="text" id="regDegree" class="modal-input-field" placeholder="B.Tech CS" />
             </div>
           </div>
 
           <div class="form-group" style="margin-bottom: 10px;">
-            <label class="form-label" style="font-size: 12.5px; font-weight: 500; color: #374151; margin-bottom: 3px; display: block;">Target Engineering Role</label>
+            <label class="form-label" style="font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 4px; display: block;">Target Engineering Role</label>
             <input type="text" id="regTargetRole" class="modal-input-field" placeholder="e.g. AI Systems Architect" />
           </div>
 
           <div class="form-group" style="margin-bottom: 12px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-              <label class="form-label" style="font-size: 12.5px; font-weight: 500; color: #374151; margin-bottom: 0;">Core Technical Interests (Choose &ge; 3)</label>
-              <span id="regInterestCounter" style="color: #b45309; font-size: 11.5px; font-weight: 700;">0/3 selected</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <label class="form-label" style="font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 0;">Core Technical Interests (Choose &ge; 3)</label>
+              <span id="regInterestCounter" style="color: #b45309; font-size: 13px; font-weight: 700;">0/3 selected</span>
             </div>
             <div class="interest-chips-matrix" id="regInterestChips" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-              <div class="interest-select-card" data-interest="Coding & Tech" style="padding: 6px 8px; font-size: 12px; border-radius: 6px;">
+              <div class="interest-select-card" data-interest="Coding & Tech" style="padding: 7px 10px; font-size: 13px; border-radius: 6px;">
                 <span>Full-Stack &amp; Core</span>
               </div>
-              <div class="interest-select-card" data-interest="AI & Machine Learning" style="padding: 6px 8px; font-size: 12px; border-radius: 6px;">
+              <div class="interest-select-card" data-interest="AI & Machine Learning" style="padding: 7px 10px; font-size: 13px; border-radius: 6px;">
                 <span>AI &amp; ML</span>
               </div>
-              <div class="interest-select-card" data-interest="Cloud & DevOps" style="padding: 6px 8px; font-size: 12px; border-radius: 6px;">
+              <div class="interest-select-card" data-interest="Cloud & DevOps" style="padding: 7px 10px; font-size: 13px; border-radius: 6px;">
                 <span>Cloud &amp; DevOps</span>
               </div>
-              <div class="interest-select-card" data-interest="Cybersecurity" style="padding: 6px 8px; font-size: 12px; border-radius: 6px;">
+              <div class="interest-select-card" data-interest="Cybersecurity" style="padding: 7px 10px; font-size: 13px; border-radius: 6px;">
                 <span>Cybersecurity</span>
               </div>
-              <div class="interest-select-card" data-interest="UI/UX & Product Design" style="padding: 6px 8px; font-size: 12px; border-radius: 6px;">
+              <div class="interest-select-card" data-interest="UI/UX & Product Design" style="padding: 7px 10px; font-size: 13px; border-radius: 6px;">
                 <span>UI/UX &amp; Design</span>
               </div>
-              <div class="interest-select-card" data-interest="Robotics & IoT" style="padding: 6px 8px; font-size: 12px; border-radius: 6px;">
+              <div class="interest-select-card" data-interest="Robotics & IoT" style="padding: 7px 10px; font-size: 13px; border-radius: 6px;">
                 <span>Robotics &amp; IoT</span>
               </div>
-              <div class="interest-select-card" data-interest="Data Science & Analytics" style="padding: 6px 8px; font-size: 12px; border-radius: 6px;">
+              <div class="interest-select-card" data-interest="Data Science & Analytics" style="padding: 7px 10px; font-size: 13px; border-radius: 6px;">
                 <span>Data Science</span>
               </div>
-              <div class="interest-select-card" data-interest="Finance & Markets" style="padding: 6px 8px; font-size: 12px; border-radius: 6px;">
+              <div class="interest-select-card" data-interest="Finance & Markets" style="padding: 7px 10px; font-size: 13px; border-radius: 6px;">
                 <span>FinTech &amp; Markets</span>
               </div>
             </div>
@@ -2199,7 +2200,7 @@
             Create account
           </button>
 
-          <p style="text-align: center; font-size: 13px; color: #6b7280; margin-top: 14px;">
+          <p style="text-align: center; font-size: 14px; color: #6b7280; margin-top: 14px;">
             Already have an account? 
             <button type="button" onclick="switchAuthTab('signin')" style="background: none; border: none; color: #5e3fae; text-decoration: underline; font-weight: 600; cursor: pointer; font-family: inherit; font-size: inherit;">Log in</button>
           </p>
@@ -2407,7 +2408,7 @@
           Max 300 MB
         </span>
       </div>
-      <p style="font-size: 13px; color: var(--comm-text-muted); margin: 0 0 16px;">
+      <p style="font-size: 14.5px; color: var(--comm-text-muted); margin: 0 0 16px;">
         Upload a screenshot, UI mockup, system diagram, or screen demo video for your teammates.
       </p>
 
@@ -2415,14 +2416,14 @@
         <input type="hidden" id="progressSquadId" value="" />
 
         <div class="form-group">
-          <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: #374151; margin-bottom: 6px; display: block;">
+          <label class="form-label" style="font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 6px; display: block;">
             Title / Milestone Caption <span style="color: #94a3b8; font-weight: 400;">(Optional)</span>
           </label>
           <input type="text" id="progressTitleInput" class="form-input" placeholder="e.g. Auth flow architecture diagram & video demo" maxlength="150" />
         </div>
 
         <div class="form-group">
-          <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: #374151; margin-bottom: 6px; display: block;">
+          <label class="form-label" style="font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 6px; display: block;">
             Media File (Image or Video &le; 300MB)
           </label>
           <div class="progress-dropzone" id="progressDropzone">
@@ -2435,10 +2436,10 @@
                   <line x1="12" y1="3" x2="12" y2="15"></line>
                 </svg>
               </div>
-              <div style="font-weight: 600; font-size: 13.5px; color: #1e293b;">
+              <div style="font-weight: 600; font-size: 15px; color: #1e293b;">
                 Click to select or drag &amp; drop
               </div>
-              <div style="font-size: 12px; color: #64748b; margin-top: 3px;">
+              <div style="font-size: 13.5px; color: #64748b; margin-top: 3px;">
                 PNG, JPG, WEBP, GIF or MP4, WEBM, MOV (Strict limit 300 MB)
               </div>
             </div>
@@ -2448,19 +2449,19 @@
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                 </div>
                 <div style="flex: 1; min-width: 0;">
-                  <div id="selectedFileName" style="font-size: 13px; font-weight: 600; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-                  <div id="selectedFileSize" style="font-size: 11.5px; color: #64748b;"></div>
+                  <div id="selectedFileName" style="font-size: 14.5px; font-weight: 600; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                  <div id="selectedFileSize" style="font-size: 13px; color: #64748b;"></div>
                 </div>
                 <button type="button" onclick="clearSelectedProgressFile(event)" style="background: none; border: none; color: #94a3b8; cursor: pointer; padding: 4px; font-size: 16px;">&times;</button>
               </div>
             </div>
           </div>
-          <div id="progressFileError" style="display: none; color: #ef4444; font-size: 12px; margin-top: 6px; font-weight: 500;"></div>
+          <div id="progressFileError" style="display: none; color: #ef4444; font-size: 13.5px; margin-top: 6px; font-weight: 500;"></div>
         </div>
 
         <!-- Live Upload Progress Bar -->
         <div id="progressUploadBarContainer" style="display: none; margin-bottom: 14px;">
-          <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 4px;">
+          <div style="display: flex; justify-content: space-between; font-size: 13.5px; font-weight: 600; color: #475569; margin-bottom: 4px;">
             <span id="uploadStatusText">Uploading to squad...</span>
             <span id="uploadPercentText">0%</span>
           </div>
@@ -2470,10 +2471,10 @@
         </div>
 
         <div style="display: flex; gap: 10px; margin-top: 18px;">
-          <button type="button" class="btn btn--outline" style="flex: 1; padding: 10px;" onclick="closeProgressUploadModal()">
+          <button type="button" class="btn btn--outline" style="flex: 1; padding: 11px; font-size: 14.5px;" onclick="closeProgressUploadModal()">
             Cancel
           </button>
-          <button type="submit" id="btnSubmitProgress" class="btn btn--solid" style="flex: 2; padding: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+          <button type="submit" id="btnSubmitProgress" class="btn btn--solid" style="flex: 2; padding: 11px; font-size: 14.5px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
             <span>Share with Squad</span>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
           </button>
@@ -2493,18 +2494,18 @@
           <h3 style="font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 20px; font-weight: 700; color: var(--comm-text-dark); margin: 0 0 2px;">
             Squad Progress Showcase
           </h3>
-          <p style="font-size: 13px; color: var(--comm-text-muted); margin: 0;">
+          <p style="font-size: 14.5px; color: var(--comm-text-muted); margin: 0;">
             Real-time feed of screenshots, diagrams, and video demos shared by your squad.
           </p>
         </div>
-        <button type="button" class="btn btn--solid" style="font-size: 12px; padding: 7px 12px; display: inline-flex; align-items: center; gap: 6px;" onclick="switchFromGalleryToUpload()">
+        <button type="button" class="btn btn--solid" style="font-size: 13.5px; padding: 8px 14px; display: inline-flex; align-items: center; gap: 6px;" onclick="switchFromGalleryToUpload()">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
           Upload New
         </button>
       </div>
 
       <div id="progressGalleryContainer" style="margin-top: 16px;">
-        <div style="text-align: center; color: #64748b; padding: 40px 0;">Loading progress uploads...</div>
+        <div style="text-align: center; color: #64748b; font-size: 14.5px; padding: 40px 0;">Loading progress uploads...</div>
       </div>
     </div>
   </div>
@@ -2516,9 +2517,9 @@
         <polyline points="20 6 9 17 4 12"></polyline>
       </svg>
     </span>
-    <span id="toastText">Action completed successfully.</span>
+    <span id="toastText" style="font-size: 14px;">Action completed successfully.</span>
   </div>
 
-  <script src="/static/js/community.js?v=35"></script>
+  <script src="/static/js/community.js?v=36"></script>
 </body>
 </html>

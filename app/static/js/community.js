@@ -122,7 +122,7 @@ function renderUserHeaderLoggedIn(user) {
           ${initials}
         </div>
         <span>${escapeHtml(user.full_name.split(' ')[0])}</span>
-        ${user.squad_name ? `<span style="font-size: 11px; background: #f0fdfa; color: #0f766e; border: 1px solid #ccfbf1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">${escapeHtml(user.squad_name)}</span>` : ''}
+        ${user.squad_name ? `<span style="font-size: 12.5px; background: #f0fdfa; color: #0f766e; border: 1px solid #ccfbf1; padding: 3px 8px; border-radius: 4px; font-weight: 600;">${escapeHtml(user.squad_name)}</span>` : ''}
       </button>
       <button class="nav-signout-btn" onclick="logout(true)" title="Sign Out">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -141,7 +141,7 @@ function renderUserHeaderLoggedOut() {
   if (!container) return;
 
   container.innerHTML = `
-    <button id="authModalTriggerBtn" class="btn btn--solid" style="padding: 8px 18px; font-size: 13px;" onclick="openAuthModal('signin')">
+    <button id="authModalTriggerBtn" class="btn btn--solid" style="padding: 9px 20px; font-size: 14.5px;" onclick="openAuthModal('signin')">
       Sign In / Join &rarr;
     </button>
   `;
@@ -439,11 +439,11 @@ function renderPeers(peers) {
   if (peers.length === 0) {
     grid.innerHTML = `
       <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px; background: #ffffff; border-radius: 14px; border: 1px dashed var(--comm-border-strong);">
-        <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 6px;">No Matching Peers Found</h3>
-        <p style="font-size: 13.5px; color: #64748b; max-width: 440px; margin: 0 auto 16px;">
+        <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 8px;">No Matching Peers Found</h3>
+        <p style="font-size: 15px; color: #64748b; max-width: 480px; margin: 0 auto 18px; line-height: 1.55;">
           Try expanding your search terms, selecting "All Academic Stages", or switching to "All Match Levels".
         </p>
-        <button class="btn-secondary" style="padding: 7px 16px; font-size: 12.5px; border-radius: 6px;" onclick="resetPeerFilters()">
+        <button class="btn-secondary" style="padding: 9px 18px; font-size: 14px; border-radius: 8px;" onclick="resetPeerFilters()">
           Reset Search Filters
         </button>
       </div>
@@ -578,18 +578,18 @@ function renderLoggedOutSquadView() {
         </svg>
       </div>
 
-      <h2 style="font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 22px; font-weight: 700; color: #0f172a; margin: 0 0 8px;">
+      <h2 style="font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 24px; font-weight: 700; color: #0f172a; margin: 0 0 10px;">
         Squad Workspaces are Private to Teams
       </h2>
-      <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin: 0 0 24px;">
+      <p style="font-size: 15.5px; color: #64748b; line-height: 1.6; margin: 0 0 24px;">
         Sign in or join FutureEra to access your 4-person squad workspace, track sprint goals, share demo recordings, and collaborate in real-time.
       </p>
 
       <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-        <button class="btn btn--solid" style="padding: 10px 24px; font-size: 13.5px;" onclick="openAuthModal('signin')">
+        <button class="btn btn--solid" style="padding: 11px 26px; font-size: 15px;" onclick="openAuthModal('signin')">
           Sign In / Join Squad &rarr;
         </button>
-        <button class="btn btn--outline" style="padding: 10px 20px; font-size: 13.5px;" onclick="switchCommTab('directory')">
+        <button class="btn btn--outline" style="padding: 11px 22px; font-size: 15px;" onclick="switchCommTab('directory')">
           Browse Squad Directory
         </button>
       </div>
@@ -671,7 +671,7 @@ function renderActiveSquadWorkspace(squad) {
 
           <!-- Invite code & quick share -->
           <div class="squad-invite-block">
-            <span style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase;">Invite Code</span>
+            <span style="font-size: 12.5px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em;">Invite Code</span>
             <span class="squad-code-val">${escapeHtml(squad.invite_code)}</span>
             <button class="btn-icon-subtle" onclick="copySquadCode('${escapeHtml(squad.invite_code)}')">
               ${ICONS.copy}
@@ -688,7 +688,7 @@ function renderActiveSquadWorkspace(squad) {
         </div>
 
         <div>
-          <div style="font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; display: flex; justify-content: space-between;">
+          <div style="font-size: 13.5px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; display: flex; justify-content: space-between;">
             <span>4-Member Pod Seats</span>
             <span>${currentCount} of 4 Occupied</span>
           </div>
@@ -706,7 +706,7 @@ function renderActiveSquadWorkspace(squad) {
             <div class="card-heading">
               <span>Sprint Objective</span>
             </div>
-            <button class="btn-icon-subtle" style="font-size: 11.5px; padding: 4px 8px;" onclick="promptUpdateSprintGoal(${squad.id})">
+            <button class="btn-icon-subtle" style="font-size: 13px; padding: 5px 10px;" onclick="promptUpdateSprintGoal(${squad.id})">
               Edit Objective
             </button>
           </div>
@@ -717,7 +717,7 @@ function renderActiveSquadWorkspace(squad) {
             </div>
           </div>
 
-          <div style="font-size: 11.5px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px;">
+          <div style="font-size: 13px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px;">
             Team Workspace Tools
           </div>
           <div class="tools-grid">
@@ -746,13 +746,13 @@ function renderActiveSquadWorkspace(squad) {
             <div class="card-heading">
               <span>Team Chat</span>
             </div>
-            <span style="font-size: 11px; color: #10b981; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+            <span style="font-size: 12.5px; color: #10b981; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
               <span class="meta-dot green"></span> Live
             </span>
           </div>
 
           <div class="chat-scroll-area" id="squadChatMessages">
-            <div style="color: #64748b; font-size: 13px; text-align: center; margin-top: 40px;">
+            <div style="color: #64748b; font-size: 14.5px; text-align: center; margin-top: 40px;">
               Loading conversation...
             </div>
           </div>
@@ -760,7 +760,7 @@ function renderActiveSquadWorkspace(squad) {
           <form class="chat-compose-form" onsubmit="handleSendChatMessage(event, ${squad.id})">
             <button type="button" class="tool-link-card" onclick="openProgressUploadModal(${squad.id})" title="Attach progress image or video (Max 300MB)" style="padding: 0 10px; height: 38px; border-radius: 8px; flex-shrink: 0; background: #f1f5f9; display: flex; align-items: center; justify-content: center; gap: 4px; border: 1px solid var(--comm-border);">
               ${ICONS.upload}
-              <span style="font-size: 11.5px; font-weight: 600;">Media</span>
+              <span style="font-size: 13px; font-weight: 600;">Media</span>
             </button>
             <input type="text" id="squadChatInput" placeholder="Message teammates..." required />
             <button type="submit" class="btn-send-message">
@@ -782,10 +782,10 @@ function renderNotInSquadView() {
 
   container.innerHTML = `
     <div style="text-align: center; max-width: 580px; margin: 16px auto 30px;">
-      <h2 style="font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 6px;">
+      <h2 style="font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 26px; font-weight: 700; color: #0f172a; margin-bottom: 8px;">
         Join or Create a 4-Person Squad
       </h2>
-      <p style="font-size: 14px; color: #64748b; line-height: 1.55;">
+      <p style="font-size: 15.5px; color: #64748b; line-height: 1.6;">
         FutureEra caps project squads strictly at 4 members. Smaller pods eliminate social loafing, maintain sprint velocity, and ensure every member owns high-yield architecture deliverables.
       </p>
     </div>
@@ -801,7 +801,7 @@ function renderNotInSquadView() {
         <p class="action-join-desc">
           Have an invite code from a squad leader (e.g. <code>NV-2026</code>)? Enter it to claim an open seat.
         </p>
-        <button class="btn btn--solid" style="width: 100%; padding: 10px;" onclick="openJoinSquadModal()">
+        <button class="btn btn--solid" style="width: 100%; padding: 11px; font-size: 14.5px;" onclick="openJoinSquadModal()">
           Enter Squad Code &rarr;
         </button>
       </div>
@@ -816,7 +816,7 @@ function renderNotInSquadView() {
         <p class="action-join-desc">
           Start your own squad, select an engineering track, set Sprint 1 goals, and recruit matching peers.
         </p>
-        <button class="btn btn--solid" style="width: 100%; padding: 10px; background: #0f766e;" onclick="openCreateSquadModal()">
+        <button class="btn btn--solid" style="width: 100%; padding: 11px; font-size: 14.5px; background: #0f766e;" onclick="openCreateSquadModal()">
           Form New Squad &rarr;
         </button>
       </div>
@@ -843,7 +843,7 @@ function renderChatMessages(messages) {
 
   if (messages.length === 0) {
     container.innerHTML = `
-      <div style="color: #64748b; font-size: 13px; text-align: center; margin-top: 60px;">
+      <div style="color: #64748b; font-size: 14.5px; text-align: center; margin-top: 60px;">
         No messages yet. Send the first update to your squad.
       </div>
     `;
@@ -1170,8 +1170,8 @@ function renderSquadsDirectory(squads) {
   if (squads.length === 0) {
     grid.innerHTML = `
       <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px; background: #ffffff; border-radius: 14px; border: 1px dashed var(--comm-border);">
-        <h3 style="color: #0f172a; font-size: 16px;">No Squads Formed Yet</h3>
-        <p style="color: #64748b; font-size: 13.5px; margin-top: 4px;">Be the first! Form a 4-member squad for your capstone.</p>
+        <h3 style="color: #0f172a; font-size: 18px;">No Squads Formed Yet</h3>
+        <p style="color: #64748b; font-size: 15px; margin-top: 6px;">Be the first! Form a 4-member squad for your capstone.</p>
       </div>
     `;
     return;
@@ -1190,12 +1190,12 @@ function renderSquadsDirectory(squads) {
             <div class="squad-dir-name">${escapeHtml(s.squad_name)}</div>
             <div class="squad-dir-track">${escapeHtml(s.track_name)}</div>
           </div>
-          <span style="font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: #f1f5f9; color: #475569;">
+          <span style="font-size: 12.5px; font-weight: 600; padding: 3px 8px; border-radius: 4px; background: #f1f5f9; color: #475569;">
             ${s.stage === 'final_year' ? 'Final Year' : 'Class 12th'}
           </span>
         </div>
 
-        <div style="font-size: 12.5px; color: #64748b; margin: 4px 0 10px;">
+        <div style="font-size: 14px; color: #64748b; margin: 6px 0 12px;">
           Lead: <strong style="color: #0f172a;">${escapeHtml(s.created_by_username)}</strong>
         </div>
 
@@ -1214,7 +1214,7 @@ function renderSquadsDirectory(squads) {
         </div>
 
         <div style="display: flex; gap: 8px; margin-top: auto;">
-          <button class="btn-secondary" style="flex: 1; padding: 8px;" onclick="openJoinSquadModal('${s.invite_code}')" ${!isOpen ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+          <button class="btn-secondary" style="flex: 1; padding: 10px 14px; font-size: 14px;" onclick="openJoinSquadModal('${s.invite_code}')" ${!isOpen ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
             ${isOpen ? `Claim Open Seat (${s.invite_code})` : 'Squad Full'}
           </button>
           <button class="btn-icon-subtle" onclick="copySquadCode('${s.invite_code}')" title="Copy Code">
@@ -1251,48 +1251,48 @@ async function openPeerModal(peerId) {
 
     content.innerHTML = `
       <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 18px;">
-        <div style="width: 52px; height: 52px; border-radius: 12px; background-color: ${color}; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #ffffff;">
+        <div style="width: 56px; height: 56px; border-radius: 12px; background-color: ${color}; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #ffffff;">
           ${initials}
         </div>
         <div>
-          <h2 style="font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 20px; font-weight: 700; color: #0f172a; line-height: 1.25; margin: 0;">
+          <h2 style="font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 22px; font-weight: 700; color: #0f172a; line-height: 1.25; margin: 0;">
             ${escapeHtml(u.full_name)}
           </h2>
-          <div style="font-size: 13px; color: #64748b; font-weight: 500;">@${escapeHtml(u.username)} • ${stageText}</div>
+          <div style="font-size: 14.5px; color: #64748b; font-weight: 500; margin-top: 2px;">@${escapeHtml(u.username)} • ${stageText}</div>
         </div>
       </div>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px;">
         <div style="background: #f8fafc; border: 1px solid var(--comm-border); padding: 10px 12px; border-radius: 8px;">
-          <div style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase;">Focus Role</div>
-          <div style="font-size: 13px; color: #0284c7; font-weight: 600; margin-top: 2px;">
+          <div style="font-size: 12.5px; color: #64748b; font-weight: 600; text-transform: uppercase;">Focus Role</div>
+          <div style="font-size: 14.5px; color: #0284c7; font-weight: 600; margin-top: 3px;">
             ${escapeHtml(u.target_role || "Engineering Track")}
           </div>
         </div>
         <div style="background: #f8fafc; border: 1px solid var(--comm-border); padding: 10px 12px; border-radius: 8px;">
-          <div style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase;">Academic Degree</div>
-          <div style="font-size: 13px; color: #0f172a; font-weight: 600; margin-top: 2px;">
+          <div style="font-size: 12.5px; color: #64748b; font-weight: 600; text-transform: uppercase;">Academic Degree</div>
+          <div style="font-size: 14.5px; color: #0f172a; font-weight: 600; margin-top: 3px;">
             ${escapeHtml(u.stream_or_degree || "Technical Sciences")}
           </div>
         </div>
       </div>
 
       <div style="margin-bottom: 16px;">
-        <div style="font-size: 11.5px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 4px;">Bio</div>
-        <p style="font-size: 13.5px; color: #334155; line-height: 1.55; margin: 0;">
+        <div style="font-size: 13px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Bio</div>
+        <p style="font-size: 15px; color: #334155; line-height: 1.6; margin: 0;">
           ${escapeHtml(u.bio || "No bio provided.")}
         </p>
       </div>
 
       <div style="margin-bottom: 22px;">
-        <div style="font-size: 11.5px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Skills &amp; Interests (${u.interests.length})</div>
-        <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+        <div style="font-size: 13px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 8px;">Skills &amp; Interests (${u.interests.length})</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
           ${u.interests.map(i => `<span class="tag-shared" style="cursor: default;">${escapeHtml(i)}</span>`).join("")}
         </div>
       </div>
 
       <div style="display: flex; gap: 8px;">
-        <button class="btn btn--solid" style="flex: 1; padding: 10px; font-size: 13px;" onclick="handlePeerInviteClick(${u.id}, '${escapeHtml(u.username)}')">
+        <button class="btn btn--solid" style="flex: 1; padding: 11px; font-size: 14.5px;" onclick="handlePeerInviteClick(${u.id}, '${escapeHtml(u.username)}')">
           Invite to Squad &rarr;
         </button>
       </div>
@@ -1679,11 +1679,11 @@ async function openProgressGalleryModal(squadId) {
           <div style="width: 48px; height: 48px; border-radius: 12px; background: #f1f5f9; color: #94a3b8; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;">
             ${ICONS.film}
           </div>
-          <h4 style="font-size: 15px; font-weight: 600; color: #1e293b; margin: 0 0 6px;">No Progress Artifacts Yet</h4>
-          <p style="font-size: 13px; color: #64748b; margin: 0 0 16px;">
+          <h4 style="font-size: 17px; font-weight: 600; color: #1e293b; margin: 0 0 6px;">No Progress Artifacts Yet</h4>
+          <p style="font-size: 14.5px; color: #64748b; margin: 0 0 18px;">
             Share your latest architecture diagram, UI screenshot, or demo screen recording.
           </p>
-          <button type="button" class="btn btn--solid" style="padding: 8px 16px;" onclick="switchFromGalleryToUpload()">
+          <button type="button" class="btn btn--solid" style="padding: 10px 20px; font-size: 14px;" onclick="switchFromGalleryToUpload()">
             Upload First Progress Artifact &rarr;
           </button>
         </div>
@@ -1705,15 +1705,15 @@ async function openProgressGalleryModal(squadId) {
                 ${mediaHtml}
               </div>
               <div class="progress-card-info">
-                <div style="font-weight: 600; font-size: 13.5px; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(item.title || item.original_filename)}">
+                <div style="font-weight: 600; font-size: 15px; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(item.title || item.original_filename)}">
                   ${escapeHtml(item.title || item.original_filename)}
                 </div>
-                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11.5px; color: #64748b;">
+                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: #64748b;">
                   <span style="font-weight: 500;">By ${escapeHtml(item.full_name || item.username)}</span>
                   <span>${formatBytes(item.file_size)}</span>
                 </div>
-                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-top: 2px;">
-                  <span class="progress-limit-badge" style="font-size: 10px; padding: 2px 6px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #94a3b8; margin-top: 3px;">
+                  <span class="progress-limit-badge" style="font-size: 11.5px; padding: 2px 7px;">
                     ${isVideo ? "VIDEO DEMO" : "SCREENSHOT"}
                   </span>
                   <span>${formatTime(item.created_at)}</span>

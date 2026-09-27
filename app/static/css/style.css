@@ -460,7 +460,7 @@ a {
     margin-bottom: 30px;
 }
 
-.form-label {
+.planner__console .form-label {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -472,7 +472,7 @@ a {
     font-weight: 800;
 }
 
-.form-label::before {
+.planner__console .form-label::before {
     content: "";
     display: inline-block;
     width: 6px;

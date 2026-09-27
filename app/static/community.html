@@ -1417,10 +1417,17 @@
 
     .form-label {
       display: block;
-      font-size: 12.5px;
+      font-size: 13px;
       font-weight: 600;
       color: var(--comm-text-dark);
       margin-bottom: 5px;
+      text-transform: none !important;
+      letter-spacing: normal !important;
+    }
+
+    .form-label::before {
+      display: none !important;
+      content: none !important;
     }
 
     .form-input, .form-textarea, .form-select {
@@ -1967,7 +1974,7 @@
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-size: 13px;">
             <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; color: #374151;">
               <input type="checkbox" id="modalRememberMe" checked style="accent-color: #5e3fae; border-radius: 4px;" />
-              <span>Remember for 30 days</span>
+              <span>Remember me</span>
             </label>
             <a href="javascript:void(0)" onclick="showToast('Password reset link sent to your email.')" style="color: #5e3fae; text-decoration: underline; font-weight: 500;">Forgot password</a>
           </div>

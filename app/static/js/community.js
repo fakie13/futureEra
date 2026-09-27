@@ -330,10 +330,10 @@ function renderPeers(peers) {
 
   if (peers.length === 0) {
     grid.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: rgba(15, 23, 42, 0.4); border-radius: 18px; border: 1px dashed var(--comm-border);">
+      <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: #ffffff; border-radius: 18px; border: 1.5px dashed #cbd5e1; box-shadow: 0 4px 15px rgba(15,23,42,0.03);">
         <div style="font-size: 38px; margin-bottom: 12px;">🔍</div>
-        <h3 style="font-size: 18px; font-weight: 800; color: #ffffff; margin-bottom: 6px;">No Matching Peers Found</h3>
-        <p style="font-size: 14px; color: #94a3b8; max-width: 480px; margin: 0 auto 16px;">
+        <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">No Matching Peers Found</h3>
+        <p style="font-size: 14px; color: #64748b; max-width: 480px; margin: 0 auto 16px;">
           Try adjusting your search criteria, switching stages, or picking more interest tags above to expand candidate overlap.
         </p>
         <button class="btn btn--solid" style="padding: 8px 18px; font-size: 13px;" onclick="resetPeerFilters()">
@@ -513,7 +513,7 @@ function renderActiveSquadWarRoom(squad, isDemoPreview = false) {
             </h2>
             <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;">
               <span class="squad-track-badge">🎯 ${escapeHtml(squad.track_name)}</span>
-              <span class="squad-track-badge" style="color: #cbd5e1; background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1);">
+              <span class="squad-track-badge" style="color: #475569; background: #f1f5f9; border-color: #e2e8f0;">
                 🎓 ${squad.stage === 'final_year' ? 'Final Year' : '12th Pass'}
               </span>
             </div>
@@ -625,10 +625,10 @@ function renderNotInSquadView() {
 
   container.innerHTML = `
     <div style="text-align: center; max-width: 640px; margin: 20px auto 36px;">
-      <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 800; color: #ffffff; margin-bottom: 8px;">
+      <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">
         Join or Form a 4-Member Squad
       </h2>
-      <p style="font-size: 15px; color: #94a3b8; line-height: 1.6;">
+      <p style="font-size: 15px; color: #475569; line-height: 1.6;">
         FutureEra limits squads strictly to 4 members. Research proves 4-person engineering pods execute with the highest velocity, zero bystander effect, and equal project ownership.
       </p>
     </div>
@@ -957,8 +957,8 @@ function renderSquadsDirectory(squads) {
   if (squads.length === 0) {
     grid.innerHTML = `
       <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px;">
-        <h3 style="color: #ffffff;">No squads formed yet</h3>
-        <p style="color: #94a3b8;">Be the pioneer! Form the very first 4-member squad.</p>
+        <h3 style="color: #0f172a;">No squads formed yet</h3>
+        <p style="color: #64748b;">Be the pioneer! Form the very first 4-member squad.</p>
       </div>
     `;
     return;
@@ -975,16 +975,16 @@ function renderSquadsDirectory(squads) {
         <div class="squad-dir-header">
           <div>
             <div class="squad-dir-name">${escapeHtml(s.squad_name)}</div>
-            <div style="font-size: 13px; color: #38bdf8; font-weight: 700; margin-top: 2px;">
+            <div style="font-size: 13px; color: var(--comm-sky); font-weight: 700; margin-top: 2px;">
               🎯 ${escapeHtml(s.track_name)}
             </div>
           </div>
-          <span style="font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 6px; background: rgba(255,255,255,0.06); color: #cbd5e1;">
+          <span style="font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 6px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0;">
             ${s.stage === 'final_year' ? 'Final Year' : '12th Pass'}
           </span>
         </div>
 
-        <div style="font-size: 13px; color: #94a3b8; margin: 8px 0;">
+        <div style="font-size: 13px; color: #64748b; margin: 8px 0;">
           👑 Leader: <strong>${escapeHtml(s.created_by_username)}</strong>
         </div>
 
@@ -993,12 +993,12 @@ function renderSquadsDirectory(squads) {
         </div>
         <div class="seats-status-text">
           <span>${count} / ${max} Seats Filled</span>
-          <span style="color: ${isOpen ? '#2dd4bf' : '#94a3b8'}; font-weight: 700;">
+          <span style="color: ${isOpen ? 'var(--comm-teal)' : '#64748b'}; font-weight: 700;">
             ${isOpen ? `⚡ ${s.open_seats} Open Seat` : '🔒 Pod Full'}
           </span>
         </div>
 
-        <div style="font-size: 13px; color: #cbd5e1; background: rgba(0,0,0,0.25); padding: 10px 12px; border-radius: 8px; margin-bottom: 16px; border-left: 2px solid var(--comm-amber);">
+        <div style="font-size: 13px; color: #78350f; background: #fffbeb; padding: 10px 12px; border-radius: 8px; margin-bottom: 16px; border-left: 3px solid #b45309;">
           ${escapeHtml(s.sprint_goal || "Sprint 1: Architecture & System Setup")}
         </div>
 
@@ -1042,40 +1042,40 @@ async function openPeerModal(peerId) {
           ${u.avatar_emoji || '🚀'}
         </div>
         <div>
-          <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 800; color: #ffffff; line-height: 1.2;">
+          <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 800; color: #0f172a; line-height: 1.2;">
             ${escapeHtml(u.full_name)}
           </h2>
           <div style="font-size: 14px; color: #64748b; font-weight: 600;">@${escapeHtml(u.username)}</div>
-          <span style="display: inline-block; margin-top: 4px; font-size: 11.5px; font-weight: 700; background: rgba(20,184,166,0.15); color: #2dd4bf; padding: 3px 8px; border-radius: 6px;">
+          <span style="display: inline-block; margin-top: 4px; font-size: 11.5px; font-weight: 700; background: var(--comm-teal-light); color: var(--comm-teal); border: 1px solid var(--comm-teal-border); padding: 3px 8px; border-radius: 6px;">
             ${stageText}
           </span>
         </div>
       </div>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-        <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px;">
+        <div style="background: #f8fafc; border: 1px solid var(--comm-border); padding: 12px; border-radius: 10px;">
           <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Target Role</div>
-          <div style="font-size: 14px; color: #38bdf8; font-weight: 700; margin-top: 2px;">
+          <div style="font-size: 14px; color: var(--comm-sky); font-weight: 700; margin-top: 2px;">
             ${escapeHtml(u.target_role || "Engineering Track")}
           </div>
         </div>
-        <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px;">
+        <div style="background: #f8fafc; border: 1px solid var(--comm-border); padding: 12px; border-radius: 10px;">
           <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Stream / Major</div>
-          <div style="font-size: 14px; color: #ffffff; font-weight: 700; margin-top: 2px;">
+          <div style="font-size: 14px; color: #0f172a; font-weight: 700; margin-top: 2px;">
             ${escapeHtml(u.stream_or_degree || "Technical Sciences")}
           </div>
         </div>
       </div>
 
       <div style="margin-bottom: 20px;">
-        <div style="font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 6px;">Bio</div>
-        <p style="font-size: 14px; color: #cbd5e1; line-height: 1.6; margin: 0;">
+        <div style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Bio</div>
+        <p style="font-size: 14px; color: #334155; line-height: 1.6; margin: 0;">
           ${escapeHtml(u.bio || "No bio provided.")}
         </p>
       </div>
 
       <div style="margin-bottom: 24px;">
-        <div style="font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px;">Core Interests (${u.interests.length})</div>
+        <div style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 8px;">Core Interests (${u.interests.length})</div>
         <div style="display: flex; flex-wrap: wrap; gap: 6px;">
           ${u.interests.map(i => `<span class="shared-tag" style="font-size: 12px; padding: 4px 10px;">${escapeHtml(i)}</span>`).join("")}
         </div>

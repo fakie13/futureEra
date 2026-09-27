@@ -104,3 +104,119 @@ class SuggestProfessionsResponse(BaseModel):
     suggestions: List[ProfessionSuggestion] = []
 
 
+# ==========================================
+# COMMUNITY, AUTH & SQUAD SCHEMAS
+# ==========================================
+
+class UserSignUpRequest(BaseModel):
+    username: str
+    full_name: str
+    email: str
+    password: str
+    stage: Optional[str] = "12th_pass"
+    stream_or_degree: Optional[str] = ""
+    target_role: Optional[str] = ""
+    bio: Optional[str] = ""
+    interests: List[str] = Field(..., min_length=3, description="At least 3 core interests required")
+    avatar_color: Optional[str] = "#0d9488"
+    avatar_emoji: Optional[str] = "🚀"
+
+
+class UserLoginRequest(BaseModel):
+    username_or_email: str
+    password: str
+
+
+class UserResponse(BaseModel):
+    id: int
+    username: str
+    full_name: str
+    email: str
+    stage: str
+    stream_or_degree: str
+    target_role: str
+    bio: str
+    interests: List[str]
+    avatar_color: str
+    avatar_emoji: str
+    created_at: str
+    squad_id: Optional[int] = None
+    squad_name: Optional[str] = None
+
+
+class PeerProfile(BaseModel):
+    id: int
+    username: str
+    full_name: str
+    stage: str
+    stream_or_degree: str
+    target_role: str
+    bio: str
+    interests: List[str]
+    avatar_color: str
+    avatar_emoji: str
+    shared_interests: List[str] = []
+    overlap_count: int = 0
+    match_percentage: int = 0
+    is_strong_match: bool = False
+    in_squad: bool = False
+    squad_name: Optional[str] = None
+
+
+class CreateSquadRequest(BaseModel):
+    squad_name: str
+    track_name: str
+    stage: Optional[str] = "final_year"
+    sprint_goal: Optional[str] = "Sprint 1: Architecture & System Setup"
+
+
+class JoinSquadRequest(BaseModel):
+    invite_code: str
+
+
+class SquadMemberInfo(BaseModel):
+    user_id: int
+    username: str
+    full_name: str
+    role: str  # 'leader' or 'member'
+    target_role: str
+    avatar_color: str
+    avatar_emoji: str
+    interests: List[str] = []
+    joined_at: str
+
+
+class SquadDetailResponse(BaseModel):
+    id: int
+    squad_name: str
+    invite_code: str
+    track_name: str
+    stage: str
+    created_by: int
+    created_by_username: str
+    max_members: int = 4
+    current_members_count: int
+    open_seats: int
+    status: str
+    sprint_goal: str
+    created_at: str
+    members: List[SquadMemberInfo] = []
+
+
+class SquadMessageRequest(BaseModel):
+    message: str
+
+
+class SquadMessageItem(BaseModel):
+    id: int
+    squad_id: int
+    sender_id: int
+    sender_username: str
+    sender_name: str
+    sender_avatar_color: str
+    sender_avatar_emoji: str
+    message: str
+    created_at: str
+
+
+

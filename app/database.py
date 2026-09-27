@@ -1,7 +1,10 @@
+import hashlib
 import json
 import os
 import re
+import secrets
 import sqlite3
+from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, Tuple, List
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -55,15 +58,114 @@ def init_db():
         );
         """)
 
-        # 3. Create search indexes
+        # 3. Community Users table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            full_name TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            salt TEXT NOT NULL,
+            stage TEXT DEFAULT '12th_pass',
+            stream_or_degree TEXT DEFAULT '',
+            target_role TEXT DEFAULT '',
+            bio TEXT DEFAULT '',
+            avatar_color TEXT DEFAULT '#0d9488',
+            avatar_emoji TEXT DEFAULT '🚀',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        """)
+
+        # 4. User Interests table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS user_interests (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            interest TEXT NOT NULL,
+            UNIQUE(user_id, interest)
+        );
+        """)
+
+        # 5. User Sessions table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS user_sessions (
+            token TEXT PRIMARY KEY,
+            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            expires_at TIMESTAMP
+        );
+        """)
+
+        # 6. Squads table (4-Member Pods)
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS squads (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            squad_name TEXT NOT NULL,
+            invite_code TEXT UNIQUE NOT NULL,
+            track_name TEXT NOT NULL,
+            stage TEXT NOT NULL,
+            created_by INTEGER NOT NULL REFERENCES users(id),
+            max_members INTEGER DEFAULT 4,
+            status TEXT DEFAULT 'forming',
+            sprint_goal TEXT DEFAULT 'Sprint 1: Architecture & System Setup',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        """)
+
+        # 7. Squad Members table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS squad_members (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            squad_id INTEGER NOT NULL REFERENCES squads(id) ON DELETE CASCADE,
+            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            role TEXT DEFAULT 'member',
+            joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(squad_id, user_id)
+        );
+        """)
+
+        # 8. Squad Messages / Chat table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS squad_messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            squad_id INTEGER NOT NULL REFERENCES squads(id) ON DELETE CASCADE,
+            sender_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            message TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        """)
+
+        # 9. Squad Direct Invites table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS squad_invites (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            squad_id INTEGER NOT NULL REFERENCES squads(id) ON DELETE CASCADE,
+            from_user_id INTEGER NOT NULL REFERENCES users(id),
+            to_user_id INTEGER NOT NULL REFERENCES users(id),
+            status TEXT DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        """)
+
+        # Create search indexes
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_blueprints_lookup ON career_blueprints(lookup_key);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_blueprints_role ON career_blueprints(target_role);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_blueprints_stream ON career_blueprints(stream);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_suggestions_lookup ON profession_suggestions(lookup_key);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_suggestions_stream ON profession_suggestions(stream);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_interests_user ON user_interests(user_id);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_interests_tag ON user_interests(interest);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_squads_code ON squads(invite_code);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_squad_members_squad ON squad_members(squad_id);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_squad_members_user ON squad_members(user_id);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_squad_msg_squad ON squad_messages(squad_id);")
         
-        # 4. Seed initial rich blueprints and suggestions if tables are empty
+        # Seed initial rich blueprints, suggestions, and community data
         seed_initial_data_if_empty(conn)
+        seed_community_data_if_empty(conn)
         
         conn.commit()
 
@@ -689,7 +791,7 @@ def seed_initial_data_if_empty(conn: sqlite3.Connection):
 
 
 def get_database_stats() -> Dict[str, Any]:
-    """Returns database telemetry and count of stored blueprints and suggestions."""
+    """Returns database telemetry and count of stored blueprints, suggestions, users, and squads."""
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -697,11 +799,17 @@ def get_database_stats() -> Dict[str, Any]:
             b_count = cursor.fetchone()["total"]
             cursor.execute("SELECT COUNT(*) AS total FROM profession_suggestions;")
             s_count = cursor.fetchone()["total"]
+            cursor.execute("SELECT COUNT(*) AS total FROM users;")
+            u_count = cursor.fetchone()["total"]
+            cursor.execute("SELECT COUNT(*) AS total FROM squads;")
+            sq_count = cursor.fetchone()["total"]
             return {
                 "status": "healthy",
                 "database_path": DB_PATH,
                 "total_blueprints_cached": b_count,
-                "total_suggestions_cached": s_count
+                "total_suggestions_cached": s_count,
+                "total_community_users": u_count,
+                "total_squads_active": sq_count
             }
     except Exception as e:
         return {
@@ -709,5 +817,762 @@ def get_database_stats() -> Dict[str, Any]:
             "error": str(e),
             "database_path": DB_PATH
         }
+
+
+# ==========================================
+# AUTHENTICATION & PASSWORD HELPERS
+# ==========================================
+
+def hash_password(password: str) -> Tuple[str, str]:
+    """Generates salt and hashes password using PBKDF2 HMAC SHA-256."""
+    salt = secrets.token_hex(16)
+    pw_hash = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt.encode("utf-8"), 100000).hex()
+    return salt, pw_hash
+
+
+def verify_password(password: str, salt: str, expected_hash: str) -> bool:
+    """Verifies a password against the stored salt and hash."""
+    pw_hash = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt.encode("utf-8"), 100000).hex()
+    return secrets.compare_digest(pw_hash, expected_hash)
+
+
+def seed_community_data_if_empty(conn: sqlite3.Connection):
+    """Seeds initial peer profiles and starter squad if community is empty."""
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) AS c FROM users;")
+    if cursor.fetchone()["c"] > 0:
+        return
+
+    sample_peers = [
+        {
+            "username": "aarav_dev",
+            "full_name": "Aarav Sharma",
+            "email": "aarav@example.com",
+            "password": "Password@123",
+            "stage": "final_year",
+            "stream_or_degree": "B.Tech Computer Science (4th Year)",
+            "target_role": "Full Stack Cloud Systems Engineer",
+            "bio": "Building distributed backends with FastAPI, Go and Docker. Passionate about system design and cloud deployments.",
+            "avatar_color": "#0d9488",
+            "avatar_emoji": "💻",
+            "interests": ["Coding & Tech", "Cloud & DevOps", "AI & Machine Learning"]
+        },
+        {
+            "username": "priya_ai",
+            "full_name": "Priya Patel",
+            "email": "priya@example.com",
+            "password": "Password@123",
+            "stage": "final_year",
+            "stream_or_degree": "B.Tech AI & Data Science (4th Year)",
+            "target_role": "AI & MLOps Systems Architect",
+            "bio": "Researching model quantization, vector retrieval, and autonomous agents. Leading Neural Vanguard squad.",
+            "avatar_color": "#8b5cf6",
+            "avatar_emoji": "🧠",
+            "interests": ["AI & Machine Learning", "Coding & Tech", "Data Science & Analytics"]
+        },
+        {
+            "username": "rohan_sec",
+            "full_name": "Rohan Verma",
+            "email": "rohan@example.com",
+            "password": "Password@123",
+            "stage": "12th_pass",
+            "stream_or_degree": "PCM (Maths & Physics)",
+            "target_role": "Cloud Security Architect",
+            "bio": "12th graduate planning for cybersecurity & network infrastructure. Looking for hackathon partners.",
+            "avatar_color": "#ef4444",
+            "avatar_emoji": "🛡️",
+            "interests": ["Cybersecurity", "Coding & Tech", "Cloud & DevOps"]
+        },
+        {
+            "username": "ananya_design",
+            "full_name": "Ananya Iyer",
+            "email": "ananya@example.com",
+            "password": "Password@123",
+            "stage": "final_year",
+            "stream_or_degree": "B.Des Product & UI/UX Design",
+            "target_role": "Lead Product Designer & Design Systems Engineer",
+            "bio": "Crafting high-conversion glassmorphic interfaces, micro-interactions, and design tokens.",
+            "avatar_color": "#f59e0b",
+            "avatar_emoji": "🎨",
+            "interests": ["UI/UX & Product Design", "Coding & Tech", "Human-Computer Interaction"]
+        },
+        {
+            "username": "karthik_robotics",
+            "full_name": "Karthik Nair",
+            "email": "karthik@example.com",
+            "password": "Password@123",
+            "stage": "12th_pass",
+            "stream_or_degree": "PCM (Maths, Electronics & CS)",
+            "target_role": "Autonomous Robotics & Embedded Systems Engineer",
+            "bio": "Programming microcontrollers (ESP32/STM32) and ROS2 navigation nodes. Keen on embedded AI.",
+            "avatar_color": "#06b6d4",
+            "avatar_emoji": "🤖",
+            "interests": ["Robotics & IoT", "Coding & Tech", "AI & Machine Learning"]
+        },
+        {
+            "username": "sneha_fintech",
+            "full_name": "Sneha Mukherjee",
+            "email": "sneha@example.com",
+            "password": "Password@123",
+            "stage": "final_year",
+            "stream_or_degree": "B.Com FinTech & Financial Modeling",
+            "target_role": "Quantitative Risk & FinTech Systems Analyst",
+            "bio": "Exploring algorithmic trading execution, risk modeling, and financial data pipelines with Python.",
+            "avatar_color": "#10b981",
+            "avatar_emoji": "📈",
+            "interests": ["Finance & Markets", "AI & Machine Learning", "Coding & Tech"]
+        }
+    ]
+
+    user_ids = {}
+    for p in sample_peers:
+        salt, pw_hash = hash_password(p["password"])
+        cursor.execute("""
+        INSERT INTO users (username, full_name, email, password_hash, salt, stage, stream_or_degree, target_role, bio, avatar_color, avatar_emoji)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+        """, (
+            p["username"], p["full_name"], p["email"], pw_hash, salt,
+            p["stage"], p["stream_or_degree"], p["target_role"], p["bio"],
+            p["avatar_color"], p["avatar_emoji"]
+        ))
+        uid = cursor.lastrowid
+        user_ids[p["username"]] = uid
+        for interest in p["interests"]:
+            cursor.execute("""
+            INSERT OR IGNORE INTO user_interests (user_id, interest) VALUES (?, ?);
+            """, (uid, interest))
+
+    # Create starter squad: Neural Vanguard (3/4 members, 1 open seat!)
+    priya_id = user_ids.get("priya_ai")
+    aarav_id = user_ids.get("aarav_dev")
+    ananya_id = user_ids.get("ananya_design")
+
+    if priya_id and aarav_id and ananya_id:
+        cursor.execute("""
+        INSERT INTO squads (squad_name, invite_code, track_name, stage, created_by, max_members, status, sprint_goal)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+        """, (
+            "Neural Vanguard",
+            "NV-2026",
+            "AI & Distributed Cloud Systems",
+            "final_year",
+            priya_id,
+            4,
+            "forming",
+            "Sprint 1: Distributed Inference Architecture & Real-Time Telemetry"
+        ))
+        squad_id = cursor.lastrowid
+
+        cursor.execute("INSERT INTO squad_members (squad_id, user_id, role) VALUES (?, ?, ?);", (squad_id, priya_id, "leader"))
+        cursor.execute("INSERT INTO squad_members (squad_id, user_id, role) VALUES (?, ?, ?);", (squad_id, aarav_id, "architect"))
+        cursor.execute("INSERT INTO squad_members (squad_id, user_id, role) VALUES (?, ?, ?);", (squad_id, ananya_id, "design_lead"))
+
+        sample_messages = [
+            (priya_id, "Welcome team! Our Sprint 1 objective is to complete the distributed inference pipeline and system specs."),
+            (aarav_id, "I've drafted the FastAPI orchestration router and Redis cache layer. Everything is running with sub-10ms response times."),
+            (ananya_id, "Designing the live telemetry dashboard wireframes now! We still have 1 open seat for a 4th teammate to join."),
+            (priya_id, "Anyone matching AI or Cloud interests can use invite code NV-2026 to take our final open seat! 🚀")
+        ]
+        for sender_id, msg in sample_messages:
+            cursor.execute("""
+            INSERT INTO squad_messages (squad_id, sender_id, message) VALUES (?, ?, ?);
+            """, (squad_id, sender_id, msg))
+
+
+# ==========================================
+# USER PROFILE & AUTH FUNCTIONS
+# ==========================================
+
+def create_user(
+    username: str,
+    full_name: str,
+    email: str,
+    password: str,
+    stage: str = "12th_pass",
+    stream_or_degree: str = "",
+    target_role: str = "",
+    bio: str = "",
+    interests: Optional[List[str]] = None,
+    avatar_color: str = "#0d9488",
+    avatar_emoji: str = "🚀"
+) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
+    """Registers a new student user and associates their core interests."""
+    username = username.strip().lower()
+    email = email.strip().lower()
+    full_name = full_name.strip()
+    
+    if not username or len(username) < 3:
+        return False, "Username must be at least 3 characters long.", None
+    if not re.match(r"^[a-zA-Z0-9_]+$", username):
+        return False, "Username can only contain letters, numbers, and underscores.", None
+    if not email or "@" not in email:
+        return False, "Please provide a valid email address.", None
+    if not password or len(password) < 6:
+        return False, "Password must be at least 6 characters long.", None
+    if not interests or len(interests) < 3:
+        return False, "Please select at least 3 core interests to enable peer matchmaking.", None
+
+    salt, pw_hash = hash_password(password)
+
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM users WHERE username = ? OR email = ? LIMIT 1;", (username, email))
+            existing = cursor.fetchone()
+            if existing:
+                return False, "A user with this username or email already exists.", None
+
+            cursor.execute("""
+            INSERT INTO users (username, full_name, email, password_hash, salt, stage, stream_or_degree, target_role, bio, avatar_color, avatar_emoji)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+            """, (username, full_name, email, pw_hash, salt, stage, stream_or_degree, target_role, bio, avatar_color, avatar_emoji))
+            
+            user_id = cursor.lastrowid
+            
+            for interest in interests:
+                cursor.execute("INSERT OR IGNORE INTO user_interests (user_id, interest) VALUES (?, ?);", (user_id, interest.strip()))
+                
+            conn.commit()
+            return True, "User registered successfully!", get_user_by_id(user_id)
+    except Exception as e:
+        return False, f"Failed to register user: {str(e)}", None
+
+
+def authenticate_user(username_or_email: str, password: str) -> Optional[Dict[str, Any]]:
+    """Authenticates a user by username or email and password."""
+    identifier = username_or_email.strip().lower()
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+            SELECT * FROM users WHERE LOWER(username) = ? OR LOWER(email) = ? LIMIT 1;
+            """, (identifier, identifier))
+            row = cursor.fetchone()
+            if not row:
+                return None
+                
+            if verify_password(password, row["salt"], row["password_hash"]):
+                return get_user_by_id(row["id"])
+            return None
+    except Exception as e:
+        print(f"[Auth Error] {e}")
+        return None
+
+
+def create_session(user_id: int) -> str:
+    """Creates a 30-day session token for an authenticated user."""
+    token = secrets.token_urlsafe(32)
+    expires = (datetime.utcnow() + timedelta(days=30)).isoformat()
+    with get_db_connection() as conn:
+        conn.execute("INSERT INTO user_sessions (token, user_id, expires_at) VALUES (?, ?, ?);", (token, user_id, expires))
+        conn.commit()
+    return token
+
+
+def get_user_by_session(token: str) -> Optional[Dict[str, Any]]:
+    """Looks up user from valid session token."""
+    if not token:
+        return None
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT user_id FROM user_sessions WHERE token = ? LIMIT 1;", (token.strip(),))
+            row = cursor.fetchone()
+            if row:
+                return get_user_by_id(row["user_id"])
+    except Exception as e:
+        print(f"[Session Error] {e}")
+    return None
+
+
+def delete_session(token: str) -> bool:
+    """Terminates a session token upon user logout."""
+    try:
+        with get_db_connection() as conn:
+            conn.execute("DELETE FROM user_sessions WHERE token = ?;", (token.strip(),))
+            conn.commit()
+        return True
+    except Exception:
+        return False
+
+
+def get_user_by_id(user_id: int) -> Optional[Dict[str, Any]]:
+    """Retrieves full user profile, interests, and squad membership."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM users WHERE id = ?;", (user_id,))
+            u = cursor.fetchone()
+            if not u:
+                return None
+            
+            cursor.execute("SELECT interest FROM user_interests WHERE user_id = ? ORDER BY id;", (user_id,))
+            interests = [r["interest"] for r in cursor.fetchall()]
+            
+            cursor.execute("""
+            SELECT s.id, s.squad_name, sm.role 
+            FROM squad_members sm 
+            JOIN squads s ON s.id = sm.squad_id 
+            WHERE sm.user_id = ? LIMIT 1;
+            """, (user_id,))
+            squad_row = cursor.fetchone()
+            
+            return {
+                "id": u["id"],
+                "username": u["username"],
+                "full_name": u["full_name"],
+                "email": u["email"],
+                "stage": u["stage"],
+                "stream_or_degree": u["stream_or_degree"],
+                "target_role": u["target_role"],
+                "bio": u["bio"],
+                "avatar_color": u["avatar_color"],
+                "avatar_emoji": u["avatar_emoji"],
+                "created_at": str(u["created_at"]),
+                "interests": interests,
+                "squad_id": squad_row["id"] if squad_row else None,
+                "squad_name": squad_row["squad_name"] if squad_row else None,
+                "squad_role": squad_row["role"] if squad_row else None
+            }
+    except Exception as e:
+        print(f"[DB Error] get_user_by_id: {e}")
+        return None
+
+
+# ==========================================
+# PEER MATCHMAKING ENGINE (>= 2 OVERLAP)
+# ==========================================
+
+def get_matched_peers(
+    current_user_id: Optional[int] = None, 
+    search_query: str = "", 
+    filter_stage: str = "",
+    min_overlap: int = 0,
+    guest_interests: Optional[List[str]] = None
+) -> List[Dict[str, Any]]:
+    """
+    Peer Matchmaking Engine:
+    Identifies peers based on interest overlap.
+    If 2 or more interests match: highlights as 'Strong Match' (is_strong_match=True).
+    Ranks strong matches first, followed by overlap count and match percentage.
+    """
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            
+            base_interests = []
+            if current_user_id:
+                cursor.execute("SELECT interest FROM user_interests WHERE user_id = ?;", (current_user_id,))
+                base_interests = [r["interest"] for r in cursor.fetchall()]
+            elif guest_interests:
+                base_interests = guest_interests
+                
+            base_set = set(base_interests)
+            
+            if current_user_id:
+                cursor.execute("SELECT * FROM users WHERE id != ? ORDER BY id DESC;", (current_user_id,))
+            else:
+                cursor.execute("SELECT * FROM users ORDER BY id DESC;")
+                
+            all_users = cursor.fetchall()
+            results = []
+            q = search_query.strip().lower()
+            
+            for u in all_users:
+                uid = u["id"]
+                cursor.execute("SELECT interest FROM user_interests WHERE user_id = ?;", (uid,))
+                peer_interests = [r["interest"] for r in cursor.fetchall()]
+                peer_set = set(peer_interests)
+                
+                cursor.execute("""
+                SELECT s.id, s.squad_name FROM squad_members sm 
+                JOIN squads s ON s.id = sm.squad_id 
+                WHERE sm.user_id = ? LIMIT 1;
+                """, (uid,))
+                sq = cursor.fetchone()
+                
+                shared = [i for i in peer_interests if i in base_set]
+                overlap_count = len(shared)
+                total_union = len(base_set | peer_set)
+                match_pct = round((overlap_count / total_union) * 100) if total_union > 0 else 0
+                is_strong = overlap_count >= 2
+                
+                # Search filtering
+                if q:
+                    user_str = f"{u['username']} {u['full_name']} {u['stream_or_degree']} {u['target_role']} {u['bio']} {' '.join(peer_interests)}".lower()
+                    if q not in user_str:
+                        continue
+                        
+                # Stage filtering
+                if filter_stage and filter_stage != "all":
+                    if u["stage"] != filter_stage:
+                        continue
+                        
+                # Minimum overlap filtering
+                if min_overlap > 0 and overlap_count < min_overlap:
+                    continue
+                    
+                results.append({
+                    "id": uid,
+                    "username": u["username"],
+                    "full_name": u["full_name"],
+                    "stage": u["stage"],
+                    "stream_or_degree": u["stream_or_degree"],
+                    "target_role": u["target_role"],
+                    "bio": u["bio"],
+                    "interests": peer_interests,
+                    "avatar_color": u["avatar_color"],
+                    "avatar_emoji": u["avatar_emoji"],
+                    "shared_interests": shared,
+                    "overlap_count": overlap_count,
+                    "match_percentage": match_pct,
+                    "is_strong_match": is_strong,
+                    "in_squad": bool(sq),
+                    "squad_name": sq["squad_name"] if sq else None
+                })
+                
+            # Strong matches (>= 2 shared) first, then highest overlap, then match percentage
+            results.sort(key=lambda x: (1 if x["is_strong_match"] else 0, x["overlap_count"], x["match_percentage"]), reverse=True)
+            return results
+    except Exception as e:
+        print(f"[Matchmaking Error] {e}")
+        return []
+
+
+# ==========================================
+# 4-MEMBER SQUAD ENGINE ("THE RULE OF 4")
+# ==========================================
+
+def create_squad(
+    user_id: int, 
+    squad_name: str, 
+    track_name: str, 
+    stage: str = "final_year", 
+    sprint_goal: str = ""
+) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
+    """Creates a new squad capped strictly at 4 members."""
+    squad_name = squad_name.strip()
+    track_name = track_name.strip()
+    sprint_goal = (sprint_goal or "Sprint 1: Architecture & System Setup").strip()
+    
+    if not squad_name:
+        return False, "Squad name is required.", None
+    if not track_name:
+        return False, "Track or focus domain is required.", None
+        
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT squad_id FROM squad_members WHERE user_id = ? LIMIT 1;", (user_id,))
+            if cursor.fetchone():
+                return False, "You are already a member of a squad. Leave your current squad before creating a new one.", None
+                
+            # Generate unique clean invite code e.g. FE-8K2N
+            code = ""
+            for _ in range(20):
+                code = f"FE-{secrets.token_hex(2).upper()}"
+                cursor.execute("SELECT id FROM squads WHERE invite_code = ?;", (code,))
+                if not cursor.fetchone():
+                    break
+                    
+            cursor.execute("""
+            INSERT INTO squads (squad_name, invite_code, track_name, stage, created_by, max_members, status, sprint_goal)
+            VALUES (?, ?, ?, ?, ?, 4, 'forming', ?);
+            """, (squad_name, code, track_name, stage, user_id, sprint_goal))
+            
+            squad_id = cursor.lastrowid
+            
+            cursor.execute("""
+            INSERT INTO squad_members (squad_id, user_id, role)
+            VALUES (?, ?, 'leader');
+            """, (squad_id, user_id))
+            
+            cursor.execute("""
+            INSERT INTO squad_messages (squad_id, sender_id, message)
+            VALUES (?, ?, ?);
+            """, (squad_id, user_id, f"🚀 Squad '{squad_name}' created! Share invite code '{code}' to recruit 3 more teammates."))
+            
+            conn.commit()
+            return True, "Squad successfully created!", get_squad_details(squad_id)
+    except Exception as e:
+        return False, f"Failed to create squad: {str(e)}", None
+
+
+def join_squad_by_code(user_id: int, invite_code: str) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
+    """Joins a squad using unique invite code; strictly enforces 4-member limit."""
+    code = invite_code.strip().upper()
+    if not code:
+        return False, "Please enter a valid Squad Invite Code.", None
+        
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT * FROM squads WHERE invite_code = ? LIMIT 1;", (code,))
+            squad = cursor.fetchone()
+            if not squad:
+                return False, f"No squad found with invite code '{code}'. Please check the code and try again.", None
+                
+            squad_id = squad["id"]
+            
+            cursor.execute("SELECT id FROM squad_members WHERE squad_id = ? AND user_id = ?;", (squad_id, user_id))
+            if cursor.fetchone():
+                return True, "You are already a member of this squad.", get_squad_details(squad_id)
+                
+            cursor.execute("SELECT s.squad_name FROM squad_members sm JOIN squads s ON s.id = sm.squad_id WHERE sm.user_id = ?;", (user_id,))
+            existing_squad = cursor.fetchone()
+            if existing_squad:
+                return False, f"You are already in squad '{existing_squad['squad_name']}'. Please leave that squad first before joining another.", None
+                
+            # Strictly enforce 4-member limit
+            cursor.execute("SELECT COUNT(*) AS c FROM squad_members WHERE squad_id = ?;", (squad_id,))
+            current_count = cursor.fetchone()["c"]
+            if current_count >= squad["max_members"]:
+                return False, f"This squad has already reached maximum capacity ({squad['max_members']}/{squad['max_members']} members).", None
+                
+            cursor.execute("""
+            INSERT INTO squad_members (squad_id, user_id, role)
+            VALUES (?, ?, 'member');
+            """, (squad_id, user_id))
+            
+            if current_count + 1 >= squad["max_members"]:
+                cursor.execute("UPDATE squads SET status = 'ready' WHERE id = ?;", (squad_id,))
+                
+            cursor.execute("SELECT full_name FROM users WHERE id = ?;", (user_id,))
+            u = cursor.fetchone()
+            uname = u["full_name"] if u else "New Member"
+            cursor.execute("""
+            INSERT INTO squad_messages (squad_id, sender_id, message)
+            VALUES (?, ?, ?);
+            """, (squad_id, user_id, f"🎉 {uname} joined the squad! ({current_count + 1}/{squad['max_members']} seats filled)"))
+            
+            conn.commit()
+            return True, f"Successfully joined {squad['squad_name']}!", get_squad_details(squad_id)
+    except Exception as e:
+        return False, f"Failed to join squad: {str(e)}", None
+
+
+def get_squad_details(squad_id: int) -> Optional[Dict[str, Any]]:
+    """Retrieves full details of a squad with all 4 seat states."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+            SELECT s.*, u.username AS leader_username, u.full_name AS leader_name 
+            FROM squads s 
+            JOIN users u ON u.id = s.created_by 
+            WHERE s.id = ?;
+            """, (squad_id,))
+            sq = cursor.fetchone()
+            if not sq:
+                return None
+                
+            cursor.execute("""
+            SELECT sm.role, sm.joined_at, u.id AS user_id, u.username, u.full_name, u.target_role, u.avatar_color, u.avatar_emoji
+            FROM squad_members sm 
+            JOIN users u ON u.id = sm.user_id 
+            WHERE sm.squad_id = ? 
+            ORDER BY CASE WHEN sm.role = 'leader' THEN 0 ELSE 1 END, sm.joined_at ASC;
+            """, (squad_id,))
+            members_rows = cursor.fetchall()
+            
+            members = []
+            for m in members_rows:
+                cursor.execute("SELECT interest FROM user_interests WHERE user_id = ?;", (m["user_id"],))
+                m_interests = [r["interest"] for r in cursor.fetchall()]
+                members.append({
+                    "user_id": m["user_id"],
+                    "username": m["username"],
+                    "full_name": m["full_name"],
+                    "role": m["role"],
+                    "target_role": m["target_role"],
+                    "avatar_color": m["avatar_color"],
+                    "avatar_emoji": m["avatar_emoji"],
+                    "interests": m_interests,
+                    "joined_at": str(m["joined_at"])
+                })
+                
+            count = len(members)
+            open_seats = max(0, sq["max_members"] - count)
+            
+            return {
+                "id": sq["id"],
+                "squad_name": sq["squad_name"],
+                "invite_code": sq["invite_code"],
+                "track_name": sq["track_name"],
+                "stage": sq["stage"],
+                "created_by": sq["created_by"],
+                "created_by_username": sq["leader_username"],
+                "max_members": sq["max_members"],
+                "current_members_count": count,
+                "open_seats": open_seats,
+                "status": "ready" if count >= sq["max_members"] else sq["status"],
+                "sprint_goal": sq["sprint_goal"],
+                "created_at": str(sq["created_at"]),
+                "members": members
+            }
+    except Exception as e:
+        print(f"[DB Error] get_squad_details: {e}")
+        return None
+
+
+def get_user_squad(user_id: int) -> Optional[Dict[str, Any]]:
+    """Gets the active squad of a user if any."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT squad_id FROM squad_members WHERE user_id = ? LIMIT 1;", (user_id,))
+            row = cursor.fetchone()
+            if row:
+                return get_squad_details(row["squad_id"])
+    except Exception as e:
+        print(f"[DB Error] get_user_squad: {e}")
+    return None
+
+
+def get_all_squads() -> List[Dict[str, Any]]:
+    """Returns directory of all squads with seats and status."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM squads ORDER BY id DESC;")
+            rows = cursor.fetchall()
+            result = []
+            for r in rows:
+                sq = get_squad_details(r["id"])
+                if sq:
+                    result.append(sq)
+            return result
+    except Exception as e:
+        print(f"[DB Error] get_all_squads: {e}")
+        return []
+
+
+def send_squad_message(squad_id: int, sender_id: int, message: str) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
+    """Posts a message to the squad war room chat."""
+    msg = message.strip()
+    if not msg:
+        return False, "Message cannot be empty.", None
+    if len(msg) > 1000:
+        return False, "Message is too long (max 1000 characters).", None
+        
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM squad_members WHERE squad_id = ? AND user_id = ?;", (squad_id, sender_id))
+            if not cursor.fetchone():
+                return False, "You must be a member of this squad to send messages.", None
+                
+            cursor.execute("""
+            INSERT INTO squad_messages (squad_id, sender_id, message)
+            VALUES (?, ?, ?);
+            """, (squad_id, sender_id, msg))
+            msg_id = cursor.lastrowid
+            conn.commit()
+            
+            cursor.execute("""
+            SELECT sm.*, u.username, u.full_name, u.avatar_color, u.avatar_emoji 
+            FROM squad_messages sm 
+            JOIN users u ON u.id = sm.sender_id 
+            WHERE sm.id = ?;
+            """, (msg_id,))
+            row = cursor.fetchone()
+            return True, "Message sent.", {
+                "id": row["id"],
+                "squad_id": row["squad_id"],
+                "sender_id": row["sender_id"],
+                "sender_username": row["username"],
+                "sender_name": row["full_name"],
+                "sender_avatar_color": row["avatar_color"],
+                "sender_avatar_emoji": row["avatar_emoji"],
+                "message": row["message"],
+                "created_at": str(row["created_at"])
+            }
+    except Exception as e:
+        return False, f"Failed to send message: {str(e)}", None
+
+
+def get_squad_messages(squad_id: int, limit: int = 50) -> List[Dict[str, Any]]:
+    """Fetches real-time conversation messages for a squad."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+            SELECT sm.*, u.username, u.full_name, u.avatar_color, u.avatar_emoji 
+            FROM squad_messages sm 
+            JOIN users u ON u.id = sm.sender_id 
+            WHERE sm.squad_id = ? 
+            ORDER BY sm.id ASC 
+            LIMIT ?;
+            """, (squad_id, limit))
+            rows = cursor.fetchall()
+            return [
+                {
+                    "id": r["id"],
+                    "squad_id": r["squad_id"],
+                    "sender_id": r["sender_id"],
+                    "sender_username": r["username"],
+                    "sender_name": r["full_name"],
+                    "sender_avatar_color": r["avatar_color"],
+                    "sender_avatar_emoji": r["avatar_emoji"],
+                    "message": r["message"],
+                    "created_at": str(r["created_at"])
+                }
+                for r in rows
+            ]
+    except Exception as e:
+        print(f"[DB Error] get_squad_messages: {e}")
+        return []
+
+
+def update_squad_sprint_goal(squad_id: int, user_id: int, sprint_goal: str) -> Tuple[bool, str]:
+    """Updates the squad's sprint objective."""
+    goal = sprint_goal.strip()
+    if not goal:
+        return False, "Sprint goal cannot be empty."
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT role FROM squad_members WHERE squad_id = ? AND user_id = ?;", (squad_id, user_id))
+            m = cursor.fetchone()
+            if not m:
+                return False, "You must be a member of this squad to update the sprint goal."
+            cursor.execute("UPDATE squads SET sprint_goal = ? WHERE id = ?;", (goal, squad_id))
+            conn.commit()
+            return True, "Sprint goal updated!"
+    except Exception as e:
+        return False, f"Failed to update sprint goal: {str(e)}"
+
+
+def leave_squad(user_id: int, squad_id: int) -> Tuple[bool, str]:
+    """Allows a member or leader to leave a squad cleanly."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT role FROM squad_members WHERE squad_id = ? AND user_id = ?;", (squad_id, user_id))
+            m = cursor.fetchone()
+            if not m:
+                return False, "You are not a member of this squad."
+                
+            cursor.execute("DELETE FROM squad_members WHERE squad_id = ? AND user_id = ?;", (squad_id, user_id))
+            
+            cursor.execute("SELECT COUNT(*) AS c FROM squad_members WHERE squad_id = ?;", (squad_id,))
+            remaining = cursor.fetchone()["c"]
+            if remaining == 0:
+                cursor.execute("DELETE FROM squads WHERE id = ?;", (squad_id,))
+            else:
+                if m["role"] == "leader":
+                    cursor.execute("SELECT id FROM squad_members WHERE squad_id = ? ORDER BY joined_at ASC LIMIT 1;", (squad_id,))
+                    next_leader = cursor.fetchone()
+                    if next_leader:
+                        cursor.execute("UPDATE squad_members SET role = 'leader' WHERE id = ?;", (next_leader["id"],))
+                cursor.execute("UPDATE squads SET status = 'forming' WHERE id = ?;", (squad_id,))
+                
+            conn.commit()
+            return True, "Successfully left the squad."
+    except Exception as e:
+        return False, f"Failed to leave squad: {str(e)}"
+
 
 

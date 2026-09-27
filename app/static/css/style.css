@@ -2235,9 +2235,18 @@ a {
     .brand-subtitle {
         display: none; /* Hide subtitle to preserve clean compact mobile header */
     }
+    .header-actions {
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+    }
+    .header-actions .nav-link {
+        font-size: 11px !important;
+        padding: 5px 10px !important;
+    }
     .header-link {
-        font-size: 12px;
-        padding: 6px 10px;
+        font-size: 11.5px !important;
+        padding: 5px 9px !important;
     }
 
     /* Hero */

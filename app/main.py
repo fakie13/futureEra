@@ -1,5 +1,6 @@
 import os
-from fastapi import FastAPI, HTTPException
+from typing import Optional, List, Dict, Any
+from fastapi import FastAPI, HTTPException, Header, Query, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -8,7 +9,16 @@ from app.schemas import (
     AnalyzeRequest, 
     CareerBlueprintResponse, 
     SuggestProfessionsRequest, 
-    SuggestProfessionsResponse
+    SuggestProfessionsResponse,
+    UserSignUpRequest,
+    UserLoginRequest,
+    UserResponse,
+    PeerProfile,
+    CreateSquadRequest,
+    JoinSquadRequest,
+    SquadDetailResponse,
+    SquadMessageRequest,
+    SquadMessageItem
 )
 from app.services.gemini_service import generate_career_blueprint, suggest_eligible_professions
 from app.services.validation import validate_career_request, is_gibberish_or_fake
@@ -18,13 +28,29 @@ from app.database import (
     get_blueprint_from_db,
     save_suggestions_to_db,
     get_suggestions_from_db,
-    get_database_stats
+    get_database_stats,
+    create_user,
+    authenticate_user,
+    create_session,
+    get_user_by_session,
+    delete_session,
+    get_user_by_id,
+    get_matched_peers,
+    create_squad,
+    join_squad_by_code,
+    get_squad_details,
+    get_user_squad,
+    get_all_squads,
+    send_squad_message,
+    get_squad_messages,
+    update_squad_sprint_goal,
+    leave_squad
 )
 
 app = FastAPI(
     title="Future Era",
-    description="The GenX Era - Future-proof career intelligence & market tech engine powered by FastAPI & Gemini",
-    version="1.0.0"
+    description="The GenX Era - Future-proof career intelligence, peer matchmaking & 4-member squad engine",
+    version="1.1.0"
 )
 
 # Enable CORS for flexible local development
@@ -71,6 +97,13 @@ async def serve_console():
 async def serve_stage():
     """Serves the Stage Selection middle page."""
     return FileResponse(os.path.join(STATIC_DIR, "stage.html"), headers=NO_CACHE_HEADERS)
+
+
+@app.get("/community")
+async def serve_community():
+    """Serves the Peer Community, Matchmaking & 4-Member Squad Hub."""
+    return FileResponse(os.path.join(STATIC_DIR, "community.html"), headers=NO_CACHE_HEADERS)
+
 
 
 @app.get("/privacy")
@@ -201,5 +234,284 @@ async def suggest_professions_endpoint(request: SuggestProfessionsRequest):
             status_code=500, 
             detail=f"AI API is currently unavailable and no suggestions found in the database. (Error: {str(ai_err)})"
         )
+
+
+# ==========================================
+# AUTH & COMMUNITY HELPERS
+# ==========================================
+
+def extract_auth_user(authorization: Optional[str] = Header(None), x_session_token: Optional[str] = Header(None)) -> Optional[Dict[str, Any]]:
+    """Extracts authenticated user from Bearer header or X-Session-Token."""
+    token = None
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.split("Bearer ", 1)[1].strip()
+    elif x_session_token:
+        token = x_session_token.strip()
+    if token:
+        return get_user_by_session(token)
+    return None
+
+
+def require_auth_user(authorization: Optional[str] = Header(None), x_session_token: Optional[str] = Header(None)) -> Dict[str, Any]:
+    """Requires user authentication; raises 401 if missing or invalid."""
+    user = extract_auth_user(authorization, x_session_token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required. Please sign in to join or manage a squad.")
+    return user
+
+
+# ==========================================
+# AUTHENTICATION ENDPOINTS
+# ==========================================
+
+@app.post("/api/auth/signup")
+async def signup(request: UserSignUpRequest):
+    """Registers a new student user with their core interests."""
+    success, msg, user = create_user(
+        username=request.username,
+        full_name=request.full_name,
+        email=request.email,
+        password=request.password,
+        stage=request.stage or "12th_pass",
+        stream_or_degree=request.stream_or_degree or "",
+        target_role=request.target_role or "",
+        bio=request.bio or "",
+        interests=request.interests,
+        avatar_color=request.avatar_color or "#0d9488",
+        avatar_emoji=request.avatar_emoji or "🚀"
+    )
+    if not success:
+        raise HTTPException(status_code=400, detail=msg)
+        
+    token = create_session(user["id"])
+    return {
+        "success": True,
+        "message": msg,
+        "token": token,
+        "user": user
+    }
+
+
+@app.post("/api/auth/login")
+async def login(request: UserLoginRequest):
+    """Authenticates a user and returns a 30-day session token."""
+    user = authenticate_user(request.username_or_email, request.password)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid username/email or password. Please try again.")
+        
+    token = create_session(user["id"])
+    return {
+        "success": True,
+        "message": "Welcome back!",
+        "token": token,
+        "user": user
+    }
+
+
+@app.post("/api/auth/logout")
+async def logout(authorization: Optional[str] = Header(None), x_session_token: Optional[str] = Header(None)):
+    """Logs out user and invalidates their session token."""
+    token = None
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.split("Bearer ", 1)[1].strip()
+    elif x_session_token:
+        token = x_session_token.strip()
+    if token:
+        delete_session(token)
+    return {"success": True, "message": "Successfully logged out."}
+
+
+@app.get("/api/auth/me")
+async def get_me(authorization: Optional[str] = Header(None), x_session_token: Optional[str] = Header(None)):
+    """Returns profile of currently logged-in user."""
+    user = extract_auth_user(authorization, x_session_token)
+    if not user:
+        return {"authenticated": False, "user": None}
+    return {"authenticated": True, "user": user}
+
+
+# ==========================================
+# PEER MATCHMAKING ENDPOINTS
+# ==========================================
+
+@app.get("/api/community/peers")
+async def list_matched_peers(
+    search: str = Query("", description="Search by name, role, or interest"),
+    stage: str = Query("", description="Filter by stage: 12th_pass, final_year, or all"),
+    min_overlap: int = Query(0, description="Minimum shared interests overlap"),
+    guest_interests: Optional[str] = Query(None, description="Comma-separated interests for guest matchmaking"),
+    authorization: Optional[str] = Header(None),
+    x_session_token: Optional[str] = Header(None)
+):
+    """
+    Returns peer list calculated against user interests.
+    Ranks >= 2 shared interests first as 'Strong Matches'.
+    """
+    user = extract_auth_user(authorization, x_session_token)
+    current_user_id = user["id"] if user else None
+    
+    parsed_guest_interests = None
+    if not current_user_id and guest_interests:
+        parsed_guest_interests = [i.strip() for i in guest_interests.split(",") if i.strip()]
+        
+    peers = get_matched_peers(
+        current_user_id=current_user_id,
+        search_query=search,
+        filter_stage=stage,
+        min_overlap=min_overlap,
+        guest_interests=parsed_guest_interests
+    )
+    
+    return {
+        "success": True,
+        "total_peers": len(peers),
+        "current_user_id": current_user_id,
+        "peers": peers
+    }
+
+
+@app.get("/api/community/user/{user_id}")
+async def get_user_profile(user_id: int):
+    """Retrieves full profile of a peer."""
+    user = get_user_by_id(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+    return user
+
+
+# ==========================================
+# 4-MEMBER SQUAD ENDPOINTS ("RULE OF 4")
+# ==========================================
+
+@app.get("/api/squads/all")
+async def list_all_squads():
+    """Returns public directory of all active and forming squads."""
+    squads = get_all_squads()
+    return {
+        "success": True,
+        "total_squads": len(squads),
+        "squads": squads
+    }
+
+
+@app.get("/api/squads/my-squad")
+async def get_my_squad(authorization: Optional[str] = Header(None), x_session_token: Optional[str] = Header(None)):
+    """Returns the authenticated user's current squad details."""
+    user = require_auth_user(authorization, x_session_token)
+    squad = get_user_squad(user["id"])
+    return {
+        "in_squad": bool(squad),
+        "squad": squad
+    }
+
+
+@app.get("/api/squads/{squad_id}")
+async def get_squad(squad_id: int):
+    """Returns squad details and all 4 seat states by squad ID."""
+    squad = get_squad_details(squad_id)
+    if not squad:
+        raise HTTPException(status_code=404, detail="Squad not found.")
+    return squad
+
+
+@app.post("/api/squads/create")
+async def create_new_squad(
+    request: CreateSquadRequest,
+    authorization: Optional[str] = Header(None),
+    x_session_token: Optional[str] = Header(None)
+):
+    """Creates a new squad strictly capped at 4 members."""
+    user = require_auth_user(authorization, x_session_token)
+    success, msg, squad = create_squad(
+        user_id=user["id"],
+        squad_name=request.squad_name,
+        track_name=request.track_name,
+        stage=request.stage or "final_year",
+        sprint_goal=request.sprint_goal or "Sprint 1: Architecture & System Setup"
+    )
+    if not success:
+        raise HTTPException(status_code=400, detail=msg)
+    return {
+        "success": True,
+        "message": msg,
+        "squad": squad
+    }
+
+
+@app.post("/api/squads/join")
+async def join_squad(
+    request: JoinSquadRequest,
+    authorization: Optional[str] = Header(None),
+    x_session_token: Optional[str] = Header(None)
+):
+    """Joins an existing squad by invite code with max 4 members validation."""
+    user = require_auth_user(authorization, x_session_token)
+    success, msg, squad = join_squad_by_code(user["id"], request.invite_code)
+    if not success:
+        raise HTTPException(status_code=400, detail=msg)
+    return {
+        "success": True,
+        "message": msg,
+        "squad": squad
+    }
+
+
+@app.post("/api/squads/{squad_id}/leave")
+async def leave_squad_endpoint(
+    squad_id: int,
+    authorization: Optional[str] = Header(None),
+    x_session_token: Optional[str] = Header(None)
+):
+    """Leaves a squad cleanly."""
+    user = require_auth_user(authorization, x_session_token)
+    success, msg = leave_squad(user["id"], squad_id)
+    if not success:
+        raise HTTPException(status_code=400, detail=msg)
+    return {"success": True, "message": msg}
+
+
+@app.get("/api/squads/{squad_id}/messages")
+async def get_messages(squad_id: int, limit: int = Query(50, le=100)):
+    """Returns conversation history for squad war room chat."""
+    messages = get_squad_messages(squad_id, limit=limit)
+    return {
+        "success": True,
+        "squad_id": squad_id,
+        "messages": messages
+    }
+
+
+@app.post("/api/squads/{squad_id}/messages")
+async def post_message(
+    squad_id: int,
+    request: SquadMessageRequest,
+    authorization: Optional[str] = Header(None),
+    x_session_token: Optional[str] = Header(None)
+):
+    """Posts a new message to the squad war room."""
+    user = require_auth_user(authorization, x_session_token)
+    success, msg, message_obj = send_squad_message(squad_id, user["id"], request.message)
+    if not success:
+        raise HTTPException(status_code=400, detail=msg)
+    return {
+        "success": True,
+        "message_item": message_obj
+    }
+
+
+@app.post("/api/squads/{squad_id}/sprint-goal")
+async def update_sprint_goal(
+    squad_id: int,
+    request: SquadMessageRequest,
+    authorization: Optional[str] = Header(None),
+    x_session_token: Optional[str] = Header(None)
+):
+    """Updates the squad's sprint goal."""
+    user = require_auth_user(authorization, x_session_token)
+    success, msg = update_squad_sprint_goal(squad_id, user["id"], request.message)
+    if not success:
+        raise HTTPException(status_code=400, detail=msg)
+    return {"success": True, "message": msg}
+
 
 

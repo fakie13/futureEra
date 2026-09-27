@@ -275,10 +275,10 @@ def main():
         comm_js = resp.read().decode('utf-8')
         assert 'Video Standup' not in comm_js, 'Video Standup should be completely removed from community.js'
         assert 'Upload Progress' in comm_js
-        assert 'Showcase Reel' in comm_js
+        assert 'Progress Gallery' in comm_js
         assert 'MAX_PROGRESS_BYTES' in comm_js
         assert 'href="/stage"' in comm_js and 'Career Roadmap' in comm_js
-    print('[PASS] Video Standup verified removed; Career Roadmap verified pointing to /stage')
+    print('[PASS] Video Standup verified removed; Progress Gallery and Career Roadmap verified in UI')
 
     # 8j. Verify strict 300MB file limit enforcement (HTTP 413)
     try:

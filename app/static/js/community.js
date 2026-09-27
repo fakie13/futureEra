@@ -756,9 +756,9 @@ function renderActiveSquadWorkspace(squad) {
               ${ICONS.upload}
               <span>Upload Progress</span>
             </button>
-            <button type="button" class="tool-link-card" onclick="openProgressGalleryModal(${squad.id})" title="View squad demo reel & media gallery">
+            <button type="button" class="tool-link-card" onclick="openProgressGalleryModal(${squad.id})" title="View squad progress gallery & media showcase">
               ${ICONS.film}
-              <span>Showcase Reel</span>
+              <span>Progress Gallery</span>
             </button>
             <a href="/stage" class="tool-link-card" title="Explore stages & architect career roadmap">
               ${ICONS.compass}

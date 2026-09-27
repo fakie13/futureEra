@@ -1,3 +1,4 @@
+import os
 import urllib.request
 import urllib.error
 import json
@@ -5,6 +6,31 @@ import time
 import uuid
 
 base = 'http://127.0.0.1:8000'
+
+def cleanup_test_data():
+    import sqlite3
+    db_file = os.path.join(os.path.dirname(__file__), '..', 'app', 'career_repository.sqlite')
+    try:
+        conn = sqlite3.connect(db_file)
+        c = conn.cursor()
+        c.execute("SELECT id FROM squads WHERE squad_name LIKE 'Pod_%' OR squad_name LIKE 'SizeSquad_%';")
+        for r in c.fetchall():
+            c.execute("DELETE FROM squad_messages WHERE squad_id = ?;", (r[0],))
+            c.execute("DELETE FROM squad_members WHERE squad_id = ?;", (r[0],))
+            c.execute("DELETE FROM squad_progress_uploads WHERE squad_id = ?;", (r[0],))
+            c.execute("DELETE FROM squads WHERE id = ?;", (r[0],))
+        c.execute("SELECT id FROM users WHERE username LIKE 'testuser_%' OR username LIKE 'member_%' OR username LIKE 'solo_%' OR username LIKE 'sizetester_%';")
+        for r in c.fetchall():
+            c.execute("DELETE FROM user_sessions WHERE user_id = ?;", (r[0],))
+            c.execute("DELETE FROM user_interests WHERE user_id = ?;", (r[0],))
+            c.execute("DELETE FROM squad_members WHERE user_id = ?;", (r[0],))
+            c.execute("DELETE FROM squad_messages WHERE sender_id = ?;", (r[0],))
+            c.execute("DELETE FROM users WHERE id = ?;", (r[0],))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"[Cleanup Note] {e}")
+
 
 def post_json(path, data, token=None):
     url = base + path
@@ -101,7 +127,8 @@ def main():
     status, peers_data = get_json('/api/community/peers', token=token1)
     assert status == 200 and peers_data['success']
     peers_count = len(peers_data['peers'])
-    print(f'[PASS] Found {peers_count} matching peers')
+    assert peers_count == 10, f"Expected exactly 10 matching peer profiles, got {peers_count}"
+    print(f'[PASS] Found exactly {peers_count} matching peers')
 
     # 4. Form a 4-person squad
     status, squad_data = post_json('/api/squads/create', {
@@ -346,7 +373,8 @@ def main():
         assert 'isDemoPreview' not in comm_js_src, 'isDemoPreview fallback should be completely removed'
         assert 'renderLoggedOutSquadView' in comm_js_src, 'renderLoggedOutSquadView must be implemented'
         assert 'Squad Workspaces are Private to Teams' in comm_js_src
-    print('[PASS] community.js verified: private workspace lockdown active, demo fallback completely eliminated')
+    # Clean up ephemeral test users and test squad so DB remains at pristine 10 peers & 10 squads
+    cleanup_test_data()
 
     print('\n========================================')
     print('ALL INTEGRATION TESTS PASSED (100% OK)')

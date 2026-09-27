@@ -948,6 +948,58 @@ def seed_community_data_if_empty(conn: sqlite3.Connection):
             "avatar_color": "#10b981",
             "avatar_emoji": "📈",
             "interests": ["Finance & Markets", "AI & Machine Learning", "Coding & Tech"]
+        },
+        {
+            "username": "vikram_data",
+            "full_name": "Vikram Malhotra",
+            "email": "vikram@example.com",
+            "password": "Password@123",
+            "stage": "final_year",
+            "stream_or_degree": "B.Tech Information Technology (4th Year)",
+            "target_role": "Big Data & Distributed Pipeline Engineer",
+            "bio": "Architecting Apache Kafka event streams, Spark clusters, and Delta Lake storage engines for real-time analytics.",
+            "avatar_color": "#3b82f6",
+            "avatar_emoji": "⚡",
+            "interests": ["Data Science & Analytics", "Cloud & DevOps", "Coding & Tech"]
+        },
+        {
+            "username": "diya_frontend",
+            "full_name": "Diya Sengupta",
+            "email": "diya@example.com",
+            "password": "Password@123",
+            "stage": "12th_pass",
+            "stream_or_degree": "PCM with Computer Science",
+            "target_role": "Creative Frontend Engineer & 3D Web Developer",
+            "bio": "Passionate about Three.js, WebGL shaders, and high-performance interactive web animations.",
+            "avatar_color": "#ec4899",
+            "avatar_emoji": "✨",
+            "interests": ["UI/UX & Product Design", "Coding & Tech", "Human-Computer Interaction"]
+        },
+        {
+            "username": "aditya_cloud",
+            "full_name": "Aditya Rao",
+            "email": "aditya@example.com",
+            "password": "Password@123",
+            "stage": "final_year",
+            "stream_or_degree": "B.Tech CSE - Cloud Specialization",
+            "target_role": "Platform & Kubernetes SRE Specialist",
+            "bio": "Automating multi-cloud Kubernetes clusters with Terraform, Helm, and GitOps CI/CD pipelines.",
+            "avatar_color": "#6366f1",
+            "avatar_emoji": "☁️",
+            "interests": ["Cloud & DevOps", "Cybersecurity", "Coding & Tech"]
+        },
+        {
+            "username": "tanvi_mobile",
+            "full_name": "Tanvi Kapoor",
+            "email": "tanvi@example.com",
+            "password": "Password@123",
+            "stage": "12th_pass",
+            "stream_or_degree": "PCM (Physics, Chemistry, Maths)",
+            "target_role": "Cross-Platform Mobile Application Architect",
+            "bio": "Building fluid cross-platform iOS & Android apps with Flutter, Kotlin Multiplatform, and Supabase.",
+            "avatar_color": "#14b8a6",
+            "avatar_emoji": "📱",
+            "interests": ["Coding & Tech", "UI/UX & Product Design", "AI & Machine Learning"]
         }
     ]
 
@@ -969,41 +1021,151 @@ def seed_community_data_if_empty(conn: sqlite3.Connection):
             INSERT OR IGNORE INTO user_interests (user_id, interest) VALUES (?, ?);
             """, (uid, interest))
 
-    # Create starter squad: Neural Vanguard (3/4 members, 1 open seat!)
-    priya_id = user_ids.get("priya_ai")
-    aarav_id = user_ids.get("aarav_dev")
-    ananya_id = user_ids.get("ananya_design")
+    # Standard 10 Project Squads
+    sample_squads = [
+        {
+            "squad_name": "Neural Vanguard",
+            "invite_code": "NV-2026",
+            "track_name": "AI & Distributed Cloud Systems",
+            "stage": "final_year",
+            "creator": "priya_ai",
+            "sprint_goal": "Sprint 1: Distributed Inference Architecture & Real-Time Telemetry",
+            "members": [("priya_ai", "leader"), ("aarav_dev", "architect"), ("ananya_design", "design_lead")],
+            "messages": [
+                ("priya_ai", "Welcome team! Our Sprint 1 objective is to complete the distributed inference pipeline and system specs."),
+                ("aarav_dev", "I've drafted the FastAPI orchestration router and Redis cache layer. Everything is running with sub-10ms response times."),
+                ("ananya_design", "Designing the live telemetry dashboard wireframes now! We still have 1 open seat for a 4th teammate to join."),
+                ("priya_ai", "Anyone matching AI or Cloud interests can use invite code NV-2026 to take our final open seat! 🚀")
+            ]
+        },
+        {
+            "squad_name": "Cloud Sentinels",
+            "invite_code": "FE-E4B4",
+            "track_name": "Cloud Architecture & Zero-Trust Security",
+            "stage": "final_year",
+            "creator": "aditya_cloud",
+            "sprint_goal": "Sprint 1: VPC Network Topology & Terraform Infrastructure as Code",
+            "members": [("aditya_cloud", "leader"), ("rohan_sec", "security_analyst")],
+            "messages": [
+                ("aditya_cloud", "Cloud Sentinels assembled! Deploying automated AWS Multi-AZ infrastructure with Terraform."),
+                ("rohan_sec", "Running security scans across IAM roles and VPC ingress rules. Open for 2 more members!")
+            ]
+        },
+        {
+            "squad_name": "Quantum Leap",
+            "invite_code": "QL-7140",
+            "track_name": "Data Engineering & Real-Time Streaming",
+            "stage": "final_year",
+            "creator": "vikram_data",
+            "sprint_goal": "Sprint 1: Kafka Event Streams & Delta Lake Analytics Lakehouse",
+            "members": [("vikram_data", "leader")],
+            "messages": [
+                ("vikram_data", "Setting up our real-time streaming pipeline. 3 open seats available for data enthusiasts!")
+            ]
+        },
+        {
+            "squad_name": "ByteCraft Studio",
+            "invite_code": "BC-5519",
+            "track_name": "Interactive WebGL & Design Systems",
+            "stage": "12th_pass",
+            "creator": "diya_frontend",
+            "sprint_goal": "Sprint 1: 3D Landing Page Canvas & Component Token Library",
+            "members": [("diya_frontend", "leader")],
+            "messages": [
+                ("diya_frontend", "Creating interactive 3D web experiences with Three.js! Looking for 3 creative devs to join.")
+            ]
+        },
+        {
+            "squad_name": "CyberShield Ops",
+            "invite_code": "CO-9023",
+            "track_name": "Offensive Security & Penetration Testing",
+            "stage": "12th_pass",
+            "creator": "rohan_sec",
+            "sprint_goal": "Sprint 1: Network Threat Emulation Lab & Automated Vulnerability Scanner",
+            "members": [("rohan_sec", "leader")],
+            "messages": [
+                ("rohan_sec", "Building automated network auditing tools for ethical hacking. Join with code CO-9023!")
+            ]
+        },
+        {
+            "squad_name": "NeoRobotics Pod",
+            "invite_code": "NR-3341",
+            "track_name": "Autonomous Robotics & Edge Vision",
+            "stage": "12th_pass",
+            "creator": "karthik_robotics",
+            "sprint_goal": "Sprint 1: ROS2 SLAM Navigation Stack & On-Device Object Detection",
+            "members": [("karthik_robotics", "leader")],
+            "messages": [
+                ("karthik_robotics", "Programming ESP32 microcontrollers and ROS2 navigation nodes. 3 seats open!")
+            ]
+        },
+        {
+            "squad_name": "FinTech Pulse",
+            "invite_code": "FP-6204",
+            "track_name": "Quantitative Trading & Financial Systems",
+            "stage": "final_year",
+            "creator": "sneha_fintech",
+            "sprint_goal": "Sprint 1: High-Frequency Market Feed Ingestion & Statistical Backtesting",
+            "members": [("sneha_fintech", "leader")],
+            "messages": [
+                ("sneha_fintech", "Analyzing algorithmic market feeds with Python & Pandas. Recruiting quant enthusiasts!")
+            ]
+        },
+        {
+            "squad_name": "Mobile Matrix",
+            "invite_code": "MM-4492",
+            "track_name": "Cross-Platform Mobile Architecture",
+            "stage": "12th_pass",
+            "creator": "tanvi_mobile",
+            "sprint_goal": "Sprint 1: Offline-First SQLite Sync Engine & Custom UI Animations",
+            "members": [("tanvi_mobile", "leader")],
+            "messages": [
+                ("tanvi_mobile", "Developing fluid cross-platform apps with Flutter and Supabase. Join our squad!")
+            ]
+        },
+        {
+            "squad_name": "DevOps Engine",
+            "invite_code": "DE-1877",
+            "track_name": "Site Reliability & Kubernetes Platform",
+            "stage": "final_year",
+            "creator": "aarav_dev",
+            "sprint_goal": "Sprint 1: GitOps Multi-Cluster Delivery with ArgoCD & Prometheus Telemetry",
+            "members": [("aarav_dev", "leader")],
+            "messages": [
+                ("aarav_dev", "Focusing on SRE, automated canary deployments and Grafana dashboards. 3 seats open!")
+            ]
+        },
+        {
+            "squad_name": "Apex Innovators",
+            "invite_code": "AI-9900",
+            "track_name": "Applied GenAI & Autonomous Multi-Agent Systems",
+            "stage": "final_year",
+            "creator": "ananya_design",
+            "sprint_goal": "Sprint 1: Agentic Decision Workflows with Local Small Language Models",
+            "members": [("ananya_design", "leader")],
+            "messages": [
+                ("ananya_design", "Exploring UX for autonomous agent loops and multi-agent systems. Code AI-9900 to join!")
+            ]
+        }
+    ]
 
-    if priya_id and aarav_id and ananya_id:
+    for sq in sample_squads:
+        creator_id = user_ids.get(sq["creator"], 1)
         cursor.execute("""
         INSERT INTO squads (squad_name, invite_code, track_name, stage, created_by, max_members, status, sprint_goal)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?);
-        """, (
-            "Neural Vanguard",
-            "NV-2026",
-            "AI & Distributed Cloud Systems",
-            "final_year",
-            priya_id,
-            4,
-            "forming",
-            "Sprint 1: Distributed Inference Architecture & Real-Time Telemetry"
-        ))
+        VALUES (?, ?, ?, ?, ?, 4, 'forming', ?);
+        """, (sq["squad_name"], sq["invite_code"], sq["track_name"], sq["stage"], creator_id, sq["sprint_goal"]))
         squad_id = cursor.lastrowid
 
-        cursor.execute("INSERT INTO squad_members (squad_id, user_id, role) VALUES (?, ?, ?);", (squad_id, priya_id, "leader"))
-        cursor.execute("INSERT INTO squad_members (squad_id, user_id, role) VALUES (?, ?, ?);", (squad_id, aarav_id, "architect"))
-        cursor.execute("INSERT INTO squad_members (squad_id, user_id, role) VALUES (?, ?, ?);", (squad_id, ananya_id, "design_lead"))
+        for u_name, role in sq["members"]:
+            u_id = user_ids.get(u_name)
+            if u_id:
+                cursor.execute("INSERT OR IGNORE INTO squad_members (squad_id, user_id, role) VALUES (?, ?, ?);", (squad_id, u_id, role))
 
-        sample_messages = [
-            (priya_id, "Welcome team! Our Sprint 1 objective is to complete the distributed inference pipeline and system specs."),
-            (aarav_id, "I've drafted the FastAPI orchestration router and Redis cache layer. Everything is running with sub-10ms response times."),
-            (ananya_id, "Designing the live telemetry dashboard wireframes now! We still have 1 open seat for a 4th teammate to join."),
-            (priya_id, "Anyone matching AI or Cloud interests can use invite code NV-2026 to take our final open seat! 🚀")
-        ]
-        for sender_id, msg in sample_messages:
-            cursor.execute("""
-            INSERT INTO squad_messages (squad_id, sender_id, message) VALUES (?, ?, ?);
-            """, (squad_id, sender_id, msg))
+        for sender_name, msg_text in sq["messages"]:
+            s_id = user_ids.get(sender_name)
+            if s_id:
+                cursor.execute("INSERT INTO squad_messages (squad_id, sender_id, message) VALUES (?, ?, ?);", (squad_id, s_id, msg_text))
 
 
 # ==========================================
@@ -1197,9 +1359,26 @@ def get_matched_peers(
             base_set = set(base_interests)
             
             if current_user_id:
-                cursor.execute("SELECT * FROM users WHERE id != ? ORDER BY id DESC;", (current_user_id,))
+                cursor.execute("""
+                SELECT * FROM users 
+                WHERE id != ? 
+                  AND username != 'dev_test'
+                  AND username NOT LIKE 'testuser_%' 
+                  AND username NOT LIKE 'member_%' 
+                  AND username NOT LIKE 'solo_%' 
+                  AND username NOT LIKE 'sizetester_%'
+                ORDER BY id ASC;
+                """, (current_user_id,))
             else:
-                cursor.execute("SELECT * FROM users ORDER BY id DESC;")
+                cursor.execute("""
+                SELECT * FROM users 
+                WHERE username NOT LIKE 'testuser_%' 
+                  AND username NOT LIKE 'member_%' 
+                  AND username NOT LIKE 'solo_%' 
+                  AND username NOT LIKE 'sizetester_%'
+                  AND username != 'dev_test'
+                ORDER BY id ASC;
+                """)
                 
             all_users = cursor.fetchall()
             results = []
@@ -1463,7 +1642,12 @@ def get_all_squads() -> List[Dict[str, Any]]:
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT id FROM squads ORDER BY id DESC;")
+            cursor.execute("""
+            SELECT id FROM squads 
+            WHERE squad_name NOT LIKE 'Pod_%' 
+              AND squad_name NOT LIKE 'SizeSquad_%'
+            ORDER BY id ASC;
+            """)
             rows = cursor.fetchall()
             result = []
             for r in rows:

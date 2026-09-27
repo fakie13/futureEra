@@ -1267,12 +1267,12 @@ function switchAuthTab(tab) {
   const modalTitle = document.getElementById("modalAuthTitle");
   const modalSub = document.getElementById("modalAuthSub");
   if (modalTitle) {
-    modalTitle.textContent = isSignIn ? "Welcome to FutureEra" : "Create Student Profile";
+    modalTitle.textContent = isSignIn ? "Welcome back" : "Create an account";
   }
   if (modalSub) {
     modalSub.textContent = isSignIn 
-      ? "Sign in to access your squad workspace and connect with matching peers."
-      : "Select at least 3 core technical interests to enable algorithm-assisted peer matching.";
+      ? "Please enter your details"
+      : "Start your journey with student developer squads";
   }
 }
 

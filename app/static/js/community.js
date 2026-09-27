@@ -81,6 +81,7 @@ function getAuthHeaders() {
 async function checkAuthStatus() {
   if (!STATE.token) {
     renderUserHeaderLoggedOut();
+    renderLoggedOutSquadView();
     return;
   }
 
@@ -91,7 +92,11 @@ async function checkAuthStatus() {
       STATE.currentUser = data.user;
       renderUserHeaderLoggedIn(data.user);
       if (data.user.squad_id) {
-        loadUserSquad();
+        if (STATE.activeTab === "squad") {
+          loadUserSquad();
+        }
+      } else {
+        renderNotInSquadView();
       }
     } else {
       logout(false);
@@ -99,6 +104,7 @@ async function checkAuthStatus() {
   } catch (err) {
     console.error("Auth check failed:", err);
     renderUserHeaderLoggedOut();
+    renderLoggedOutSquadView();
   }
 }
 
@@ -239,11 +245,12 @@ function logout(showNotice = true) {
   STATE.token = "";
   STATE.currentUser = null;
   STATE.currentSquad = null;
+  stopChatPolling();
   localStorage.removeItem("fe_session_token");
   renderUserHeaderLoggedOut();
+  renderLoggedOutSquadView();
   if (showNotice) showToast("Signed out successfully.");
   refreshPeers();
-  renderNotInSquadView();
 }
 window.logout = logout;
 window.feGlobalSignOut = logout;
@@ -264,10 +271,14 @@ function switchCommTab(tabKey) {
   if (activeView) activeView.classList.add("active");
 
   if (tabKey === "squad") {
-    if (STATE.currentUser && STATE.currentUser.squad_id) {
+    if (!STATE.token || !STATE.currentUser) {
+      stopChatPolling();
+      renderLoggedOutSquadView();
+    } else if (STATE.currentUser.squad_id) {
       loadUserSquad();
     } else {
-      renderDefaultSquadView();
+      stopChatPolling();
+      renderNotInSquadView();
     }
   } else {
     stopChatPolling();
@@ -535,8 +546,9 @@ function resetPeerFilters() {
 // TAB 2: 4-MEMBER SQUAD WORKSPACE ("RULE OF 4")
 // ==========================================
 async function loadUserSquad() {
-  if (!STATE.token) {
-    renderDefaultSquadView();
+  if (!STATE.token || !STATE.currentUser) {
+    stopChatPolling();
+    renderLoggedOutSquadView();
     return;
   }
 
@@ -548,29 +560,68 @@ async function loadUserSquad() {
       renderActiveSquadWorkspace(data.squad);
       startChatPolling(data.squad.id);
     } else {
+      STATE.currentSquad = null;
+      stopChatPolling();
       renderNotInSquadView();
     }
   } catch (err) {
     console.error("Failed to load user squad:", err);
-    renderDefaultSquadView();
+    STATE.currentSquad = null;
+    stopChatPolling();
+    renderNotInSquadView();
   }
 }
 
-async function renderDefaultSquadView() {
-  try {
-    const res = await fetch("/api/squads/1");
-    if (res.ok) {
-      const demoSquad = await res.json();
-      renderActiveSquadWorkspace(demoSquad, true);
-      startChatPolling(demoSquad.id);
-      return;
-    }
-  } catch (e) {}
+function renderLoggedOutSquadView() {
+  stopChatPolling();
+  STATE.currentSquad = null;
+  const container = document.getElementById("squadViewContainer");
+  if (!container) return;
 
-  renderNotInSquadView();
+  container.innerHTML = `
+    <div style="text-align: center; max-width: 540px; margin: 36px auto 50px; padding: 40px 32px; background: #ffffff; border: 1.5px solid var(--comm-border); border-radius: 16px; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);">
+      <div style="width: 56px; height: 56px; border-radius: 16px; background: #f0fdfa; border: 1.5px solid #ccfbf1; color: #0f766e; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 18px;">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      </div>
+
+      <h2 style="font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 22px; font-weight: 700; color: #0f172a; margin: 0 0 8px;">
+        Squad Workspaces are Private to Teams
+      </h2>
+      <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin: 0 0 24px;">
+        Sign in or join FutureEra to access your 4-person squad workspace, track sprint goals, share demo recordings, and collaborate in real-time.
+      </p>
+
+      <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+        <button class="btn btn--solid" style="padding: 10px 24px; font-size: 13.5px;" onclick="openAuthModal('signin')">
+          Sign In / Join Squad &rarr;
+        </button>
+        <button class="btn btn--outline" style="padding: 10px 20px; font-size: 13.5px;" onclick="switchCommTab('directory')">
+          Browse Squad Directory
+        </button>
+      </div>
+
+      <div style="margin-top: 30px; padding-top: 22px; border-top: 1px solid #f1f5f9; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: center; font-size: 11.5px; color: #64748b;">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+          <span style="font-weight: 700; color: #0f766e; font-size: 13px;">Rule of 4</span>
+          <span>Capped Pods</span>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+          <span style="font-weight: 700; color: #0f766e; font-size: 13px;">300 MB</span>
+          <span>Demo Media</span>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+          <span style="font-weight: 700; color: #0f766e; font-size: 13px;">Live Chat</span>
+          <span>Sprint War Room</span>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
-function renderActiveSquadWorkspace(squad, isDemoPreview = false) {
+function renderActiveSquadWorkspace(squad) {
   const container = document.getElementById("squadViewContainer");
   if (!container) return;
 
@@ -654,11 +705,9 @@ function renderActiveSquadWorkspace(squad, isDemoPreview = false) {
               ${ICONS.share}
               <span>Share Link</span>
             </button>
-            ${!isDemoPreview ? `
-              <button class="btn-icon-subtle" style="color: #dc2626; border-color: #fecaca;" onclick="confirmLeaveSquad(${squad.id})">
-                Leave Squad
-              </button>
-            ` : ''}
+            <button class="btn-icon-subtle" style="color: #dc2626; border-color: #fecaca;" onclick="confirmLeaveSquad(${squad.id})">
+              Leave Squad
+            </button>
           </div>
         </div>
 

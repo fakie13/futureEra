@@ -318,6 +318,36 @@ def main():
         assert '.nav-signout-btn' in css_content
     print('[PASS] style.css verified with .nav-signout-btn styles')
 
+    # 13. Verify Squad Workspace Privacy (Users not signed in or not joined CANNOT see squad workspace)
+    # 13a. Unauthenticated /api/squads/my-squad returns HTTP 401
+    st_anon_squad, r_anon_squad = get_json('/api/squads/my-squad')
+    assert st_anon_squad == 401, f'Expected 401, got {st_anon_squad}'
+    print('[PASS] Unauthenticated access to /api/squads/my-squad rejected with HTTP 401')
+
+    # 13b. Authenticated user with no squad returns in_squad == False
+    u_solo = f'solo_{ts}'
+    st_solo, r_solo = post_json('/api/auth/register', {
+        'username': u_solo,
+        'full_name': 'Solo User',
+        'email': f'{u_solo}@example.com',
+        'password': 'Password@123',
+        'stage': 'final_year',
+        'interests': ['Coding & Tech', 'AI & Machine Learning', 'Cloud & DevOps']
+    })
+    st_my_squad, r_my_squad = get_json('/api/squads/my-squad', token=r_solo['token'])
+    assert st_my_squad == 200 and r_my_squad['in_squad'] is False and r_my_squad['squad'] is None
+    print('[PASS] Authenticated user without a squad correctly reports in_squad == False')
+
+    # 13c. Verify community.js does NOT contain renderDefaultSquadView or isDemoPreview, and contains renderLoggedOutSquadView
+    req_comm_js = urllib.request.Request(base + '/static/js/community.js')
+    with urllib.request.urlopen(req_comm_js) as resp:
+        comm_js_src = resp.read().decode('utf-8')
+        assert 'renderDefaultSquadView' not in comm_js_src, 'renderDefaultSquadView should be completely removed'
+        assert 'isDemoPreview' not in comm_js_src, 'isDemoPreview fallback should be completely removed'
+        assert 'renderLoggedOutSquadView' in comm_js_src, 'renderLoggedOutSquadView must be implemented'
+        assert 'Squad Workspaces are Private to Teams' in comm_js_src
+    print('[PASS] community.js verified: private workspace lockdown active, demo fallback completely eliminated')
+
     print('\n========================================')
     print('ALL INTEGRATION TESTS PASSED (100% OK)')
     print('========================================')

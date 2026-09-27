@@ -105,6 +105,14 @@ async def serve_community():
     return FileResponse(os.path.join(STATIC_DIR, "community.html"), headers=NO_CACHE_HEADERS)
 
 
+@app.get("/signin")
+@app.get("/signup")
+@app.get("/login")
+async def serve_auth_page():
+    """Serves the unified Sign In and Sign Up page."""
+    return FileResponse(os.path.join(STATIC_DIR, "signin.html"), headers=NO_CACHE_HEADERS)
+
+
 
 @app.get("/privacy")
 async def serve_privacy():

@@ -300,7 +300,7 @@ function checkUrlParamsForJoin() {
 // TAB 1: PEER DISCOVERY & MATCHMAKING
 // ==========================================
 function initRegistrationChips() {
-  const chips = document.querySelectorAll("#regInterestChips .skill-pill-btn");
+  const chips = document.querySelectorAll("#regInterestChips .skill-pill-btn, #regInterestChips .interest-select-card");
   const counter = document.getElementById("regInterestCounter");
 
   chips.forEach(chip => {
@@ -308,15 +308,22 @@ function initRegistrationChips() {
       const val = chip.getAttribute("data-interest");
       if (STATE.regInterests.has(val)) {
         STATE.regInterests.delete(val);
+        chip.classList.remove("selected");
         chip.classList.remove("active");
       } else {
         STATE.regInterests.add(val);
+        chip.classList.add("selected");
         chip.classList.add("active");
       }
       const count = STATE.regInterests.size;
       if (counter) {
-        counter.textContent = `${count}/3 selected`;
-        counter.style.color = count >= 3 ? "#0f766e" : "#b45309";
+        if (count >= 3) {
+          counter.textContent = `✓ ${count} selected • Matching active`;
+          counter.style.color = "#0f766e";
+        } else {
+          counter.textContent = `${count} / 3 selected`;
+          counter.style.color = "var(--comm-amber, #f59e0b)";
+        }
       }
     });
   });
@@ -1227,6 +1234,31 @@ function switchAuthTab(tab) {
   const signUpForm = document.getElementById("signUpForm");
   if (signInForm) signInForm.style.display = isSignIn ? "block" : "none";
   if (signUpForm) signUpForm.style.display = isSignIn ? "none" : "block";
+
+  const modalTitle = document.getElementById("modalAuthTitle");
+  const modalSub = document.getElementById("modalAuthSub");
+  if (modalTitle) {
+    modalTitle.textContent = isSignIn ? "Welcome to FutureEra" : "Create Student Profile";
+  }
+  if (modalSub) {
+    modalSub.textContent = isSignIn 
+      ? "Sign in to access your squad workspace and connect with matching peers."
+      : "Select at least 3 core technical interests to enable algorithm-assisted peer matching.";
+  }
+}
+
+function fillModalDemoCredentials() {
+  const usernameInput = document.getElementById("loginUsername");
+  const passwordInput = document.getElementById("loginPassword");
+  if (usernameInput) usernameInput.value = "aarav_dev";
+  if (passwordInput) passwordInput.value = "Password@123";
+  showToast("Loaded Aarav Sharma's credentials (@aarav_dev). Click Sign In!");
+}
+
+function toggleModalPasswordView(inputId) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  input.type = input.type === "password" ? "text" : "password";
 }
 
 function openCreateSquadModal() {

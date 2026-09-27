@@ -118,8 +118,13 @@ function renderUserHeaderLoggedIn(user) {
         <span>${escapeHtml(user.full_name.split(' ')[0])}</span>
         ${user.squad_name ? `<span style="font-size: 11px; background: #f0fdfa; color: #0f766e; border: 1px solid #ccfbf1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">${escapeHtml(user.squad_name)}</span>` : ''}
       </button>
-      <button class="btn-secondary" style="padding: 6px 12px; font-size: 12px; border-radius: 999px;" onclick="logout(true)" title="Sign Out">
-        Sign Out
+      <button class="nav-signout-btn" onclick="logout(true)" title="Sign Out">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        <span>Sign Out</span>
       </button>
     </div>
   `;
@@ -240,6 +245,8 @@ function logout(showNotice = true) {
   refreshPeers();
   renderNotInSquadView();
 }
+window.logout = logout;
+window.feGlobalSignOut = logout;
 
 // ==========================================
 // TAB SWITCHING & URL PARAMS

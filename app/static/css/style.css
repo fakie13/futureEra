@@ -224,7 +224,13 @@ a {
     font-weight: 700;
 }
 
-/* Global Nav User Pill */
+/* Global Nav User Pill & Auth Actions */
+.nav-auth-user-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .nav-user-pill {
     display: inline-flex;
     align-items: center;
@@ -245,6 +251,48 @@ a {
     border-color: #0f766e;
     box-shadow: 0 4px 14px rgba(15, 118, 110, 0.16);
     transform: translateY(-1px);
+}
+
+.nav-signout-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    color: #475569;
+    border-radius: 999px;
+    padding: 5px 13px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    white-space: nowrap;
+}
+
+.nav-signout-btn:hover {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #ef4444;
+    box-shadow: 0 3px 10px rgba(239, 68, 68, 0.12);
+    transform: translateY(-1px);
+}
+
+.nav-signin-link {
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.nav-signin-link:hover {
+    color: #0f766e;
+    background: #f0fdfa;
 }
 
 .nav-user-avatar {

@@ -294,6 +294,30 @@ def main():
     assert st_me == 200 and r_me.get('authenticated') is True
     print('[PASS] Demo account login and session verification verified')
 
+    # 12. Verify Sign Out functionality and UI integration
+    # 12a. Verify /api/auth/logout invalidates session
+    st_logout, r_logout = post_json('/api/auth/logout', {}, token=demo_token)
+    assert st_logout == 200 and r_logout.get('success') is True
+    st_me_after, r_me_after = get_json('/api/auth/me', token=demo_token)
+    assert r_me_after.get('authenticated') is False, 'Session should be invalidated after logout'
+    print('[PASS] /api/auth/logout successfully revoked session token')
+
+    # 12b. Verify nav-auth.js includes Sign Out button & handler
+    req_nav = urllib.request.Request(base + '/static/js/nav-auth.js')
+    with urllib.request.urlopen(req_nav) as resp:
+        nav_js = resp.read().decode('utf-8')
+        assert 'feGlobalSignOut' in nav_js
+        assert 'nav-signout-btn' in nav_js
+        assert 'Sign Out' in nav_js
+    print('[PASS] nav-auth.js verified with global Sign Out button and feGlobalSignOut() handler')
+
+    # 12c. Verify style.css includes .nav-signout-btn styles
+    req_css = urllib.request.Request(base + '/static/css/style.css')
+    with urllib.request.urlopen(req_css) as resp:
+        css_content = resp.read().decode('utf-8')
+        assert '.nav-signout-btn' in css_content
+    print('[PASS] style.css verified with .nav-signout-btn styles')
+
     print('\n========================================')
     print('ALL INTEGRATION TESTS PASSED (100% OK)')
     print('========================================')

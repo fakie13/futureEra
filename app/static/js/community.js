@@ -1,6 +1,6 @@
 /**
- * FutureEra Community & 4-Member Squad War Room
- * High-performance peer matchmaking and pod collaboration engine.
+ * FutureEra Community & Project Squad Engine
+ * Human-crafted peer matchmaking and 4-member squad collaboration.
  */
 
 // Global State
@@ -12,14 +12,50 @@ const STATE = {
   currentSquad: null,
   activeTab: "matchmaking",
   chatPollTimer: null,
-  regInterests: new Set()
+  regInterests: new Set(),
+  activeSkillFilter: "all"
 };
+
+// ==========================================
+// SVG ICON HELPERS
+// ==========================================
+const ICONS = {
+  search: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`,
+  target: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>`,
+  academic: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>`,
+  userPlus: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>`,
+  copy: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`,
+  share: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>`,
+  video: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>`,
+  compass: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>`,
+  download: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>`,
+  send: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`,
+  check: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`
+};
+
+function getInitials(name) {
+  if (!name) return "FE";
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  return parts[0].slice(0, 2).toUpperCase();
+}
+
+function getAvatarColor(name, storedColor) {
+  if (storedColor && storedColor.startsWith("#")) return storedColor;
+  const palette = ["#0f766e", "#4338ca", "#0284c7", "#b45309", "#059669", "#7c3aed", "#be185d", "#334155"];
+  let hash = 0;
+  for (let i = 0; i < (name || "").length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return palette[Math.abs(hash) % palette.length];
+}
 
 // ==========================================
 // INITIALIZATION
 // ==========================================
 document.addEventListener("DOMContentLoaded", async () => {
-  initSimulatorChips();
   initRegistrationChips();
   await checkAuthStatus();
   await refreshPeers();
@@ -67,16 +103,19 @@ function renderUserHeaderLoggedIn(user) {
   const container = document.getElementById("userHeaderArea");
   if (!container) return;
 
+  const initials = getInitials(user.full_name);
+  const color = getAvatarColor(user.full_name, user.avatar_color);
+
   container.innerHTML = `
-    <div style="display: flex; align-items: center; gap: 10px;">
+    <div style="display: flex; align-items: center; gap: 8px;">
       <button class="user-pill-btn" onclick="openMyProfileModal()">
-        <div class="user-avatar-sm" style="background-color: ${user.avatar_color || '#0d9488'};">
-          ${user.avatar_emoji || '🚀'}
+        <div class="user-avatar-initials-sm" style="background-color: ${color};">
+          ${initials}
         </div>
         <span>${escapeHtml(user.full_name.split(' ')[0])}</span>
-        ${user.squad_name ? `<span style="font-size: 11px; background: rgba(20,184,166,0.2); color: #2dd4bf; padding: 2px 6px; border-radius: 4px;">🛡️ ${escapeHtml(user.squad_name)}</span>` : ''}
+        ${user.squad_name ? `<span style="font-size: 11px; background: #f0fdfa; color: #0f766e; border: 1px solid #ccfbf1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">${escapeHtml(user.squad_name)}</span>` : ''}
       </button>
-      <button class="btn-peer-view" style="padding: 7px 12px; font-size: 12px; border-radius: 999px;" onclick="logout(true)" title="Sign Out">
+      <button class="btn-secondary" style="padding: 6px 12px; font-size: 12px; border-radius: 999px;" onclick="logout(true)" title="Sign Out">
         Sign Out
       </button>
     </div>
@@ -107,7 +146,7 @@ async function handleSignInSubmit(e) {
     });
     const data = await res.json();
     if (!res.ok) {
-      showToast(data.detail || "Sign-in failed. Please check credentials.", "⚠️");
+      showToast(data.detail || "Sign-in failed. Please check credentials.", "error");
       return;
     }
 
@@ -117,14 +156,14 @@ async function handleSignInSubmit(e) {
 
     closeAuthModal();
     renderUserHeaderLoggedIn(data.user);
-    showToast(`Welcome back, ${data.user.full_name}!`, "🎉");
+    showToast(`Signed in as ${data.user.full_name}`);
 
     await refreshPeers();
     if (data.user.squad_id) {
       await loadUserSquad();
     }
   } catch (err) {
-    showToast("Network error. Please try again.", "⚠️");
+    showToast("Network error. Please try again.", "error");
   }
 }
 
@@ -141,14 +180,11 @@ async function handleSignUpSubmit(e) {
   const interests = Array.from(STATE.regInterests);
 
   if (interests.length < 3) {
-    showToast("Please choose at least 3 core interests to enable matchmaking.", "⚠️");
+    showToast("Please choose at least 3 core interests to enable peer matching.", "error");
     return;
   }
 
-  const avatar_colors = ["#0d9488", "#8b5cf6", "#ef4444", "#f59e0b", "#06b6d4", "#10b981", "#ec4899"];
-  const avatar_emojis = ["🚀", "💻", "🧠", "🛡️", "🎨", "🤖", "⚡", "🔬"];
-  const randomColor = avatar_colors[Math.floor(Math.random() * avatar_colors.length)];
-  const randomEmoji = avatar_emojis[Math.floor(Math.random() * avatar_emojis.length)];
+  const color = getAvatarColor(full_name);
 
   try {
     const res = await fetch("/api/auth/signup", {
@@ -164,13 +200,13 @@ async function handleSignUpSubmit(e) {
         target_role,
         bio,
         interests,
-        avatar_color: randomColor,
-        avatar_emoji: randomEmoji
+        avatar_color: color,
+        avatar_emoji: "🚀"
       })
     });
     const data = await res.json();
     if (!res.ok) {
-      showToast(data.detail || "Registration failed.", "⚠️");
+      showToast(data.detail || "Registration failed.", "error");
       return;
     }
 
@@ -180,11 +216,11 @@ async function handleSignUpSubmit(e) {
 
     closeAuthModal();
     renderUserHeaderLoggedIn(data.user);
-    showToast(`Account created! Welcome, ${data.user.full_name}!`, "🎉");
+    showToast(`Account created. Welcome, ${data.user.full_name}!`);
 
     await refreshPeers();
   } catch (err) {
-    showToast("Network error during registration.", "⚠️");
+    showToast("Network error during registration.", "error");
   }
 }
 
@@ -197,7 +233,7 @@ function logout(showNotice = true) {
   STATE.currentSquad = null;
   localStorage.removeItem("fe_session_token");
   renderUserHeaderLoggedOut();
-  if (showNotice) showToast("Signed out successfully.", "👋");
+  if (showNotice) showToast("Signed out successfully.");
   refreshPeers();
   renderNotInSquadView();
 }
@@ -221,7 +257,6 @@ function switchCommTab(tabKey) {
     if (STATE.currentUser && STATE.currentUser.squad_id) {
       loadUserSquad();
     } else {
-      // Show default preview or prompt
       renderDefaultSquadView();
     }
   } else {
@@ -245,13 +280,14 @@ function checkUrlParamsForJoin() {
     const searchInput = document.getElementById("peerSearchInput");
     if (searchInput) {
       searchInput.value = trackParam;
+      document.getElementById("clearSearchBtn").style.display = "block";
       refreshPeers();
     }
     const squadTrackInput = document.getElementById("squadTrackInput");
     if (squadTrackInput) {
       squadTrackInput.value = trackParam;
     }
-    showToast(`Filtering peers for track: "${trackParam}"`, "🎯");
+    showToast(`Filtered peers for track: "${trackParam}"`);
   }
 
   const tabParam = urlParams.get("tab");
@@ -261,26 +297,10 @@ function checkUrlParamsForJoin() {
 }
 
 // ==========================================
-// TAB 1: PEER MATCHMAKING ENGINE
+// TAB 1: PEER DISCOVERY & MATCHMAKING
 // ==========================================
-function initSimulatorChips() {
-  const chips = document.querySelectorAll("#simInterestChips .interest-chip");
-  chips.forEach(chip => {
-    chip.addEventListener("click", () => {
-      const val = chip.getAttribute("data-interest");
-      chip.classList.toggle("selected");
-      if (chip.classList.contains("selected")) {
-        if (!STATE.guestInterests.includes(val)) STATE.guestInterests.push(val);
-      } else {
-        STATE.guestInterests = STATE.guestInterests.filter(i => i !== val);
-      }
-      refreshPeers();
-    });
-  });
-}
-
 function initRegistrationChips() {
-  const chips = document.querySelectorAll("#regInterestChips .interest-chip");
+  const chips = document.querySelectorAll("#regInterestChips .skill-pill-btn");
   const counter = document.getElementById("regInterestCounter");
 
   chips.forEach(chip => {
@@ -288,24 +308,60 @@ function initRegistrationChips() {
       const val = chip.getAttribute("data-interest");
       if (STATE.regInterests.has(val)) {
         STATE.regInterests.delete(val);
-        chip.classList.remove("selected");
+        chip.classList.remove("active");
       } else {
         STATE.regInterests.add(val);
-        chip.classList.add("selected");
+        chip.classList.add("active");
       }
       const count = STATE.regInterests.size;
       if (counter) {
-        counter.textContent = `${count}/3 required`;
-        counter.style.color = count >= 3 ? "#2dd4bf" : "#f59e0b";
+        counter.textContent = `${count}/3 selected`;
+        counter.style.color = count >= 3 ? "#0f766e" : "#b45309";
       }
     });
   });
 }
 
+function toggleQuickSkill(skill) {
+  STATE.activeSkillFilter = skill;
+  document.querySelectorAll("#quickSkillPills .skill-pill-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.getAttribute("data-skill") === skill);
+  });
+
+  const searchInput = document.getElementById("peerSearchInput");
+  const clearBtn = document.getElementById("clearSearchBtn");
+
+  if (skill === "all") {
+    if (searchInput) {
+      searchInput.value = "";
+      if (clearBtn) clearBtn.style.display = "none";
+    }
+  } else {
+    if (searchInput) {
+      searchInput.value = skill;
+      if (clearBtn) clearBtn.style.display = "block";
+    }
+  }
+  refreshPeers();
+}
+
+function clearSearchInput() {
+  const searchInput = document.getElementById("peerSearchInput");
+  const clearBtn = document.getElementById("clearSearchBtn");
+  if (searchInput) searchInput.value = "";
+  if (clearBtn) clearBtn.style.display = "none";
+  toggleQuickSkill("all");
+}
+
 async function refreshPeers() {
-  const search = document.getElementById("peerSearchInput")?.value || "";
+  const search = document.getElementById("peerSearchInput")?.value.trim() || "";
   const stage = document.getElementById("stageFilterSelect")?.value || "all";
   const minOverlap = parseInt(document.getElementById("overlapFilterSelect")?.value || "0", 10);
+
+  const clearBtn = document.getElementById("clearSearchBtn");
+  if (clearBtn) {
+    clearBtn.style.display = search.length > 0 ? "block" : "none";
+  }
 
   const queryParams = new URLSearchParams({
     search,
@@ -339,7 +395,7 @@ function handlePeerSearch() {
 function updatePeerStats(peers) {
   const totalElem = document.getElementById("statTotalPeers");
   const badgeElem = document.getElementById("tabMatchBadge");
-  if (totalElem) totalElem.textContent = `${peers.length} Active`;
+  if (totalElem) totalElem.textContent = peers.length;
   if (badgeElem) badgeElem.textContent = peers.length;
 }
 
@@ -349,13 +405,12 @@ function renderPeers(peers) {
 
   if (peers.length === 0) {
     grid.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: #ffffff; border-radius: 18px; border: 1.5px dashed #cbd5e1; box-shadow: 0 4px 15px rgba(15,23,42,0.03);">
-        <div style="font-size: 38px; margin-bottom: 12px;">🔍</div>
-        <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">No Matching Peers Found</h3>
-        <p style="font-size: 14px; color: #64748b; max-width: 480px; margin: 0 auto 16px;">
-          Try adjusting your search criteria, switching stages, or picking more interest tags above to expand candidate overlap.
+      <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px; background: #ffffff; border-radius: 14px; border: 1px dashed var(--comm-border-strong);">
+        <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 6px;">No Matching Peers Found</h3>
+        <p style="font-size: 13.5px; color: #64748b; max-width: 440px; margin: 0 auto 16px;">
+          Try expanding your search terms, selecting "All Academic Stages", or switching to "All Match Levels".
         </p>
-        <button class="btn btn--solid" style="padding: 8px 18px; font-size: 13px;" onclick="resetPeerFilters()">
+        <button class="btn-secondary" style="padding: 7px 16px; font-size: 12.5px; border-radius: 6px;" onclick="resetPeerFilters()">
           Reset Search Filters
         </button>
       </div>
@@ -366,55 +421,67 @@ function renderPeers(peers) {
   grid.innerHTML = peers.map(peer => {
     const isStrong = peer.is_strong_match;
     const matchTag = isStrong
-      ? `<div class="match-banner-tag strong">🔥 ${peer.match_percentage}% Match (${peer.overlap_count} Shared)</div>`
+      ? `<span class="peer-match-pill strong"><span class="match-indicator-dot"></span> ${peer.match_percentage}% match • ${peer.overlap_count} shared</span>`
       : peer.overlap_count > 0
-        ? `<div class="match-banner-tag partial">🌱 ${peer.match_percentage}% Match (1 Shared)</div>`
-        : `<div class="match-banner-tag partial">✨ Available Peer</div>`;
+        ? `<span class="peer-match-pill"><span class="match-indicator-dot muted"></span> ${peer.match_percentage}% match • 1 shared</span>`
+        : `<span class="peer-match-pill">Available</span>`;
 
-    const stageLabel = peer.stage === "final_year" ? "🎓 Final Year" : "🎒 12th Pass";
+    const stageLabel = peer.stage === "final_year" ? "Final Year" : "Class 12th";
+    const initials = getInitials(peer.full_name);
+    const color = getAvatarColor(peer.full_name, peer.avatar_color);
 
     return `
       <div class="peer-card ${isStrong ? 'strong-match' : ''}">
-        ${matchTag}
-        
-        <div class="peer-header">
-          <div class="peer-avatar" style="background-color: ${peer.avatar_color || '#0d9488'};">
-            ${peer.avatar_emoji || '🚀'}
+        <div class="peer-card-top">
+          <div class="peer-header">
+            <div class="peer-avatar-initials" style="background-color: ${color};">
+              ${initials}
+              <span class="peer-status-dot"></span>
+            </div>
+            <div class="peer-name-group">
+              <div class="peer-full-name">${escapeHtml(peer.full_name)}</div>
+              <div class="peer-meta-sub">
+                <span>@${escapeHtml(peer.username)}</span>
+                <span>•</span>
+                <span class="peer-stage-tag">${stageLabel}</span>
+              </div>
+            </div>
           </div>
-          <div>
-            <div class="peer-info-title">${escapeHtml(peer.full_name)}</div>
-            <div class="peer-username">@${escapeHtml(peer.username)}</div>
-            <span class="peer-stage-badge">${stageLabel}</span>
-          </div>
+          ${matchTag}
         </div>
 
-        <div class="peer-target-role">
-          <span>🎯</span> ${escapeHtml(peer.target_role || "Engineering Track")}
-        </div>
-        <div class="peer-degree">
-          <span>📚</span> ${escapeHtml(peer.stream_or_degree || "Technical Sciences")}
+        <div class="peer-detail-line">
+          <span class="peer-detail-label">Focus:</span>
+          <span class="peer-role-text">${escapeHtml(peer.target_role || "Engineering Track")}</span>
         </div>
 
-        <div class="peer-bio">
+        <div class="peer-detail-line">
+          <span class="peer-detail-label">Degree:</span>
+          <span class="peer-degree-text">${escapeHtml(peer.stream_or_degree || "Technical Sciences")}</span>
+        </div>
+
+        <div class="peer-bio-text">
           ${escapeHtml(peer.bio || "Student engineer focused on high-yield software systems and capstone development.")}
         </div>
 
-        <div class="shared-interests-block">
-          <div class="shared-interests-label">
-            <span>✨</span> Intersecting Interests (${peer.overlap_count})
+        <div class="peer-skills-block">
+          <div class="peer-skills-header">
+            <span>Interests &amp; Skills</span>
+            <span style="color: #0f766e;">${peer.overlap_count} matching</span>
           </div>
-          <div class="shared-interests-tags">
-            ${peer.shared_interests.map(i => `<span class="shared-tag" onclick="filterByInterestTag('${escapeHtml(i)}')" style="cursor: pointer;" title="Filter peers by ${escapeHtml(i)}">${escapeHtml(i)}</span>`).join("")}
-            ${peer.interests.filter(i => !peer.shared_interests.includes(i)).map(i => `<span class="other-tag" onclick="filterByInterestTag('${escapeHtml(i)}')" style="cursor: pointer;" title="Filter peers by ${escapeHtml(i)}">${escapeHtml(i)}</span>`).join("")}
+          <div class="peer-skills-tags">
+            ${peer.shared_interests.map(i => `<span class="tag-shared" onclick="filterByInterestTag('${escapeHtml(i)}')" title="Filter by ${escapeHtml(i)}">${escapeHtml(i)}</span>`).join("")}
+            ${peer.interests.filter(i => !peer.shared_interests.includes(i)).map(i => `<span class="tag-other" onclick="filterByInterestTag('${escapeHtml(i)}')" title="Filter by ${escapeHtml(i)}">${escapeHtml(i)}</span>`).join("")}
           </div>
         </div>
 
         <div class="peer-card-actions">
-          <button class="btn-peer-view" onclick="openPeerModal(${peer.id})">
+          <button class="btn-secondary" onclick="openPeerModal(${peer.id})">
             View Profile
           </button>
-          <button class="btn-peer-invite" onclick="handlePeerInviteClick(${peer.id}, '${escapeHtml(peer.username)}')">
-            <span>🤝</span> Connect / Invite
+          <button class="btn-primary-action" onclick="handlePeerInviteClick(${peer.id}, '${escapeHtml(peer.username)}')">
+            ${ICONS.userPlus}
+            <span>Invite</span>
           </button>
         </div>
       </div>
@@ -423,26 +490,27 @@ function renderPeers(peers) {
 }
 
 function filterByInterestTag(tag) {
-  const search = document.getElementById("peerSearchInput");
-  if (search) {
-    search.value = tag;
+  const searchInput = document.getElementById("peerSearchInput");
+  if (searchInput) {
+    searchInput.value = tag;
+    const clearBtn = document.getElementById("clearSearchBtn");
+    if (clearBtn) clearBtn.style.display = "block";
     refreshPeers();
-    showToast(`Filtering peers by interest: "${tag}"`, "🔍");
+    showToast(`Filtering by skill: "${tag}"`);
   }
 }
 
 function resetPeerFilters() {
-  const search = document.getElementById("peerSearchInput");
+  clearSearchInput();
   const stage = document.getElementById("stageFilterSelect");
   const overlap = document.getElementById("overlapFilterSelect");
-  if (search) search.value = "";
   if (stage) stage.value = "all";
   if (overlap) overlap.value = "0";
   refreshPeers();
 }
 
 // ==========================================
-// TAB 2: 4-MEMBER SQUAD WAR ROOM ("RULE OF 4")
+// TAB 2: 4-MEMBER SQUAD WORKSPACE ("RULE OF 4")
 // ==========================================
 async function loadUserSquad() {
   if (!STATE.token) {
@@ -455,7 +523,7 @@ async function loadUserSquad() {
     const data = await res.json();
     if (data.in_squad && data.squad) {
       STATE.currentSquad = data.squad;
-      renderActiveSquadWarRoom(data.squad);
+      renderActiveSquadWorkspace(data.squad);
       startChatPolling(data.squad.id);
     } else {
       renderNotInSquadView();
@@ -467,12 +535,11 @@ async function loadUserSquad() {
 }
 
 async function renderDefaultSquadView() {
-  // Try to load Squad 1 (Neural Vanguard) as a public live demo war room if user not signed in
   try {
     const res = await fetch("/api/squads/1");
     if (res.ok) {
       const demoSquad = await res.json();
-      renderActiveSquadWarRoom(demoSquad, true);
+      renderActiveSquadWorkspace(demoSquad, true);
       startChatPolling(demoSquad.id);
       return;
     }
@@ -481,7 +548,7 @@ async function renderDefaultSquadView() {
   renderNotInSquadView();
 }
 
-function renderActiveSquadWarRoom(squad, isDemoPreview = false) {
+function renderActiveSquadWorkspace(squad, isDemoPreview = false) {
   const container = document.getElementById("squadViewContainer");
   if (!container) return;
 
@@ -491,159 +558,166 @@ function renderActiveSquadWarRoom(squad, isDemoPreview = false) {
   const isFull = currentCount >= maxMembers;
 
   const statusBadge = isFull
-    ? `<span style="font-size: 12px; font-weight: 800; background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(16, 185, 129, 0.35);">🟢 4/4 Squad Ready & Locked</span>`
-    : `<span style="font-size: 12px; font-weight: 800; background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(245, 158, 11, 0.35); animation: pulse 2s infinite;">🟡 ${currentCount}/${maxMembers} Members (${openSeats} Open Seat remaining)</span>`;
+    ? `<span class="squad-status-badge full"><span class="meta-dot green"></span> Squad Full (4/4 Members)</span>`
+    : `<span class="squad-status-badge open"><span class="meta-dot amber"></span> ${currentCount}/${maxMembers} Members (${openSeats} Open Seat)</span>`;
 
-  // Build the 4 seat cards (Rule of 4)
+  // Build the 4 seat cards
   let seatCardsHtml = "";
   for (let i = 0; i < maxMembers; i++) {
     if (i < currentCount) {
       const member = squad.members[i];
       const isLeader = member.role === "leader";
+      const initials = getInitials(member.full_name);
+      const color = getAvatarColor(member.full_name, member.avatar_color);
+
       seatCardsHtml += `
-        <div class="seat-card ${isLeader ? 'leader' : ''}">
-          <div class="seat-role-pill ${isLeader ? 'leader' : 'member'}">
-            ${isLeader ? '👑 Squad Leader' : `⚡ Member Seat #${i + 1}`}
+        <div class="member-seat-card ${isLeader ? 'lead' : ''}">
+          <div class="seat-role-badge ${isLeader ? 'lead' : 'member'}">
+            ${isLeader ? 'Team Lead' : `Teammate #${i + 1}`}
           </div>
-          <div class="seat-avatar" style="background-color: ${member.avatar_color || '#0d9488'};">
-            ${member.avatar_emoji || '🚀'}
+          <div class="seat-avatar-row">
+            <div class="seat-avatar-circle" style="background-color: ${color};">
+              ${initials}
+            </div>
+            <div>
+              <div class="seat-name-text">${escapeHtml(member.full_name)}</div>
+              <div class="seat-handle-text">@${escapeHtml(member.username)}</div>
+            </div>
           </div>
-          <div class="seat-name">${escapeHtml(member.full_name)}</div>
-          <div class="seat-user-tag">@${escapeHtml(member.username)}</div>
-          <div class="seat-role-desc">${escapeHtml(member.target_role || "Full Stack Engineer")}</div>
-          <div class="seat-skills-list">
-            ${(member.interests || []).slice(0, 3).map(sk => `<span class="seat-skill-tag">${escapeHtml(sk)}</span>`).join("")}
+          <div class="seat-role-focus">${escapeHtml(member.target_role || "Engineering Track")}</div>
+          <div class="seat-skills-pills">
+            ${(member.interests || []).slice(0, 3).map(sk => `<span class="seat-skill-item">${escapeHtml(sk)}</span>`).join("")}
           </div>
         </div>
       `;
     } else {
-      // Empty / Open Seat
       seatCardsHtml += `
-        <div class="seat-card open-seat" onclick="handleClaimSeatClick('${squad.invite_code}')">
-          <div class="open-seat-icon">+</div>
+        <div class="member-seat-card open" onclick="handleClaimSeatClick('${squad.invite_code}')">
+          <div class="open-seat-plus-icon">+</div>
           <div class="open-seat-title">Open Seat #${i + 1}</div>
-          <div class="open-seat-desc">Waiting for a matching engineer (&ge; 2 shared interests)</div>
-          <button class="btn-claim-seat">Claim Open Seat</button>
+          <div class="open-seat-sub">Available for matching engineer (&ge; 2 shared skills)</div>
+          <button class="btn-claim-pill">Claim Seat</button>
         </div>
       `;
     }
   }
 
   container.innerHTML = `
-    <div class="squad-war-room-container">
-      <!-- Squad Header Card -->
-      <div class="squad-header-card">
-        <div class="squad-header-top">
-          <div class="squad-title-group">
-            <h2>
-              <span>🛡️</span> ${escapeHtml(squad.squad_name)}
+    <div class="squad-workspace-layout">
+      <!-- Squad Overview Card -->
+      <div class="squad-overview-card">
+        <div class="squad-top-meta">
+          <div>
+            <div class="squad-title-row">
+              <h2>${escapeHtml(squad.squad_name)}</h2>
               ${statusBadge}
-            </h2>
+            </div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;">
-              <span class="squad-track-badge">🎯 ${escapeHtml(squad.track_name)}</span>
-              <span class="squad-track-badge" style="color: #475569; background: #f1f5f9; border-color: #e2e8f0;">
-                🎓 ${squad.stage === 'final_year' ? 'Final Year' : '12th Pass'}
+              <span class="squad-tag-pill">${escapeHtml(squad.track_name)}</span>
+              <span class="squad-tag-pill" style="color: #475569; background: #f1f5f9; border-color: #e2e8f0;">
+                ${squad.stage === 'final_year' ? 'Final Year' : 'Class 12th'}
               </span>
             </div>
           </div>
 
-          <!-- Squad Invite Code Banner -->
-          <div class="squad-invite-banner">
-            <div>
-              <div style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Invite Code (Max 4 Members)</div>
-              <div class="invite-code-pill">${escapeHtml(squad.invite_code)}</div>
-            </div>
-            <button class="btn-copy-code" onclick="copySquadCode('${escapeHtml(squad.invite_code)}')">
-              <span>📋</span> Copy Code
+          <!-- Invite code & quick share -->
+          <div class="squad-invite-block">
+            <span style="font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase;">Invite Code</span>
+            <span class="squad-code-val">${escapeHtml(squad.invite_code)}</span>
+            <button class="btn-icon-subtle" onclick="copySquadCode('${escapeHtml(squad.invite_code)}')">
+              ${ICONS.copy}
+              <span>Copy</span>
             </button>
-            <button class="btn-copy-code" onclick="copySquadLink('${escapeHtml(squad.invite_code)}')">
-              <span>🔗</span> Share Link
+            <button class="btn-icon-subtle" onclick="copySquadLink('${escapeHtml(squad.invite_code)}')">
+              ${ICONS.share}
+              <span>Share Link</span>
             </button>
             ${!isDemoPreview ? `
-              <button class="btn-peer-view" style="color: #f87171; border-color: rgba(239,68,68,0.3);" onclick="confirmLeaveSquad(${squad.id})">
+              <button class="btn-icon-subtle" style="color: #dc2626; border-color: #fecaca;" onclick="confirmLeaveSquad(${squad.id})">
                 Leave Squad
               </button>
             ` : ''}
           </div>
         </div>
 
-        <!-- 4 Visual Seats (Rule of 4) -->
         <div>
-          <div style="font-size: 12.5px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
-            <span>The 4-Member Pod Seats (Rule of 4)</span>
+          <div style="font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; display: flex; justify-content: space-between;">
+            <span>4-Member Pod Seats</span>
             <span>${currentCount} of 4 Occupied</span>
           </div>
-          <div class="pod-grid">
+          <div class="seats-grid">
             ${seatCardsHtml}
           </div>
         </div>
       </div>
 
-      <!-- Sprint Objective & War Room Chat Workspace -->
-      <div class="squad-workspace-grid">
+      <!-- Split: Objective & Tools / Team Chat -->
+      <div class="workspace-split">
         <!-- Sprint Objective & Collaboration Tools -->
-        <div class="war-room-panel">
-          <div class="panel-header">
-            <div class="panel-title">
-              <span>🎯</span> Active Sprint Goal
+        <div class="workspace-card">
+          <div class="card-header-clean">
+            <div class="card-heading">
+              <span>Sprint Objective</span>
             </div>
-            <button class="btn-peer-view" style="padding: 5px 12px; font-size: 12px;" onclick="promptUpdateSprintGoal(${squad.id})">
-              Edit Goal
+            <button class="btn-icon-subtle" style="font-size: 11.5px; padding: 4px 8px;" onclick="promptUpdateSprintGoal(${squad.id})">
+              Edit Objective
             </button>
           </div>
 
-          <div class="sprint-goal-display">
-            <div class="sprint-goal-text" id="sprintGoalText">
-              ${escapeHtml(squad.sprint_goal || "Sprint 1: Architecture & System Setup")}
+          <div class="sprint-goal-box">
+            <div class="sprint-goal-content" id="sprintGoalText">
+              ${escapeHtml(squad.sprint_goal || "Sprint 1: Architecture & API Gateway Scaffold")}
             </div>
           </div>
 
-          <div style="font-size: 12.5px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;">
-            Rapid Collaboration Tools
+          <div style="font-size: 11.5px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px;">
+            Team Workspace Tools
           </div>
-          <div class="collaboration-actions">
-            <a href="https://meet.jit.si/FutureEra-${escapeHtml(squad.invite_code)}" target="_blank" class="collab-btn">
-              <span style="font-size: 20px;">📹</span>
-              <span>Live Video Standup</span>
+          <div class="tools-grid">
+            <a href="https://meet.jit.si/FutureEra-${escapeHtml(squad.invite_code)}" target="_blank" class="tool-link-card">
+              ${ICONS.video}
+              <span>Video Standup</span>
             </a>
-            <a href="/console" class="collab-btn">
-              <span style="font-size: 20px;">📐</span>
-              <span>Career Console</span>
+            <a href="/console" class="tool-link-card">
+              ${ICONS.compass}
+              <span>Career Roadmap</span>
             </a>
-            <button class="collab-btn" onclick="exportSquadManifest()">
-              <span style="font-size: 20px;">📦</span>
-              <span>Export Manifest</span>
+            <button class="tool-link-card" onclick="exportSquadManifest()">
+              ${ICONS.download}
+              <span>Export Team JSON</span>
             </button>
           </div>
         </div>
 
-        <!-- In-App Real-Time War Room Chat -->
-        <div class="war-room-panel">
-          <div class="panel-header">
-            <div class="panel-title">
-              <span>💬</span> Squad War Room Chat
+        <!-- Real-Time Team Chat -->
+        <div class="workspace-card">
+          <div class="card-header-clean">
+            <div class="card-heading">
+              <span>Team Chat</span>
             </div>
-            <span style="font-size: 11px; color: #10b981; font-weight: 700; display: flex; align-items: center; gap: 4px;">
-              <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; display: inline-block;"></span> Live
+            <span style="font-size: 11px; color: #10b981; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+              <span class="meta-dot green"></span> Live
             </span>
           </div>
 
-          <div class="chat-messages-container" id="squadChatMessages">
+          <div class="chat-scroll-area" id="squadChatMessages">
             <div style="color: #64748b; font-size: 13px; text-align: center; margin-top: 40px;">
-              Loading conversation history...
+              Loading conversation...
             </div>
           </div>
 
-          <form class="chat-input-bar" onsubmit="handleSendChatMessage(event, ${squad.id})">
-            <input type="text" id="squadChatInput" placeholder="Message squad teammates..." required />
-            <button type="submit" class="btn-send-chat">Send</button>
+          <form class="chat-compose-form" onsubmit="handleSendChatMessage(event, ${squad.id})">
+            <input type="text" id="squadChatInput" placeholder="Message teammates..." required />
+            <button type="submit" class="btn-send-message">
+              <span>Send</span>
+              ${ICONS.send}
+            </button>
           </form>
         </div>
       </div>
     </div>
   `;
 
-  // Fetch initial chat messages
   fetchChatMessages(squad.id);
 }
 
@@ -652,35 +726,43 @@ function renderNotInSquadView() {
   if (!container) return;
 
   container.innerHTML = `
-    <div style="text-align: center; max-width: 640px; margin: 20px auto 36px;">
-      <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">
-        Join or Form a 4-Member Squad
+    <div style="text-align: center; max-width: 580px; margin: 16px auto 30px;">
+      <h2 style="font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 6px;">
+        Join or Create a 4-Person Squad
       </h2>
-      <p style="font-size: 15px; color: #475569; line-height: 1.6;">
-        FutureEra limits squads strictly to 4 members. Research proves 4-person engineering pods execute with the highest velocity, zero bystander effect, and equal project ownership.
+      <p style="font-size: 14px; color: #64748b; line-height: 1.55;">
+        FutureEra caps project squads strictly at 4 members. Smaller pods eliminate social loafing, maintain sprint velocity, and ensure every member owns high-yield architecture deliverables.
       </p>
     </div>
 
     <div class="not-in-squad-state">
       <div class="action-join-card">
-        <div class="action-join-icon">🔑</div>
+        <div class="action-icon-circle">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+          </svg>
+        </div>
         <h3 class="action-join-title">Join Existing Squad</h3>
         <p class="action-join-desc">
-          Have an invite code from a squad leader (e.g. <code>NV-2026</code>)? Enter it to claim an open seat immediately.
+          Have an invite code from a squad leader (e.g. <code>NV-2026</code>)? Enter it to claim an open seat.
         </p>
-        <button class="btn btn--solid" style="width: 100%; padding: 12px;" onclick="openJoinSquadModal()">
+        <button class="btn btn--solid" style="width: 100%; padding: 10px;" onclick="openJoinSquadModal()">
           Enter Squad Code &rarr;
         </button>
       </div>
 
       <div class="action-join-card">
-        <div class="action-join-icon" style="background: rgba(99, 102, 241, 0.12); border-color: rgba(99, 102, 241, 0.3); color: #818cf8;">🚀</div>
-        <h3 class="action-join-title">Create New 4-Person Squad</h3>
+        <div class="action-icon-circle" style="background: #f0f9ff; border-color: #bae6fd; color: #0284c7;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v20M2 12h20"></path>
+          </svg>
+        </div>
+        <h3 class="action-join-title">Form New 4-Person Squad</h3>
         <p class="action-join-desc">
           Start your own squad, select an engineering track, set Sprint 1 goals, and recruit matching peers.
         </p>
-        <button class="btn btn--solid" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #6366f1 0%, #0d9488 100%);" onclick="openCreateSquadModal()">
-          Form a New Squad &rarr;
+        <button class="btn btn--solid" style="width: 100%; padding: 10px; background: #0f766e;" onclick="openCreateSquadModal()">
+          Form New Squad &rarr;
         </button>
       </div>
     </div>
@@ -707,7 +789,7 @@ function renderChatMessages(messages) {
   if (messages.length === 0) {
     container.innerHTML = `
       <div style="color: #64748b; font-size: 13px; text-align: center; margin-top: 60px;">
-        No messages yet. Send the first message to your squad!
+        No messages yet. Send the first update to your squad.
       </div>
     `;
     return;
@@ -715,20 +797,25 @@ function renderChatMessages(messages) {
 
   const isScrolledToBottom = container.scrollHeight - container.clientHeight <= container.scrollTop + 40;
 
-  container.innerHTML = messages.map(m => `
-    <div class="chat-msg-row">
-      <div class="chat-msg-avatar" style="background-color: ${m.sender_avatar_color || '#0d9488'};">
-        ${m.sender_avatar_emoji || '🚀'}
-      </div>
-      <div class="chat-msg-content">
-        <div class="chat-msg-header">
-          <span class="chat-msg-sender">${escapeHtml(m.sender_name)}</span>
-          <span class="chat-msg-time">${formatTime(m.created_at)}</span>
+  container.innerHTML = messages.map(m => {
+    const initials = getInitials(m.sender_name);
+    const color = getAvatarColor(m.sender_name, m.sender_avatar_color);
+
+    return `
+      <div class="chat-msg-row">
+        <div class="chat-sender-avatar" style="background-color: ${color};">
+          ${initials}
         </div>
-        <div class="chat-msg-body">${escapeHtml(m.message)}</div>
+        <div class="chat-msg-bubble">
+          <div class="chat-meta-row">
+            <span class="chat-sender-name">${escapeHtml(m.sender_name)}</span>
+            <span class="chat-timestamp">${formatTime(m.created_at)}</span>
+          </div>
+          <div class="chat-text">${escapeHtml(m.message)}</div>
+        </div>
       </div>
-    </div>
-  `).join("");
+    `;
+  }).join("");
 
   if (isScrolledToBottom) {
     container.scrollTop = container.scrollHeight;
@@ -739,7 +826,7 @@ async function handleSendChatMessage(e, squadId) {
   e.preventDefault();
   if (!STATE.token) {
     openAuthModal("signin");
-    showToast("Please sign in to participate in squad chat.", "🔒");
+    showToast("Please sign in to participate in squad chat.", "error");
     return;
   }
 
@@ -756,12 +843,12 @@ async function handleSendChatMessage(e, squadId) {
     });
     const data = await res.json();
     if (!res.ok) {
-      showToast(data.detail || "Failed to post message.", "⚠️");
+      showToast(data.detail || "Failed to post message.", "error");
       return;
     }
     fetchChatMessages(squadId);
   } catch (err) {
-    showToast("Error sending message.", "⚠️");
+    showToast("Error sending message.", "error");
   }
 }
 
@@ -786,7 +873,7 @@ async function handleCreateSquadSubmit(e) {
   e.preventDefault();
   if (!STATE.token) {
     openAuthModal("signin");
-    showToast("Please sign in to create a squad.", "🔒");
+    showToast("Please sign in to form a squad.", "error");
     return;
   }
 
@@ -803,19 +890,19 @@ async function handleCreateSquadSubmit(e) {
     });
     const data = await res.json();
     if (!res.ok) {
-      showToast(data.detail || "Could not create squad.", "⚠️");
+      showToast(data.detail || "Could not create squad.", "error");
       return;
     }
 
     closeCreateSquadModal();
-    showToast(`Squad '${squad_name}' created!`, "🚀");
+    showToast(`Squad '${squad_name}' created.`);
     STATE.currentSquad = data.squad;
     if (STATE.currentUser) STATE.currentUser.squad_id = data.squad.id;
-    renderActiveSquadWarRoom(data.squad);
+    renderActiveSquadWorkspace(data.squad);
     startChatPolling(data.squad.id);
     refreshSquadsDirectory();
   } catch (err) {
-    showToast("Network error creating squad.", "⚠️");
+    showToast("Network error creating squad.", "error");
   }
 }
 
@@ -823,7 +910,7 @@ async function handleJoinSquadSubmit(e) {
   e.preventDefault();
   if (!STATE.token) {
     openAuthModal("signin");
-    showToast("Please sign in before joining a squad.", "🔒");
+    showToast("Please sign in before joining a squad.", "error");
     return;
   }
 
@@ -838,20 +925,20 @@ async function handleJoinSquadSubmit(e) {
     });
     const data = await res.json();
     if (!res.ok) {
-      showToast(data.detail || "Failed to join squad.", "⚠️");
+      showToast(data.detail || "Failed to join squad.", "error");
       return;
     }
 
     closeJoinSquadModal();
-    showToast(`Joined squad '${data.squad.squad_name}'!`, "🎉");
+    showToast(`Joined squad '${data.squad.squad_name}'.`);
     STATE.currentSquad = data.squad;
     if (STATE.currentUser) STATE.currentUser.squad_id = data.squad.id;
     switchCommTab("squad");
-    renderActiveSquadWarRoom(data.squad);
+    renderActiveSquadWorkspace(data.squad);
     startChatPolling(data.squad.id);
     refreshSquadsDirectory();
   } catch (err) {
-    showToast("Network error joining squad.", "⚠️");
+    showToast("Network error joining squad.", "error");
   }
 }
 
@@ -865,18 +952,18 @@ async function confirmLeaveSquad(squadId) {
     });
     const data = await res.json();
     if (!res.ok) {
-      showToast(data.detail || "Failed to leave squad.", "⚠️");
+      showToast(data.detail || "Failed to leave squad.", "error");
       return;
     }
 
-    showToast("Left squad successfully.", "👋");
+    showToast("Left squad successfully.");
     STATE.currentSquad = null;
     if (STATE.currentUser) STATE.currentUser.squad_id = null;
     stopChatPolling();
     renderNotInSquadView();
     refreshSquadsDirectory();
   } catch (err) {
-    showToast("Error leaving squad.", "⚠️");
+    showToast("Error leaving squad.", "error");
   }
 }
 
@@ -893,22 +980,22 @@ async function promptUpdateSprintGoal(squadId) {
     });
     const data = await res.json();
     if (!res.ok) {
-      showToast(data.detail || "Failed to update sprint goal.", "⚠️");
+      showToast(data.detail || "Failed to update objective.", "error");
       return;
     }
 
-    showToast("Sprint goal updated!", "🎯");
+    showToast("Sprint objective updated.");
     const textElem = document.getElementById("sprintGoalText");
     if (textElem) textElem.textContent = newGoal;
   } catch (err) {
-    showToast("Error updating sprint goal.", "⚠️");
+    showToast("Error updating sprint objective.", "error");
   }
 }
 
 function handleClaimSeatClick(inviteCode) {
   if (!STATE.token) {
     openAuthModal("signin");
-    showToast("Sign in to claim this seat.", "🔒");
+    showToast("Sign in to claim an open seat.");
     return;
   }
   openJoinSquadModal(inviteCode);
@@ -917,34 +1004,33 @@ function handleClaimSeatClick(inviteCode) {
 function handlePeerInviteClick(peerId, username) {
   if (!STATE.token) {
     openAuthModal("signin");
-    showToast("Sign in to invite peers.", "🔒");
+    showToast("Sign in to invite peers.");
     return;
   }
   if (!STATE.currentSquad) {
-    showToast(`You must be in a squad to invite @${username}. Create one first!`, "💡");
+    showToast(`You must be in a squad to invite @${username}. Create one first.`);
     openCreateSquadModal();
     return;
   }
   if (STATE.currentSquad.open_seats <= 0) {
-    showToast("Your squad is already full (4/4 members).", "⚠️");
+    showToast("Your squad is already full (4/4 members).", "error");
     return;
   }
 
-  // Copy squad invite text
   const inviteText = `Hey @${username}! Let's build together on FutureEra. Join my 4-person squad '${STATE.currentSquad.squad_name}' using invite code: ${STATE.currentSquad.invite_code}`;
   navigator.clipboard.writeText(inviteText);
-  showToast(`Invite copied to clipboard for @${username}!`, "📋");
+  showToast(`Squad invite copied to clipboard for @${username}.`);
 }
 
 function copySquadCode(code) {
   navigator.clipboard.writeText(code);
-  showToast(`Invite Code '${code}' copied to clipboard!`, "📋");
+  showToast(`Invite code '${code}' copied to clipboard.`);
 }
 
 function copySquadLink(code) {
   const url = `${window.location.origin}/community?join=${code}`;
   navigator.clipboard.writeText(url);
-  showToast("Direct squad join link copied to clipboard!", "🔗");
+  showToast("Direct squad join link copied to clipboard.");
 }
 
 function exportSquadManifest() {
@@ -956,7 +1042,7 @@ function exportSquadManifest() {
   document.body.appendChild(downloadAnchor);
   downloadAnchor.click();
   downloadAnchor.remove();
-  showToast("Squad Manifest downloaded!", "📦");
+  showToast("Squad manifest downloaded.");
 }
 
 // ==========================================
@@ -971,7 +1057,7 @@ async function refreshSquadsDirectory() {
       const badgeElem = document.getElementById("tabSquadBadge");
       const statElem = document.getElementById("statActiveSquads");
       if (badgeElem) badgeElem.textContent = data.squads.length;
-      if (statElem) statElem.textContent = `${data.squads.length} Active`;
+      if (statElem) statElem.textContent = data.squads.length;
     }
   } catch (err) {
     console.error("Directory fetch error:", err);
@@ -984,9 +1070,9 @@ function renderSquadsDirectory(squads) {
 
   if (squads.length === 0) {
     grid.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px;">
-        <h3 style="color: #0f172a;">No squads formed yet</h3>
-        <p style="color: #64748b;">Be the pioneer! Form the very first 4-member squad.</p>
+      <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px; background: #ffffff; border-radius: 14px; border: 1px dashed var(--comm-border);">
+        <h3 style="color: #0f172a; font-size: 16px;">No Squads Formed Yet</h3>
+        <p style="color: #64748b; font-size: 13.5px; margin-top: 4px;">Be the first! Form a 4-member squad for your capstone.</p>
       </div>
     `;
     return;
@@ -1000,42 +1086,40 @@ function renderSquadsDirectory(squads) {
 
     return `
       <div class="squad-dir-card">
-        <div class="squad-dir-header">
+        <div class="squad-dir-top">
           <div>
             <div class="squad-dir-name">${escapeHtml(s.squad_name)}</div>
-            <div style="font-size: 13px; color: var(--comm-sky); font-weight: 700; margin-top: 2px;">
-              🎯 ${escapeHtml(s.track_name)}
-            </div>
+            <div class="squad-dir-track">${escapeHtml(s.track_name)}</div>
           </div>
-          <span style="font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 6px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0;">
-            ${s.stage === 'final_year' ? 'Final Year' : '12th Pass'}
+          <span style="font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: #f1f5f9; color: #475569;">
+            ${s.stage === 'final_year' ? 'Final Year' : 'Class 12th'}
           </span>
         </div>
 
-        <div style="font-size: 13px; color: #64748b; margin: 8px 0;">
-          👑 Leader: <strong>${escapeHtml(s.created_by_username)}</strong>
+        <div style="font-size: 12.5px; color: #64748b; margin: 4px 0 10px;">
+          Lead: <strong style="color: #0f172a;">${escapeHtml(s.created_by_username)}</strong>
         </div>
 
         <div class="seats-progress-bar">
           <div class="seats-fill" style="width: ${pct}%;"></div>
         </div>
         <div class="seats-status-text">
-          <span>${count} / ${max} Seats Filled</span>
-          <span style="color: ${isOpen ? 'var(--comm-teal)' : '#64748b'}; font-weight: 700;">
-            ${isOpen ? `⚡ ${s.open_seats} Open Seat` : '🔒 Pod Full'}
+          <span>${count} of ${max} Seats Occupied</span>
+          <span style="color: ${isOpen ? '#0f766e' : '#64748b'}; font-weight: 600;">
+            ${isOpen ? `${s.open_seats} Open Seat` : 'Full'}
           </span>
         </div>
 
-        <div style="font-size: 13px; color: #78350f; background: #fffbeb; padding: 10px 12px; border-radius: 8px; margin-bottom: 16px; border-left: 3px solid #b45309;">
+        <div class="squad-goal-snippet">
           ${escapeHtml(s.sprint_goal || "Sprint 1: Architecture & System Setup")}
         </div>
 
         <div style="display: flex; gap: 8px; margin-top: auto;">
-          <button class="btn btn--solid" style="flex: 1; padding: 9px; font-size: 12.5px;" onclick="openJoinSquadModal('${s.invite_code}')" ${!isOpen ? 'disabled style="opacity: 0.5;"' : ''}>
+          <button class="btn-secondary" style="flex: 1; padding: 8px;" onclick="openJoinSquadModal('${s.invite_code}')" ${!isOpen ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
             ${isOpen ? `Claim Open Seat (${s.invite_code})` : 'Squad Full'}
           </button>
-          <button class="btn-peer-view" style="padding: 9px 12px;" onclick="copySquadCode('${s.invite_code}')" title="Copy Code">
-            📋
+          <button class="btn-icon-subtle" onclick="copySquadCode('${s.invite_code}')" title="Copy Code">
+            ${ICONS.copy}
           </button>
         </div>
       </div>
@@ -1051,72 +1135,71 @@ async function openPeerModal(peerId) {
   const content = document.getElementById("peerModalContent");
   if (!modal || !content) return;
 
-  content.innerHTML = `<div style="text-align:center; padding: 40px; color: #94a3b8;">Loading engineer profile...</div>`;
+  content.innerHTML = `<div style="text-align:center; padding: 40px; color: #94a3b8;">Loading profile...</div>`;
   modal.classList.add("open");
 
   try {
     const res = await fetch(`/api/community/user/${peerId}`);
     const u = await res.json();
     if (!res.ok) {
-      content.innerHTML = `<div style="color: #f87171;">Could not load profile.</div>`;
+      content.innerHTML = `<div style="color: #ef4444;">Could not load profile.</div>`;
       return;
     }
 
-    const stageText = u.stage === "final_year" ? "Final Year Student" : "Class 12th Pass Graduate";
+    const stageText = u.stage === "final_year" ? "Final Year Student" : "Class 12th Graduate";
+    const initials = getInitials(u.full_name);
+    const color = getAvatarColor(u.full_name, u.avatar_color);
 
     content.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
-        <div style="width: 64px; height: 64px; border-radius: 16px; background-color: ${u.avatar_color || '#0d9488'}; display: flex; align-items: center; justify-content: center; font-size: 32px;">
-          ${u.avatar_emoji || '🚀'}
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 18px;">
+        <div style="width: 52px; height: 52px; border-radius: 12px; background-color: ${color}; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #ffffff;">
+          ${initials}
         </div>
         <div>
-          <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 800; color: #0f172a; line-height: 1.2;">
+          <h2 style="font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 20px; font-weight: 700; color: #0f172a; line-height: 1.25; margin: 0;">
             ${escapeHtml(u.full_name)}
           </h2>
-          <div style="font-size: 14px; color: #64748b; font-weight: 600;">@${escapeHtml(u.username)}</div>
-          <span style="display: inline-block; margin-top: 4px; font-size: 11.5px; font-weight: 700; background: var(--comm-teal-light); color: var(--comm-teal); border: 1px solid var(--comm-teal-border); padding: 3px 8px; border-radius: 6px;">
-            ${stageText}
-          </span>
+          <div style="font-size: 13px; color: #64748b; font-weight: 500;">@${escapeHtml(u.username)} • ${stageText}</div>
         </div>
       </div>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-        <div style="background: #f8fafc; border: 1px solid var(--comm-border); padding: 12px; border-radius: 10px;">
-          <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Target Role</div>
-          <div style="font-size: 14px; color: var(--comm-sky); font-weight: 700; margin-top: 2px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px;">
+        <div style="background: #f8fafc; border: 1px solid var(--comm-border); padding: 10px 12px; border-radius: 8px;">
+          <div style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase;">Focus Role</div>
+          <div style="font-size: 13px; color: #0284c7; font-weight: 600; margin-top: 2px;">
             ${escapeHtml(u.target_role || "Engineering Track")}
           </div>
         </div>
-        <div style="background: #f8fafc; border: 1px solid var(--comm-border); padding: 12px; border-radius: 10px;">
-          <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Stream / Major</div>
-          <div style="font-size: 14px; color: #0f172a; font-weight: 700; margin-top: 2px;">
+        <div style="background: #f8fafc; border: 1px solid var(--comm-border); padding: 10px 12px; border-radius: 8px;">
+          <div style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase;">Academic Degree</div>
+          <div style="font-size: 13px; color: #0f172a; font-weight: 600; margin-top: 2px;">
             ${escapeHtml(u.stream_or_degree || "Technical Sciences")}
           </div>
         </div>
       </div>
 
-      <div style="margin-bottom: 20px;">
-        <div style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Bio</div>
-        <p style="font-size: 14px; color: #334155; line-height: 1.6; margin: 0;">
+      <div style="margin-bottom: 16px;">
+        <div style="font-size: 11.5px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 4px;">Bio</div>
+        <p style="font-size: 13.5px; color: #334155; line-height: 1.55; margin: 0;">
           ${escapeHtml(u.bio || "No bio provided.")}
         </p>
       </div>
 
-      <div style="margin-bottom: 24px;">
-        <div style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 8px;">Core Interests (${u.interests.length})</div>
-        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-          ${u.interests.map(i => `<span class="shared-tag" style="font-size: 12px; padding: 4px 10px;">${escapeHtml(i)}</span>`).join("")}
+      <div style="margin-bottom: 22px;">
+        <div style="font-size: 11.5px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Skills &amp; Interests (${u.interests.length})</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+          ${u.interests.map(i => `<span class="tag-shared" style="cursor: default;">${escapeHtml(i)}</span>`).join("")}
         </div>
       </div>
 
-      <div style="display: flex; gap: 10px;">
-        <button class="btn btn--solid" style="flex: 1; padding: 12px;" onclick="handlePeerInviteClick(${u.id}, '${escapeHtml(u.username)}')">
-          Invite to My Squad &rarr;
+      <div style="display: flex; gap: 8px;">
+        <button class="btn btn--solid" style="flex: 1; padding: 10px; font-size: 13px;" onclick="handlePeerInviteClick(${u.id}, '${escapeHtml(u.username)}')">
+          Invite to Squad &rarr;
         </button>
       </div>
     `;
   } catch (err) {
-    content.innerHTML = `<div style="color: #f87171;">Network error fetching profile.</div>`;
+    content.innerHTML = `<div style="color: #ef4444;">Network error fetching profile.</div>`;
   }
 }
 
@@ -1136,28 +1219,20 @@ function closeAuthModal() {
 }
 
 function switchAuthTab(tab) {
-  const signInBtn = document.getElementById("authTabSignInBtn");
-  const signUpBtn = document.getElementById("authTabSignUpBtn");
+  const isSignIn = tab === 'signin';
+  document.getElementById("authTabSignInBtn")?.classList.toggle("active", isSignIn);
+  document.getElementById("authTabSignUpBtn")?.classList.toggle("active", !isSignIn);
+
   const signInForm = document.getElementById("signInForm");
   const signUpForm = document.getElementById("signUpForm");
-
-  if (tab === 'signin') {
-    signInBtn?.classList.add("active");
-    signUpBtn?.classList.remove("active");
-    if (signInForm) signInForm.style.display = "block";
-    if (signUpForm) signUpForm.style.display = "none";
-  } else {
-    signUpBtn?.classList.add("active");
-    signInBtn?.classList.remove("active");
-    if (signUpForm) signUpForm.style.display = "block";
-    if (signInForm) signInForm.style.display = "none";
-  }
+  if (signInForm) signInForm.style.display = isSignIn ? "block" : "none";
+  if (signUpForm) signUpForm.style.display = isSignIn ? "none" : "block";
 }
 
 function openCreateSquadModal() {
   if (!STATE.token) {
     openAuthModal("signin");
-    showToast("Please sign in to form a squad.", "🔒");
+    showToast("Please sign in to form a squad.");
     return;
   }
   document.getElementById("createSquadModal")?.classList.add("open");
@@ -1167,16 +1242,12 @@ function closeCreateSquadModal() {
   document.getElementById("createSquadModal")?.classList.remove("open");
 }
 
-function openJoinSquadModal(prefillCode = "") {
-  if (!STATE.token) {
-    openAuthModal("signin");
-    showToast("Please sign in to join a squad.", "🔒");
-    return;
-  }
+function openJoinSquadModal(prefillCode = '') {
   const modal = document.getElementById("joinSquadModal");
+  if (!modal) return;
   const input = document.getElementById("joinCodeInput");
   if (input && prefillCode) input.value = prefillCode;
-  modal?.classList.add("open");
+  modal.classList.add("open");
 }
 
 function closeJoinSquadModal() {
@@ -1190,25 +1261,29 @@ function openMyProfileModal() {
 }
 
 // Toast
-function showToast(text, icon = "✨") {
-  const notice = document.getElementById("toastNotice");
-  const iconElem = document.getElementById("toastIcon");
+function showToast(text, type = "success") {
+  const toast = document.getElementById("toastNotice");
   const textElem = document.getElementById("toastText");
-  if (!notice) return;
+  const iconElem = document.getElementById("toastIcon");
+  if (!toast || !textElem) return;
 
-  if (iconElem) iconElem.textContent = icon;
-  if (textElem) textElem.textContent = text;
+  textElem.textContent = text;
+  if (iconElem) {
+    iconElem.innerHTML = type === "error" 
+      ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`
+      : ICONS.check;
+  }
 
-  notice.classList.add("show");
+  toast.classList.add("show");
   setTimeout(() => {
-    notice.classList.remove("show");
-  }, 4000);
+    toast.classList.remove("show");
+  }, 3200);
 }
 
-// Utilities
-function escapeHtml(text) {
-  if (!text) return "";
-  return String(text)
+// Helpers
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -1216,12 +1291,12 @@ function escapeHtml(text) {
     .replace(/'/g, "&#039;");
 }
 
-function formatTime(isoStr) {
-  if (!isoStr) return "";
+function formatTime(isoString) {
+  if (!isoString) return "";
   try {
-    const d = new Date(isoStr.replace(" ", "T"));
+    const d = new Date(isoString);
     return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   } catch (e) {
-    return isoStr;
+    return "";
   }
 }

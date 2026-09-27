@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FutureEra Community — Peer Matchmaking & 4-Member Squads</title>
+  <title>Student Community &amp; Project Squads — FutureEra</title>
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/css/style.css?v=26" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css?v=27" />
   <style>
     /* ===================================================
-       FUTUREERA COMMUNITY & 4-MEMBER SQUAD WAR ROOM
-       Aligned with First Page Architectural Theme
+       FUTUREERA COMMUNITY & PROJECT SQUADS
+       Human-crafted SaaS Engineering Aesthetic
        =================================================== */
     :root {
       --comm-teal: #0f766e;
@@ -21,19 +21,22 @@
       --comm-teal-border: #ccfbf1;
       --comm-amber: #b45309;
       --comm-amber-light: #fffbeb;
+      --comm-amber-border: #fef3c7;
       --comm-sky: #0284c7;
-      --comm-sky-light: #e0f2fe;
+      --comm-sky-light: #f0f9ff;
+      --comm-sky-border: #e0f2fe;
       --comm-text-dark: #0f172a;
       --comm-text-body: #334155;
-      --comm-text-muted: #475569;
+      --comm-text-muted: #64748b;
       --comm-border: #e2e8f0;
       --comm-border-strong: #cbd5e1;
       --comm-card-bg: #ffffff;
-      --comm-shadow-card: 0 4px 20px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.03);
-      --comm-shadow-hover: 0 12px 30px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.04);
+      --comm-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+      --comm-shadow-card: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 14px rgba(15, 23, 42, 0.02);
+      --comm-shadow-hover: 0 8px 24px rgba(15, 23, 42, 0.06), 0 2px 6px rgba(15, 23, 42, 0.03);
     }
 
-    /* MATCH MAIN PAGE EXACT BACKGROUND */
+    /* PRESERVE EXACT MAIN PAGE BACKGROUND - DO NOT CHANGE */
     body {
       background-color: var(--bg-base);
       background-image: 
@@ -45,68 +48,68 @@
       background-attachment: fixed;
       color: var(--comm-text-body);
       min-height: 100vh;
-      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-      line-height: 1.6;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* Top Header */
+    /* Header Nav */
     .app-header {
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.94);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--comm-border);
-      padding: 14px 6vw;
+      padding: 13px 6vw;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
     }
 
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 6px;
     }
 
     .nav-link {
       color: var(--comm-text-muted);
       text-decoration: none;
       font-size: 13.5px;
-      font-weight: 600;
-      transition: all 0.2s ease;
+      font-weight: 500;
+      transition: all 0.18s ease;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
       padding: 6px 14px;
-      border-radius: 8px;
+      border-radius: 999px;
     }
 
     .nav-link:hover {
       color: var(--comm-text-dark);
-      background: rgba(0, 0, 0, 0.04);
+      background: rgba(15, 23, 42, 0.04);
     }
 
     .nav-link.active {
       color: var(--comm-teal);
       background: var(--comm-teal-light);
       border: 1px solid var(--comm-teal-border);
-      font-weight: 700;
+      font-weight: 600;
     }
 
     @media (max-width: 860px) {
       .app-header {
         padding: 12px 18px;
         flex-wrap: wrap;
-        gap: 12px;
+        gap: 10px;
       }
       .nav-links {
         order: 3;
         width: 100%;
         justify-content: center;
-        gap: 6px;
+        gap: 4px;
         overflow-x: auto;
         padding-top: 4px;
         -webkit-overflow-scrolling: touch;
@@ -126,136 +129,124 @@
 
     .user-pill-btn {
       background: #ffffff;
-      border: 1.5px solid var(--comm-border-strong);
+      border: 1px solid var(--comm-border-strong);
       color: var(--comm-text-dark);
       border-radius: 999px;
-      padding: 6px 16px 6px 10px;
+      padding: 4px 12px 4px 5px;
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 600;
       display: inline-flex;
       align-items: center;
       gap: 8px;
       cursor: pointer;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-      transition: all 0.2s ease;
+      box-shadow: var(--comm-shadow-sm);
+      transition: all 0.18s ease;
     }
 
     .user-pill-btn:hover {
       border-color: var(--comm-teal);
-      box-shadow: 0 3px 10px rgba(15, 118, 110, 0.15);
-      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(15, 118, 110, 0.12);
     }
 
-    .user-avatar-sm {
+    .user-avatar-initials-sm {
       width: 26px;
       height: 26px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 13px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.02em;
     }
 
     /* Hero Section */
     .comm-hero {
-      padding: 48px 24px 24px;
-      max-width: 1200px;
+      padding: 44px 24px 20px;
+      max-width: 1060px;
       margin: 0 auto;
       text-align: center;
     }
 
-    .comm-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--comm-teal-light);
-      border: 1px solid var(--comm-teal-border);
-      color: var(--comm-teal);
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 6px 16px;
-      border-radius: 999px;
-      margin-bottom: 18px;
-    }
-
     .comm-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(32px, 4.5vw, 50px);
-      font-weight: 800;
-      line-height: 1.15;
-      letter-spacing: -0.03em;
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      font-size: clamp(30px, 4vw, 44px);
+      font-weight: 700;
+      line-height: 1.18;
+      letter-spacing: -0.025em;
       color: var(--comm-text-dark);
-      margin-bottom: 14px;
-    }
-
-    .comm-title-highlight {
-      background: linear-gradient(135deg, #0f766e 0%, #0284c7 50%, #b45309 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
     }
 
     .comm-subtitle {
-      font-size: clamp(15px, 2vw, 17.5px);
+      font-size: clamp(15px, 1.8vw, 17px);
       color: var(--comm-text-muted);
-      max-width: 760px;
-      margin: 0 auto 34px;
+      max-width: 700px;
+      margin: 0 auto 24px;
       line-height: 1.6;
     }
 
-    /* Stats Bar */
-    .comm-stats-bar {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      max-width: 980px;
-      margin: 0 auto 36px;
-    }
-
-    .stat-card {
+    /* Clean Metadata Ribbon */
+    .comm-meta-ribbon {
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
       background: #ffffff;
       border: 1px solid var(--comm-border);
-      border-radius: 16px;
-      padding: 16px 20px;
-      text-align: left;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      box-shadow: 0 4px 15px rgba(15, 23, 42, 0.03);
+      border-radius: 999px;
+      padding: 6px 20px;
+      font-size: 13px;
+      color: var(--comm-text-muted);
+      box-shadow: var(--comm-shadow-sm);
+      margin-bottom: 30px;
     }
 
-    .stat-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      background: #f8fafc;
-      border: 1px solid var(--comm-border);
-      display: flex;
+    .meta-item {
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      font-size: 20px;
+      gap: 6px;
     }
 
-    .stat-value {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 22px;
-      font-weight: 800;
+    .meta-item strong {
       color: var(--comm-text-dark);
-      line-height: 1.1;
-    }
-
-    .stat-label {
-      font-size: 12px;
-      color: #64748b;
       font-weight: 600;
-      margin-top: 3px;
     }
 
-    /* Community Tabs */
+    .meta-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #94a3b8;
+      display: inline-block;
+    }
+
+    .meta-dot.green { background: #10b981; }
+    .meta-dot.teal { background: #0f766e; }
+    .meta-dot.blue { background: #0284c7; }
+    .meta-dot.amber { background: #d97706; }
+
+    .meta-divider {
+      color: #cbd5e1;
+      user-select: none;
+    }
+
+    @media (max-width: 640px) {
+      .comm-meta-ribbon {
+        border-radius: 12px;
+        padding: 10px 14px;
+        gap: 8px;
+      }
+      .meta-divider { display: none; }
+      .meta-item { width: 48%; justify-content: flex-start; }
+    }
+
+    /* Community Segmented Tabs */
     .comm-tabs-wrap {
-      max-width: 1200px;
-      margin: 0 auto 32px;
+      max-width: 1140px;
+      margin: 0 auto 28px;
       padding: 0 20px;
     }
 
@@ -263,12 +254,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 6px;
       background: #ffffff;
       border: 1px solid var(--comm-border);
-      padding: 6px;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+      padding: 5px;
+      border-radius: 12px;
+      box-shadow: var(--comm-shadow-sm);
       width: fit-content;
       margin: 0 auto;
     }
@@ -276,13 +267,13 @@
     .comm-tab-btn {
       background: transparent;
       border: none;
-      color: #64748b;
-      font-size: 14px;
-      font-weight: 700;
-      padding: 10px 22px;
-      border-radius: 12px;
+      color: var(--comm-text-muted);
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 8px 18px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.18s ease;
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -296,113 +287,59 @@
     .comm-tab-btn.active {
       background: var(--comm-teal);
       color: #ffffff;
-      box-shadow: 0 4px 14px rgba(15, 118, 110, 0.3);
+      box-shadow: 0 1px 3px rgba(15, 118, 110, 0.25);
     }
 
     .tab-badge {
       font-size: 11px;
-      font-weight: 800;
+      font-weight: 600;
       padding: 2px 7px;
       border-radius: 999px;
-      background: #e2e8f0;
-      color: #334155;
+      background: #f1f5f9;
+      color: #475569;
     }
 
     .comm-tab-btn.active .tab-badge {
-      background: rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.22);
       color: #ffffff;
     }
 
     .tab-view {
       display: none;
-      max-width: 1200px;
+      max-width: 1140px;
       margin: 0 auto;
       padding: 0 20px 80px;
-      animation: fadeIn 0.3s ease;
+      animation: fadeIn 0.25s ease;
     }
 
     .tab-view.active {
       display: block;
     }
 
-    /* TAB 1: MATCHMAKING SIMULATOR & FILTERS */
-    .match-simulator-box {
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* DIRECTORY FILTER CARD */
+    .directory-filter-card {
       background: #ffffff;
       border: 1px solid var(--comm-border);
-      border-radius: 18px;
-      padding: 24px;
-      margin-bottom: 26px;
-      box-shadow: var(--comm-shadow-card);
-    }
-
-    .match-sim-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .match-sim-title {
-      font-size: 16px;
-      font-weight: 800;
-      color: var(--comm-text-dark);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .match-sim-desc {
-      font-size: 13.5px;
-      color: var(--comm-text-muted);
-      margin-bottom: 14px;
-    }
-
-    .interest-chips-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .interest-chip {
-      background: #f8fafc;
-      border: 1px solid var(--comm-border);
-      color: var(--comm-text-body);
-      padding: 7px 14px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      user-select: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .interest-chip:hover {
-      border-color: var(--comm-teal);
-      background: var(--comm-teal-light);
-      color: var(--comm-teal);
-    }
-
-    .interest-chip.selected {
-      background: var(--comm-teal);
-      border-color: var(--comm-teal);
-      color: #ffffff;
-      box-shadow: 0 2px 8px rgba(15, 118, 110, 0.28);
-      font-weight: 700;
-    }
-
-    /* Search & Filter Bar */
-    .filter-controls-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      flex-wrap: wrap;
+      border-radius: 14px;
+      padding: 16px 20px;
       margin-bottom: 24px;
+      box-shadow: var(--comm-shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .filter-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     .search-input-wrap {
@@ -413,48 +350,67 @@
 
     .search-input-wrap input {
       width: 100%;
-      background: #ffffff;
-      border: 1.5px solid var(--comm-border-strong);
-      border-radius: 12px;
-      padding: 12px 16px 12px 42px;
+      background: #f8fafc;
+      border: 1px solid var(--comm-border-strong);
+      border-radius: 9px;
+      padding: 10px 36px 10px 38px;
       color: var(--comm-text-dark);
-      font-size: 14px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-      transition: all 0.2s ease;
+      font-size: 13.5px;
+      font-family: inherit;
+      transition: all 0.18s ease;
+      box-sizing: border-box;
     }
 
     .search-input-wrap input:focus {
       outline: none;
+      background: #ffffff;
       border-color: var(--comm-teal);
-      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
     }
 
     .search-icon {
       position: absolute;
-      left: 14px;
+      left: 13px;
       top: 50%;
       transform: translateY(-50%);
       color: #94a3b8;
       pointer-events: none;
     }
 
-    .filter-dropdowns {
+    .clear-search-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 16px;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .clear-search-btn:hover { color: #0f172a; }
+
+    .filter-selects {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
     .filter-select {
       background: #ffffff;
-      border: 1.5px solid var(--comm-border-strong);
-      border-radius: 12px;
-      padding: 11px 16px;
+      border: 1px solid var(--comm-border-strong);
+      border-radius: 9px;
+      padding: 9px 14px;
       color: var(--comm-text-dark);
-      font-size: 13.5px;
-      font-weight: 600;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: inherit;
       cursor: pointer;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+      transition: border-color 0.18s ease;
     }
 
     .filter-select:focus {
@@ -462,252 +418,352 @@
       border-color: var(--comm-teal);
     }
 
+    /* Skill Filter Row */
+    .filter-tags-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding-top: 10px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .filter-tags-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--comm-text-muted);
+      white-space: nowrap;
+    }
+
+    .filter-pills-list {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      overflow-x: auto;
+    }
+
+    .skill-pill-btn {
+      background: #f8fafc;
+      border: 1px solid var(--comm-border);
+      color: #475569;
+      font-size: 12px;
+      font-weight: 500;
+      font-family: inherit;
+      padding: 4px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .skill-pill-btn:hover {
+      background: #ffffff;
+      border-color: var(--comm-teal);
+      color: var(--comm-teal);
+    }
+
+    .skill-pill-btn.active {
+      background: #0f766e;
+      border-color: #0f766e;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
     /* Peers Grid */
     .peers-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 22px;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
     }
 
     .peer-card {
       background: #ffffff;
       border: 1px solid var(--comm-border);
-      border-radius: 18px;
-      padding: 24px;
+      border-radius: 14px;
+      padding: 22px;
       position: relative;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       flex-direction: column;
       box-shadow: var(--comm-shadow-card);
     }
 
     .peer-card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-2px);
       box-shadow: var(--comm-shadow-hover);
       border-color: var(--comm-border-strong);
     }
 
     .peer-card.strong-match {
-      border: 1.5px solid var(--comm-teal);
-      background: linear-gradient(180deg, #ffffff 0%, #f0fdfa 100%);
-      box-shadow: 0 8px 25px rgba(15, 118, 110, 0.09);
+      border-color: #99f6e4;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdfd 100%);
     }
 
-    .match-banner-tag {
-      position: absolute;
-      top: 18px;
-      right: 18px;
-      font-size: 11.5px;
-      font-weight: 800;
-      padding: 4px 10px;
-      border-radius: 999px;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .match-banner-tag.strong {
-      background: var(--comm-teal-light);
-      border: 1px solid #99f6e4;
-      color: var(--comm-teal);
-    }
-
-    .match-banner-tag.partial {
-      background: #f8fafc;
-      border: 1px solid var(--comm-border);
-      color: #64748b;
+    /* Top Row of Peer Card */
+    .peer-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
     }
 
     .peer-header {
       display: flex;
       align-items: center;
-      gap: 14px;
-      margin-bottom: 14px;
-      padding-right: 90px;
+      gap: 12px;
     }
 
-    .peer-avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 14px;
+    .peer-avatar-initials {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.01em;
       flex-shrink: 0;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+      position: relative;
     }
 
-    .peer-info-title {
-      font-size: 17px;
-      font-weight: 800;
+    .peer-status-dot {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #10b981;
+      border: 2px solid #ffffff;
+    }
+
+    .peer-name-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .peer-full-name {
+      font-size: 15.5px;
+      font-weight: 700;
       color: var(--comm-text-dark);
-      line-height: 1.2;
+      line-height: 1.25;
     }
 
-    .peer-username {
-      font-size: 13px;
-      color: #64748b;
-      font-weight: 600;
-    }
-
-    .peer-stage-badge {
-      font-size: 11px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 6px;
-      background: #f1f5f9;
+    .peer-meta-sub {
+      font-size: 12.5px;
       color: var(--comm-text-muted);
-      display: inline-block;
-      margin-top: 4px;
-    }
-
-    .peer-target-role {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--comm-sky);
-      margin-bottom: 6px;
+      margin-top: 2px;
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    .peer-degree {
-      font-size: 13px;
-      color: #64748b;
-      margin-bottom: 12px;
+    .peer-stage-tag {
+      font-size: 11px;
+      font-weight: 600;
+      background: #f1f5f9;
+      color: #475569;
+      padding: 1px 6px;
+      border-radius: 4px;
     }
 
-    .peer-bio {
-      font-size: 13.5px;
+    /* Match Pill */
+    .peer-match-pill {
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      background: #f8fafc;
+      border: 1px solid var(--comm-border);
+      color: var(--comm-text-muted);
+    }
+
+    .peer-match-pill.strong {
+      background: #f0fdfa;
+      border-color: #ccfbf1;
+      color: #0f766e;
+    }
+
+    .match-indicator-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+    }
+
+    .match-indicator-dot.muted {
+      background: #0284c7;
+    }
+
+    /* Peer Details */
+    .peer-detail-line {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      font-size: 13px;
+      margin-bottom: 6px;
       color: var(--comm-text-body);
-      line-height: 1.55;
-      margin-bottom: 16px;
+    }
+
+    .peer-detail-label {
+      color: var(--comm-text-muted);
+      font-weight: 500;
+      font-size: 12px;
+      min-width: 48px;
+    }
+
+    .peer-role-text {
+      color: #0284c7;
+      font-weight: 600;
+    }
+
+    .peer-degree-text {
+      color: var(--comm-text-dark);
+      font-weight: 500;
+    }
+
+    .peer-bio-text {
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.5;
+      margin: 10px 0 16px;
       flex: 1;
     }
 
-    .shared-interests-block {
+    /* Skills Box */
+    .peer-skills-block {
       background: #f8fafc;
-      border: 1px solid var(--comm-border);
-      border-radius: 12px;
-      padding: 10px 14px;
-      margin-bottom: 18px;
+      border: 1px solid #f1f5f9;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 16px;
     }
 
-    .shared-interests-label {
-      font-size: 11.5px;
-      font-weight: 700;
-      color: #64748b;
+    .peer-skills-header {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--comm-text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
       margin-bottom: 6px;
       display: flex;
-      align-items: center;
+      justify-content: space-between;
+    }
+
+    .peer-skills-tags {
+      display: flex;
+      flex-wrap: wrap;
       gap: 5px;
     }
 
-    .shared-interests-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .shared-tag {
-      font-size: 11.5px;
-      font-weight: 700;
+    .tag-shared {
+      font-size: 11px;
+      font-weight: 600;
       padding: 3px 8px;
       border-radius: 6px;
-      background: var(--comm-teal-light);
-      border: 1px solid #99f6e4;
-      color: var(--comm-teal);
+      background: #f0fdfa;
+      border: 1px solid #ccfbf1;
+      color: #0f766e;
+      cursor: pointer;
+      transition: all 0.15s ease;
     }
 
-    .other-tag {
-      font-size: 11.5px;
-      font-weight: 600;
+    .tag-shared:hover {
+      background: #0f766e;
+      color: #ffffff;
+    }
+
+    .tag-other {
+      font-size: 11px;
+      font-weight: 500;
       padding: 3px 8px;
       border-radius: 6px;
       background: #ffffff;
       border: 1px solid var(--comm-border);
-      color: #64748b;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.15s ease;
     }
 
+    .tag-other:hover {
+      border-color: #94a3b8;
+      color: #0f172a;
+    }
+
+    /* Actions */
     .peer-card-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       margin-top: auto;
     }
 
-    .btn-peer-view {
+    .btn-secondary {
       flex: 1;
-      background: #f8fafc;
-      border: 1.5px solid var(--comm-border-strong);
+      background: #ffffff;
+      border: 1px solid var(--comm-border-strong);
       color: var(--comm-text-dark);
-      padding: 9px 12px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 700;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      font-family: inherit;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.18s ease;
       text-align: center;
     }
 
-    .btn-peer-view:hover {
-      background: #ffffff;
+    .btn-secondary:hover {
+      background: #f8fafc;
       border-color: var(--comm-teal);
       color: var(--comm-teal);
     }
 
-    .btn-peer-invite {
+    .btn-primary-action {
       background: var(--comm-teal);
       border: 1px solid var(--comm-teal);
       color: #ffffff;
-      padding: 9px 16px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      font-family: inherit;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.18s ease;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      box-shadow: 0 2px 8px rgba(15, 118, 110, 0.25);
     }
 
-    .btn-peer-invite:hover {
+    .btn-primary-action:hover {
       background: var(--comm-teal-hover);
-      box-shadow: 0 4px 14px rgba(15, 118, 110, 0.35);
     }
 
-    /* TAB 2: SQUAD WAR ROOM */
-    .squad-war-room-container {
+    /* TAB 2: SQUAD WORKSPACE */
+    .squad-workspace-layout {
       display: flex;
       flex-direction: column;
-      gap: 28px;
+      gap: 24px;
     }
 
-    .squad-header-card {
+    .squad-overview-card {
       background: #ffffff;
       border: 1px solid var(--comm-border);
-      border-radius: 20px;
-      padding: 28px;
+      border-radius: 16px;
+      padding: 24px 28px;
       box-shadow: var(--comm-shadow-card);
-      position: relative;
-      overflow: hidden;
     }
 
-    .squad-header-card::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, #0f766e, #0284c7, #b45309);
-    }
-
-    .squad-header-top {
+    .squad-top-meta {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
@@ -716,345 +772,362 @@
       margin-bottom: 20px;
     }
 
-    .squad-title-group h2 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 28px;
-      font-weight: 800;
-      color: var(--comm-text-dark);
-      margin-bottom: 6px;
+    .squad-title-row {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
-    .squad-track-badge {
-      font-size: 13px;
+    .squad-title-row h2 {
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      font-size: 24px;
       font-weight: 700;
+      color: var(--comm-text-dark);
+      margin: 0;
+    }
+
+    .squad-status-badge {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .squad-status-badge.open {
+      background: #fffbeb;
+      border: 1px solid #fef3c7;
+      color: #b45309;
+    }
+
+    .squad-status-badge.full {
+      background: #f0fdfa;
+      border: 1px solid #ccfbf1;
+      color: #0f766e;
+    }
+
+    .squad-tag-pill {
+      font-size: 12.5px;
+      font-weight: 600;
       color: var(--comm-teal);
       background: var(--comm-teal-light);
       border: 1px solid var(--comm-teal-border);
-      padding: 4px 10px;
+      padding: 3px 10px;
       border-radius: 6px;
       display: inline-block;
     }
 
-    .squad-invite-banner {
+    .squad-invite-block {
       background: #f8fafc;
-      border: 1.5px dashed var(--comm-teal);
-      border-radius: 14px;
-      padding: 12px 18px;
+      border: 1px solid var(--comm-border);
+      border-radius: 10px;
+      padding: 8px 14px;
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
-    .invite-code-pill {
+    .squad-code-val {
       font-family: 'Space Grotesk', monospace;
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: 0.1em;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
       color: var(--comm-teal);
-      background: var(--comm-teal-light);
-      padding: 4px 12px;
-      border-radius: 8px;
-      border: 1px solid #99f6e4;
+      background: #ffffff;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid #ccfbf1;
     }
 
-    .btn-copy-code {
+    .btn-icon-subtle {
       background: #ffffff;
-      border: 1.5px solid var(--comm-border-strong);
+      border: 1px solid var(--comm-border-strong);
       color: var(--comm-text-dark);
-      padding: 7px 14px;
-      border-radius: 8px;
-      font-size: 12.5px;
-      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
-    .btn-copy-code:hover {
+    .btn-icon-subtle:hover {
       background: var(--comm-teal-light);
       border-color: var(--comm-teal);
       color: var(--comm-teal);
     }
 
-    /* 4-SEAT POD GRID */
-    .pod-grid {
+    /* 4-Member Pod Grid */
+    .seats-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 18px;
-      margin-top: 10px;
+      gap: 16px;
+      margin-top: 14px;
     }
 
     @media (max-width: 900px) {
-      .pod-grid { grid-template-columns: repeat(2, 1fr); }
+      .seats-grid { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 550px) {
-      .pod-grid { grid-template-columns: 1fr; }
+      .seats-grid { grid-template-columns: 1fr; }
     }
 
-    .seat-card {
+    .member-seat-card {
       background: #f8fafc;
       border: 1px solid var(--comm-border);
-      border-radius: 16px;
-      padding: 20px 18px;
+      border-radius: 12px;
+      padding: 18px 16px;
       position: relative;
       display: flex;
       flex-direction: column;
-      transition: all 0.2s ease;
+      transition: all 0.18s ease;
     }
 
-    .seat-card.leader {
-      border: 1.5px solid #f59e0b;
-      background: #fffbeb;
+    .member-seat-card.lead {
+      border-color: #fde68a;
+      background: #fffdf7;
     }
 
-    .seat-role-pill {
+    .seat-role-badge {
       font-size: 10.5px;
-      font-weight: 800;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      padding: 3px 8px;
-      border-radius: 999px;
+      letter-spacing: 0.06em;
+      padding: 2px 7px;
+      border-radius: 4px;
       width: fit-content;
       margin-bottom: 12px;
     }
 
-    .seat-role-pill.leader {
+    .seat-role-badge.lead {
       background: #fef3c7;
-      border: 1px solid #fde68a;
       color: #92400e;
     }
 
-    .seat-role-pill.member {
+    .seat-role-badge.member {
       background: #e0f2fe;
-      border: 1px solid #bae6fd;
       color: #0369a1;
     }
 
-    .seat-avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
+    .seat-avatar-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .seat-avatar-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
-      margin-bottom: 10px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+      flex-shrink: 0;
     }
 
-    .seat-name {
-      font-size: 15px;
-      font-weight: 800;
+    .seat-name-text {
+      font-size: 14.5px;
+      font-weight: 700;
       color: var(--comm-text-dark);
       line-height: 1.2;
     }
 
-    .seat-user-tag {
+    .seat-handle-text {
       font-size: 12px;
-      color: #64748b;
-      margin-bottom: 8px;
+      color: var(--comm-text-muted);
     }
 
-    .seat-role-desc {
-      font-size: 12.5px;
+    .seat-role-focus {
+      font-size: 12px;
       font-weight: 600;
-      color: var(--comm-sky);
-      margin-bottom: 12px;
+      color: #0284c7;
+      margin: 6px 0 10px;
       line-height: 1.35;
     }
 
-    .seat-skills-list {
+    .seat-skills-pills {
       display: flex;
       flex-wrap: wrap;
       gap: 4px;
       margin-top: auto;
     }
 
-    .seat-skill-tag {
+    .seat-skill-item {
       font-size: 10.5px;
       padding: 2px 6px;
       border-radius: 4px;
       background: #ffffff;
       border: 1px solid var(--comm-border);
-      color: var(--comm-text-muted);
+      color: #475569;
     }
 
     /* Open Seat Card */
-    .seat-card.open-seat {
-      border: 1.5px dashed var(--comm-teal);
-      background: var(--comm-teal-light);
-      display: flex;
-      flex-direction: column;
+    .member-seat-card.open {
+      border: 1.5px dashed #cbd5e1;
+      background: #ffffff;
       align-items: center;
       justify-content: center;
       text-align: center;
-      min-height: 220px;
+      min-height: 200px;
       cursor: pointer;
     }
 
-    .seat-card.open-seat:hover {
-      background: #ccfbf1;
-      border-color: var(--comm-teal-hover);
-      box-shadow: 0 4px 16px rgba(15, 118, 110, 0.15);
+    .member-seat-card.open:hover {
+      border-color: var(--comm-teal);
+      background: #f0fdfa;
     }
 
-    .open-seat-icon {
-      width: 50px;
-      height: 50px;
+    .open-seat-plus-icon {
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
-      background: #ffffff;
-      border: 1.5px solid var(--comm-teal);
-      color: var(--comm-teal);
+      background: #f8fafc;
+      border: 1px solid var(--comm-border-strong);
+      color: #64748b;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
-      font-weight: 800;
-      margin-bottom: 12px;
-      animation: pulseGlow 2.5s infinite;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      transition: all 0.15s ease;
     }
 
-    @keyframes pulseGlow {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(15, 118, 110, 0); }
-      50% { transform: scale(1.06); box-shadow: 0 0 14px rgba(15, 118, 110, 0.25); }
+    .member-seat-card.open:hover .open-seat-plus-icon {
+      background: var(--comm-teal);
+      border-color: var(--comm-teal);
+      color: #ffffff;
     }
 
     .open-seat-title {
-      font-size: 15px;
-      font-weight: 800;
+      font-size: 14.5px;
+      font-weight: 700;
       color: var(--comm-text-dark);
       margin-bottom: 4px;
     }
 
-    .open-seat-desc {
+    .open-seat-sub {
       font-size: 12px;
       color: var(--comm-text-muted);
-      margin-bottom: 14px;
-      padding: 0 10px;
+      margin-bottom: 12px;
+      padding: 0 8px;
     }
 
-    .btn-claim-seat {
+    .btn-claim-pill {
       background: var(--comm-teal);
       color: #ffffff;
       border: none;
-      padding: 7px 16px;
-      border-radius: 8px;
+      padding: 6px 14px;
+      border-radius: 6px;
       font-size: 12px;
-      font-weight: 800;
+      font-weight: 600;
+      font-family: inherit;
       cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 6px rgba(15, 118, 110, 0.25);
     }
 
-    .btn-claim-seat:hover {
-      background: var(--comm-teal-hover);
-    }
-
-    /* Sprint & Tools Grid */
-    .squad-workspace-grid {
+    /* Workspace 2-Column Split (Goal/Tools & Chat) */
+    .workspace-split {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 22px;
+      gap: 20px;
     }
 
     @media (max-width: 900px) {
-      .squad-workspace-grid { grid-template-columns: 1fr; }
+      .workspace-split { grid-template-columns: 1fr; }
     }
 
-    .war-room-panel {
+    .workspace-card {
       background: #ffffff;
       border: 1px solid var(--comm-border);
-      border-radius: 18px;
+      border-radius: 16px;
       padding: 22px;
       box-shadow: var(--comm-shadow-card);
       display: flex;
       flex-direction: column;
     }
 
-    .panel-header {
+    .card-header-clean {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
-    .panel-title {
-      font-size: 16px;
-      font-weight: 800;
+    .card-heading {
+      font-size: 15px;
+      font-weight: 700;
       color: var(--comm-text-dark);
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .sprint-goal-display {
-      background: var(--comm-amber-light);
-      border-left: 3px solid var(--comm-amber);
-      border-radius: 0 10px 10px 0;
-      padding: 14px 18px;
+    .sprint-goal-box {
+      background: #fffdf5;
+      border-left: 3px solid #d97706;
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
       margin-bottom: 18px;
     }
 
-    .sprint-goal-text {
-      font-size: 15px;
+    .sprint-goal-content {
+      font-size: 14px;
       color: #78350f;
-      font-weight: 600;
+      font-weight: 500;
       line-height: 1.5;
     }
 
-    .collaboration-actions {
+    .tools-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
       gap: 10px;
     }
 
-    .collab-btn {
+    .tool-link-card {
       background: #f8fafc;
       border: 1px solid var(--comm-border);
       border-radius: 10px;
       padding: 12px;
       color: var(--comm-text-dark);
-      font-size: 13px;
-      font-weight: 700;
+      font-size: 12.5px;
+      font-weight: 600;
+      font-family: inherit;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 6px;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
       text-decoration: none;
     }
 
-    .collab-btn:hover {
+    .tool-link-card:hover {
       background: var(--comm-teal-light);
       border-color: var(--comm-teal);
       color: var(--comm-teal);
-      transform: translateY(-2px);
     }
 
-    /* Live Squad Chat Panel */
-    .chat-messages-container {
-      height: 320px;
+    /* Clean Messaging Thread */
+    .chat-scroll-area {
+      height: 300px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       padding-right: 6px;
-      margin-bottom: 14px;
-    }
-
-    .chat-messages-container::-webkit-scrollbar {
-      width: 6px;
-    }
-    .chat-messages-container::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.1);
-      border-radius: 4px;
+      margin-bottom: 12px;
     }
 
     .chat-msg-row {
@@ -1063,97 +1136,100 @@
       align-items: flex-start;
     }
 
-    .chat-msg-avatar {
-      width: 32px;
-      height: 32px;
+    .chat-sender-avatar {
+      width: 28px;
+      height: 28px;
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 15px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #ffffff;
       flex-shrink: 0;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     }
 
-    .chat-msg-content {
+    .chat-msg-bubble {
       background: #f8fafc;
       border: 1px solid var(--comm-border);
-      border-radius: 12px;
+      border-radius: 10px;
       padding: 8px 12px;
-      max-width: 85%;
+      max-width: 86%;
     }
 
-    .chat-msg-header {
+    .chat-meta-row {
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
 
-    .chat-msg-sender {
+    .chat-sender-name {
       font-size: 12px;
-      font-weight: 800;
-      color: var(--comm-teal);
+      font-weight: 700;
+      color: var(--comm-text-dark);
     }
 
-    .chat-msg-time {
-      font-size: 10.5px;
+    .chat-timestamp {
+      font-size: 11px;
       color: #94a3b8;
     }
 
-    .chat-msg-body {
-      font-size: 13.5px;
-      color: #1e293b;
+    .chat-text {
+      font-size: 13px;
+      color: #334155;
       line-height: 1.45;
       word-break: break-word;
     }
 
-    .chat-input-bar {
+    .chat-compose-form {
       display: flex;
       gap: 8px;
       margin-top: auto;
     }
 
-    .chat-input-bar input {
+    .chat-compose-form input {
       flex: 1;
-      background: #ffffff;
-      border: 1.5px solid var(--comm-border-strong);
-      border-radius: 10px;
-      padding: 10px 14px;
+      background: #f8fafc;
+      border: 1px solid var(--comm-border-strong);
+      border-radius: 8px;
+      padding: 9px 12px;
       color: var(--comm-text-dark);
-      font-size: 13.5px;
+      font-size: 13px;
+      font-family: inherit;
     }
 
-    .chat-input-bar input:focus {
+    .chat-compose-form input:focus {
       outline: none;
+      background: #ffffff;
       border-color: var(--comm-teal);
     }
 
-    .btn-send-chat {
+    .btn-send-message {
       background: var(--comm-teal);
       color: #ffffff;
       border: none;
-      border-radius: 10px;
-      padding: 0 16px;
-      font-weight: 800;
+      border-radius: 8px;
+      padding: 0 14px;
+      font-weight: 600;
+      font-size: 12.5px;
+      font-family: inherit;
       cursor: pointer;
-      transition: all 0.2s ease;
       display: flex;
       align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 6px rgba(15, 118, 110, 0.25);
+      gap: 5px;
     }
 
-    .btn-send-chat:hover {
+    .btn-send-message:hover {
       background: var(--comm-teal-hover);
     }
 
-    /* Not in Squad State */
+    /* Not In Squad State */
     .not-in-squad-state {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      max-width: 900px;
+      gap: 20px;
+      max-width: 840px;
       margin: 20px auto;
     }
 
@@ -1164,102 +1240,125 @@
     .action-join-card {
       background: #ffffff;
       border: 1px solid var(--comm-border);
-      border-radius: 18px;
-      padding: 32px 24px;
+      border-radius: 14px;
+      padding: 28px 24px;
       text-align: center;
       box-shadow: var(--comm-shadow-card);
       display: flex;
       flex-direction: column;
       align-items: center;
-      transition: all 0.25s ease;
+      transition: all 0.2s ease;
     }
 
     .action-join-card:hover {
       border-color: var(--comm-teal);
-      transform: translateY(-3px);
+      transform: translateY(-2px);
       box-shadow: var(--comm-shadow-hover);
     }
 
-    .action-join-icon {
-      width: 56px;
-      height: 56px;
-      border-radius: 16px;
+    .action-icon-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
       background: var(--comm-teal-light);
       border: 1px solid var(--comm-teal-border);
       color: var(--comm-teal);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 26px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .action-join-title {
-      font-size: 20px;
-      font-weight: 800;
+      font-size: 17px;
+      font-weight: 700;
       color: var(--comm-text-dark);
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .action-join-desc {
-      font-size: 13.5px;
+      font-size: 13px;
       color: var(--comm-text-muted);
       line-height: 1.5;
-      margin-bottom: 22px;
+      margin-bottom: 20px;
     }
 
     /* TAB 3: SQUAD DIRECTORY */
     .squads-dir-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 22px;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
     }
 
     .squad-dir-card {
       background: #ffffff;
       border: 1px solid var(--comm-border);
-      border-radius: 18px;
-      padding: 24px;
+      border-radius: 14px;
+      padding: 22px;
       box-shadow: var(--comm-shadow-card);
       display: flex;
       flex-direction: column;
-      position: relative;
+      transition: all 0.2s ease;
     }
 
-    .squad-dir-header {
+    .squad-dir-card:hover {
+      border-color: var(--comm-border-strong);
+      transform: translateY(-2px);
+      box-shadow: var(--comm-shadow-hover);
+    }
+
+    .squad-dir-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .squad-dir-name {
-      font-size: 19px;
-      font-weight: 800;
+      font-size: 17px;
+      font-weight: 700;
       color: var(--comm-text-dark);
     }
 
+    .squad-dir-track {
+      font-size: 13px;
+      color: #0284c7;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
     .seats-progress-bar {
-      height: 8px;
-      background: #e2e8f0;
+      height: 6px;
+      background: #f1f5f9;
       border-radius: 999px;
       overflow: hidden;
-      margin: 14px 0 8px;
+      margin: 12px 0 6px;
     }
 
     .seats-fill {
       height: 100%;
-      background: linear-gradient(90deg, #0f766e, #0284c7);
+      background: #0f766e;
       border-radius: 999px;
     }
 
     .seats-status-text {
       display: flex;
       justify-content: space-between;
-      font-size: 12px;
-      color: #64748b;
-      font-weight: 600;
+      font-size: 11.5px;
+      color: var(--comm-text-muted);
+      font-weight: 500;
+      margin-bottom: 14px;
+    }
+
+    .squad-goal-snippet {
+      font-size: 12.5px;
+      color: #78350f;
+      background: #fffdf5;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border-left: 2px solid #d97706;
       margin-bottom: 16px;
+      line-height: 1.45;
     }
 
     /* MODALS */
@@ -1267,14 +1366,14 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
       z-index: 9999;
       align-items: center;
       justify-content: center;
       padding: 20px;
-      animation: fadeIn 0.2s ease;
+      animation: fadeIn 0.18s ease;
     }
 
     .modal-backdrop.open {
@@ -1284,27 +1383,28 @@
     .modal-card {
       background: #ffffff;
       border: 1px solid var(--comm-border);
-      border-radius: 20px;
+      border-radius: 16px;
       width: 100%;
-      max-width: 520px;
+      max-width: 480px;
       max-height: 90vh;
       overflow-y: auto;
-      padding: 28px;
-      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.2);
+      padding: 26px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.16);
       position: relative;
       color: var(--comm-text-dark);
     }
 
     .modal-close-btn {
       position: absolute;
-      top: 20px;
-      right: 20px;
+      top: 18px;
+      right: 18px;
       background: transparent;
       border: none;
-      color: #64748b;
-      font-size: 22px;
+      color: #94a3b8;
+      font-size: 20px;
       cursor: pointer;
       line-height: 1;
+      padding: 4px;
     }
 
     .modal-close-btn:hover {
@@ -1312,43 +1412,44 @@
     }
 
     .form-group {
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .form-label {
       display: block;
-      font-size: 13px;
-      font-weight: 700;
+      font-size: 12.5px;
+      font-weight: 600;
       color: var(--comm-text-dark);
-      margin-bottom: 6px;
+      margin-bottom: 5px;
     }
 
     .form-input, .form-textarea, .form-select {
       width: 100%;
-      background: #ffffff;
-      border: 1.5px solid var(--comm-border-strong);
-      border-radius: 10px;
-      padding: 10px 14px;
+      background: #f8fafc;
+      border: 1px solid var(--comm-border-strong);
+      border-radius: 8px;
+      padding: 9px 12px;
       color: var(--comm-text-dark);
-      font-size: 14px;
-      transition: all 0.2s ease;
+      font-size: 13.5px;
+      font-family: inherit;
+      transition: all 0.15s ease;
       box-sizing: border-box;
     }
 
     .form-input:focus, .form-textarea:focus, .form-select:focus {
       outline: none;
+      background: #ffffff;
       border-color: var(--comm-teal);
-      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
     }
 
     .auth-tab-switch {
       display: flex;
-      gap: 8px;
+      gap: 4px;
       background: #f1f5f9;
-      border: 1px solid var(--comm-border);
+      border-radius: 8px;
       padding: 4px;
-      border-radius: 12px;
-      margin-bottom: 22px;
+      margin-bottom: 18px;
     }
 
     .auth-tab-btn {
@@ -1356,19 +1457,18 @@
       background: transparent;
       border: none;
       color: #64748b;
-      font-size: 13.5px;
-      font-weight: 700;
-      padding: 8px 12px;
-      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 7px 12px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
     }
 
     .auth-tab-btn.active {
       background: #ffffff;
       color: var(--comm-teal);
-      border: 1px solid var(--comm-teal-border);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
     }
 
     /* Toast */
@@ -1377,20 +1477,20 @@
       bottom: 24px;
       right: 24px;
       background: #0f172a;
-      border: 1px solid var(--comm-teal);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       color: #ffffff;
-      padding: 12px 20px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 500;
       display: flex;
       align-items: center;
-      gap: 10px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      gap: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
       z-index: 10000;
       transform: translateY(100px);
       opacity: 0;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .toast-notice.show {
@@ -1441,42 +1541,32 @@
   <!-- Hero Section -->
   <section class="comm-hero">
     <h1 class="comm-title">
-      Connect With Your Tribe.<br />
-      <span class="comm-title-highlight">Rule of 4 Squads.</span>
+      Project Teams &amp; Peer Matching
     </h1>
     <p class="comm-subtitle">
-      Stop building in isolation. Match with student engineers who share &ge; 2 core interests, assemble focused 4-member pods, and ship production capstones with real-time sprint collaboration.
+      Connect with peers who share your technical interests, collaborate on capstone milestones, and form focused 4-person project squads.
     </p>
 
-    <!-- Key Stats Bar -->
-    <div class="comm-stats-bar">
-      <div class="stat-card">
-        <div class="stat-icon" style="color: var(--comm-teal);">🎯</div>
-        <div>
-          <div class="stat-value" id="statMatchRate">&ge; 2 Overlap</div>
-          <div class="stat-label">Matchmaking Rule</div>
-        </div>
+    <!-- Clean Metadata Ribbon -->
+    <div class="comm-meta-ribbon">
+      <div class="meta-item">
+        <span class="meta-dot teal"></span>
+        <span><strong>4 Members</strong> max per squad</span>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="color: var(--comm-sky);">🛡️</div>
-        <div>
-          <div class="stat-value">Max 4 Seats</div>
-          <div class="stat-label">Pod Capacity Limit</div>
-        </div>
+      <div class="meta-divider">•</div>
+      <div class="meta-item">
+        <span class="meta-dot green"></span>
+        <span><strong>&ge; 2 shared skills</strong> for strong match</span>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="color: #6366f1;">👥</div>
-        <div>
-          <div class="stat-value" id="statTotalPeers">6 Active</div>
-          <div class="stat-label">Engineers in Pool</div>
-        </div>
+      <div class="meta-divider">•</div>
+      <div class="meta-item">
+        <span class="meta-dot blue"></span>
+        <span><strong><span id="statTotalPeers">7</span> Active</strong> students</span>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon" style="color: var(--comm-amber);">⚡</div>
-        <div>
-          <div class="stat-value" id="statActiveSquads">1 Forming</div>
-          <div class="stat-label">Active Sprint Squads</div>
-        </div>
+      <div class="meta-divider">•</div>
+      <div class="meta-item">
+        <span class="meta-dot amber"></span>
+        <span><strong><span id="statActiveSquads">2</span> Squads</strong> active</span>
       </div>
     </div>
   </section>
@@ -1485,70 +1575,62 @@
   <div class="comm-tabs-wrap">
     <div class="comm-tabs">
       <button class="comm-tab-btn active" onclick="switchCommTab('matchmaking')">
-        <span>🔍</span> Peer Matchmaking
-        <span class="tab-badge" id="tabMatchBadge">6</span>
+        Find Peers
+        <span class="tab-badge" id="tabMatchBadge">7</span>
       </button>
       <button class="comm-tab-btn" onclick="switchCommTab('squad')">
-        <span>🛡️</span> 4-Member Squad War Room
-        <span class="tab-badge" style="background: rgba(180, 83, 9, 0.15); color: #b45309;">Rule of 4</span>
+        Squad Workspace
       </button>
       <button class="comm-tab-btn" onclick="switchCommTab('directory')">
-        <span>📂</span> Squad Directory
-        <span class="tab-badge" id="tabSquadBadge">1</span>
+        Browse Squads
+        <span class="tab-badge" id="tabSquadBadge">2</span>
       </button>
     </div>
   </div>
 
   <!-- ===================================================
-       TAB 1: PEER MATCHMAKING
+       TAB 1: FIND PEERS & MATCHMAKING
        =================================================== -->
   <main class="tab-view active" id="tab-matchmaking">
-    <!-- Matchmaking Interest Simulator Banner -->
-    <div class="match-simulator-box">
-      <div class="match-sim-header">
-        <div class="match-sim-title">
-          <span>⚡</span> Real-Time Matchmaker: Select Interests to Calculate Overlap
+    <!-- Directory Filter Bar -->
+    <div class="directory-filter-card">
+      <div class="filter-top-row">
+        <div class="search-input-wrap">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="peerSearchInput" placeholder="Search by name, role, university, or skill..." oninput="handlePeerSearch()" />
+          <button class="clear-search-btn" id="clearSearchBtn" onclick="clearSearchInput()" style="display: none;" title="Clear search">&times;</button>
         </div>
-        <div style="font-size: 12px; color: var(--comm-teal); font-weight: 700;">
-          Rule: Peers with &ge; 2 shared interests are marked 🔥 Strong Match
+
+        <div class="filter-selects">
+          <select id="stageFilterSelect" class="filter-select" onchange="handlePeerSearch()">
+            <option value="all">All Academic Stages</option>
+            <option value="12th_pass">Class 12th Graduates</option>
+            <option value="final_year">Final Year Students</option>
+          </select>
+
+          <select id="overlapFilterSelect" class="filter-select" onchange="handlePeerSearch()">
+            <option value="0">All Match Levels</option>
+            <option value="2" selected>Strong Matches (&ge; 2 shared)</option>
+          </select>
         </div>
       </div>
-      <div class="match-sim-desc">
-        Click interest tags below to see how our matchmaking engine matches you against active peers:
-      </div>
-      <div class="interest-chips-container" id="simInterestChips">
-        <div class="interest-chip selected" data-interest="Coding & Tech">💻 Coding & Tech</div>
-        <div class="interest-chip selected" data-interest="AI & Machine Learning">🧠 AI & Machine Learning</div>
-        <div class="interest-chip" data-interest="Cloud & DevOps">☁️ Cloud & DevOps</div>
-        <div class="interest-chip" data-interest="Cybersecurity">🛡️ Cybersecurity</div>
-        <div class="interest-chip" data-interest="UI/UX & Product Design">🎨 UI/UX & Design</div>
-        <div class="interest-chip" data-interest="Robotics & IoT">🤖 Robotics & IoT</div>
-        <div class="interest-chip" data-interest="Data Science & Analytics">📊 Data Science</div>
-        <div class="interest-chip" data-interest="Finance & Markets">📈 FinTech & Markets</div>
-      </div>
-    </div>
 
-    <!-- Filters & Search Bar -->
-    <div class="filter-controls-bar">
-      <div class="search-input-wrap">
-        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <input type="text" id="peerSearchInput" placeholder="Search peers by name, username, target role, or stream..." oninput="handlePeerSearch()" />
-      </div>
-
-      <div class="filter-dropdowns">
-        <select id="stageFilterSelect" class="filter-select" onchange="handlePeerSearch()">
-          <option value="all">All Stages</option>
-          <option value="12th_pass">12th Pass Candidates</option>
-          <option value="final_year">Final Year Students</option>
-        </select>
-
-        <select id="overlapFilterSelect" class="filter-select" onchange="handlePeerSearch()">
-          <option value="0">All Match Levels</option>
-          <option value="2" selected>🔥 Strong Matches (&ge; 2 Shared)</option>
-        </select>
+      <!-- Quick Skill Filter Pills -->
+      <div class="filter-tags-row">
+        <span class="filter-tags-label">Filter by skill:</span>
+        <div class="filter-pills-list" id="quickSkillPills">
+          <button class="skill-pill-btn active" data-skill="all" onclick="toggleQuickSkill('all')">All Skills</button>
+          <button class="skill-pill-btn" data-skill="AI & Machine Learning" onclick="toggleQuickSkill('AI & Machine Learning')">AI &amp; ML</button>
+          <button class="skill-pill-btn" data-skill="Coding & Tech" onclick="toggleQuickSkill('Coding & Tech')">Full-Stack / Core</button>
+          <button class="skill-pill-btn" data-skill="Cloud & DevOps" onclick="toggleQuickSkill('Cloud & DevOps')">Cloud &amp; DevOps</button>
+          <button class="skill-pill-btn" data-skill="Cybersecurity" onclick="toggleQuickSkill('Cybersecurity')">Cybersecurity</button>
+          <button class="skill-pill-btn" data-skill="UI/UX & Product Design" onclick="toggleQuickSkill('UI/UX & Product Design')">Product Design</button>
+          <button class="skill-pill-btn" data-skill="Robotics & IoT" onclick="toggleQuickSkill('Robotics & IoT')">Robotics &amp; IoT</button>
+          <button class="skill-pill-btn" data-skill="Finance & Markets" onclick="toggleQuickSkill('Finance & Markets')">FinTech</button>
+        </div>
       </div>
     </div>
 
@@ -1559,11 +1641,11 @@
   </main>
 
   <!-- ===================================================
-       TAB 2: 4-MEMBER SQUAD WAR ROOM ("RULE OF 4")
+       TAB 2: SQUAD WORKSPACE ("RULE OF 4")
        =================================================== -->
   <main class="tab-view" id="tab-squad">
     <div id="squadViewContainer">
-      <!-- Rendered dynamically: Either Active Squad War Room or Not-In-Squad State -->
+      <!-- Rendered dynamically: Either Active Squad Workspace or Not-In-Squad State -->
     </div>
   </main>
 
@@ -1571,12 +1653,12 @@
        TAB 3: SQUAD DIRECTORY
        =================================================== -->
   <main class="tab-view" id="tab-directory">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
       <div>
-        <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 800; color: var(--comm-text-dark);">Active 4-Person Squads</h2>
-        <p style="font-size: 14px; color: var(--comm-text-muted); margin: 4px 0 0;">Browse squads forming around cutting-edge engineering tracks. Max 4 members per squad.</p>
+        <h2 style="font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 22px; font-weight: 700; color: var(--comm-text-dark); margin: 0;">Active 4-Person Squads</h2>
+        <p style="font-size: 13.5px; color: var(--comm-text-muted); margin: 3px 0 0;">Browse active and forming teams. Each squad is capped strictly at 4 members.</p>
       </div>
-      <button class="btn btn--solid" style="padding: 10px 20px; font-size: 13px;" onclick="openCreateSquadModal()">
+      <button class="btn btn--solid" style="padding: 9px 18px; font-size: 13px;" onclick="openCreateSquadModal()">
         + Form New Squad
       </button>
     </div>
@@ -1615,8 +1697,8 @@
 
       <!-- Sign In Form -->
       <form id="signInForm" onsubmit="handleSignInSubmit(event)">
-        <h3 style="font-size: 20px; font-weight: 800; color: var(--comm-text-dark); margin-bottom: 6px;">Welcome Back</h3>
-        <p style="font-size: 13px; color: var(--comm-text-muted); margin-bottom: 18px;">Sign in to enter your 4-member squad war room.</p>
+        <h3 style="font-size: 18px; font-weight: 700; color: var(--comm-text-dark); margin-bottom: 4px;">Welcome Back</h3>
+        <p style="font-size: 13px; color: var(--comm-text-muted); margin-bottom: 16px;">Sign in to access your squad workspace and connect with peers.</p>
         
         <div class="form-group">
           <label class="form-label">Username or Email</label>
@@ -1627,21 +1709,21 @@
           <input type="password" id="loginPassword" class="form-input" required placeholder="••••••••" />
         </div>
 
-        <button type="submit" class="btn btn--solid" style="width: 100%; padding: 12px; margin-top: 8px;">
-          Sign In to FutureEra &rarr;
+        <button type="submit" class="btn btn--solid" style="width: 100%; padding: 11px; margin-top: 6px;">
+          Sign In &rarr;
         </button>
 
-        <div style="margin-top: 14px; padding: 12px; border-radius: 8px; background: #f8fafc; border: 1px solid var(--comm-border); font-size: 12px; color: var(--comm-text-muted);">
-          💡 <strong>Demo Profile:</strong> Log in as <code>aarav_dev</code> with password <code>Password@123</code> to test the active squad!
+        <div style="margin-top: 14px; padding: 10px 14px; border-radius: 8px; background: #f8fafc; border: 1px solid var(--comm-border); font-size: 12px; color: var(--comm-text-muted);">
+          <strong>Demo Account:</strong> Sign in with <code>aarav_dev</code> / <code>Password@123</code> to test the Neural Vanguard squad!
         </div>
       </form>
 
       <!-- Sign Up Form -->
       <form id="signUpForm" style="display: none;" onsubmit="handleSignUpSubmit(event)">
-        <h3 style="font-size: 20px; font-weight: 800; color: var(--comm-text-dark); margin-bottom: 6px;">Join the Era</h3>
-        <p style="font-size: 13px; color: var(--comm-text-muted); margin-bottom: 18px;">Select at least 3 core interests to enable peer matchmaking.</p>
+        <h3 style="font-size: 18px; font-weight: 700; color: var(--comm-text-dark); margin-bottom: 4px;">Create Student Profile</h3>
+        <p style="font-size: 13px; color: var(--comm-text-muted); margin-bottom: 16px;">Select at least 3 core interests to enable peer matchmaking.</p>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
           <div class="form-group">
             <label class="form-label">Full Name</label>
             <input type="text" id="regFullName" class="form-input" required placeholder="Aarav Sharma" />
@@ -1659,10 +1741,10 @@
 
         <div class="form-group">
           <label class="form-label">Password</label>
-          <input type="password" id="regPassword" class="form-input" minlength="6" required placeholder="Minimum 6 characters" />
+          <input type="password" id="regPassword" class="form-input" minlength="6" required placeholder="At least 6 characters" />
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
           <div class="form-group">
             <label class="form-label">Career Stage</label>
             <select id="regStage" class="form-select">
@@ -1671,37 +1753,37 @@
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">Stream or Degree</label>
-            <input type="text" id="regDegree" class="form-input" placeholder="B.Tech CSE" />
+            <label class="form-label">Degree or Stream</label>
+            <input type="text" id="regDegree" class="form-input" placeholder="B.Tech Computer Science" />
           </div>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Target Role</label>
+          <label class="form-label">Target Engineering Role</label>
           <input type="text" id="regTargetRole" class="form-input" placeholder="e.g. AI Systems Architect" />
         </div>
 
         <div class="form-group">
-          <label class="form-label">Select Core Interests (Min 3 required) <span id="regInterestCounter" style="color: var(--comm-amber); font-weight: 800;">0/3</span></label>
-          <div class="interest-chips-container" id="regInterestChips">
-            <div class="interest-chip" data-interest="Coding & Tech">💻 Coding & Tech</div>
-            <div class="interest-chip" data-interest="AI & Machine Learning">🧠 AI & Machine Learning</div>
-            <div class="interest-chip" data-interest="Cloud & DevOps">☁️ Cloud & DevOps</div>
-            <div class="interest-chip" data-interest="Cybersecurity">🛡️ Cybersecurity</div>
-            <div class="interest-chip" data-interest="UI/UX & Product Design">🎨 UI/UX & Design</div>
-            <div class="interest-chip" data-interest="Robotics & IoT">🤖 Robotics & IoT</div>
-            <div class="interest-chip" data-interest="Data Science & Analytics">📊 Data Science</div>
-            <div class="interest-chip" data-interest="Finance & Markets">📈 Finance & Markets</div>
+          <label class="form-label">Core Interests (Choose &ge; 3) <span id="regInterestCounter" style="color: var(--comm-amber); font-weight: 700;">0/3 selected</span></label>
+          <div class="filter-pills-list" id="regInterestChips" style="margin-top: 4px;">
+            <div class="skill-pill-btn" data-interest="Coding & Tech">Coding &amp; Tech</div>
+            <div class="skill-pill-btn" data-interest="AI & Machine Learning">AI &amp; Machine Learning</div>
+            <div class="skill-pill-btn" data-interest="Cloud & DevOps">Cloud &amp; DevOps</div>
+            <div class="skill-pill-btn" data-interest="Cybersecurity">Cybersecurity</div>
+            <div class="skill-pill-btn" data-interest="UI/UX & Product Design">UI/UX &amp; Design</div>
+            <div class="skill-pill-btn" data-interest="Robotics & IoT">Robotics &amp; IoT</div>
+            <div class="skill-pill-btn" data-interest="Data Science & Analytics">Data Science</div>
+            <div class="skill-pill-btn" data-interest="Finance & Markets">FinTech &amp; Markets</div>
           </div>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Short Bio / What you want to build</label>
-          <textarea id="regBio" class="form-textarea" rows="2" placeholder="Passionate about building scalable distributed backends..."></textarea>
+          <label class="form-label">Short Bio</label>
+          <textarea id="regBio" class="form-textarea" rows="2" placeholder="Student engineer interested in distributed backends and AI evaluation..."></textarea>
         </div>
 
-        <button type="submit" class="btn btn--solid" style="width: 100%; padding: 12px;">
-          Complete Registration &rarr;
+        <button type="submit" class="btn btn--solid" style="width: 100%; padding: 11px;">
+          Create Profile &rarr;
         </button>
       </form>
     </div>
@@ -1711,7 +1793,7 @@
        MODAL 2: PEER PROFILE DETAIL MODAL
        =================================================== -->
   <div class="modal-backdrop" id="peerModal">
-    <div class="modal-card" style="max-width: 580px;">
+    <div class="modal-card" style="max-width: 520px;">
       <button class="modal-close-btn" onclick="closePeerModal()">&times;</button>
       <div id="peerModalContent">
         <!-- Rendered dynamically -->
@@ -1725,11 +1807,11 @@
   <div class="modal-backdrop" id="createSquadModal">
     <div class="modal-card">
       <button class="modal-close-btn" onclick="closeCreateSquadModal()">&times;</button>
-      <h3 style="font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 800; color: var(--comm-text-dark); margin-bottom: 6px;">
-        Form a 4-Member Squad
+      <h3 style="font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 20px; font-weight: 700; color: var(--comm-text-dark); margin-bottom: 4px;">
+        Form a 4-Person Squad
       </h3>
-      <p style="font-size: 13px; color: var(--comm-text-muted); margin-bottom: 20px;">
-        Squads are capped strictly at 4 members to enforce high accountability and ownership.
+      <p style="font-size: 13px; color: var(--comm-text-muted); margin-bottom: 16px;">
+        Squads are limited strictly to 4 members to ensure high engagement and equal project ownership.
       </p>
 
       <form id="createSquadForm" onsubmit="handleCreateSquadSubmit(event)">
@@ -1739,25 +1821,25 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Engineering Focus Track</label>
-          <input type="text" id="squadTrackInput" class="form-input" required placeholder="e.g. AI & Distributed Systems, Web3, Mobile Systems" />
+          <label class="form-label">Focus Domain Track</label>
+          <input type="text" id="squadTrackInput" class="form-input" required placeholder="e.g. AI & Distributed Systems, Web3, Cloud Security" />
         </div>
 
         <div class="form-group">
-          <label class="form-label">Career Stage</label>
+          <label class="form-label">Academic Stage</label>
           <select id="squadStageInput" class="form-select">
             <option value="final_year" selected>Final Year Students</option>
-            <option value="12th_pass">12th Pass Candidates</option>
+            <option value="12th_pass">Class 12th Graduates</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Sprint 1 Goal Objective</label>
+          <label class="form-label">Sprint 1 Objective</label>
           <input type="text" id="squadGoalInput" class="form-input" placeholder="e.g. Sprint 1: Architecture & API Gateway Scaffold" />
         </div>
 
-        <button type="submit" class="btn btn--solid" style="width: 100%; padding: 12px; margin-top: 10px;">
-          Launch Squad & Generate Invite Code &rarr;
+        <button type="submit" class="btn btn--solid" style="width: 100%; padding: 11px; margin-top: 8px;">
+          Create Squad &amp; Generate Invite Code &rarr;
         </button>
       </form>
     </div>
@@ -1767,25 +1849,29 @@
        MODAL 4: JOIN SQUAD MODAL
        =================================================== -->
   <div class="modal-backdrop" id="joinSquadModal">
-    <div class="modal-card" style="max-width: 440px;">
+    <div class="modal-card" style="max-width: 420px;">
       <button class="modal-close-btn" onclick="closeJoinSquadModal()">&times;</button>
-      <div style="text-align: center; margin-bottom: 20px;">
-        <div style="font-size: 36px; margin-bottom: 8px;">🔑</div>
-        <h3 style="font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 800; color: var(--comm-text-dark);">
+      <div style="text-align: center; margin-bottom: 18px;">
+        <div style="width: 44px; height: 44px; border-radius: 12px; background: #f0fdfa; border: 1px solid #ccfbf1; color: #0f766e; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+          </svg>
+        </div>
+        <h3 style="font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 19px; font-weight: 700; color: var(--comm-text-dark); margin: 0 0 4px;">
           Enter Squad Invite Code
         </h3>
-        <p style="font-size: 13px; color: var(--comm-text-muted); margin-top: 6px;">
-          Paste the 4-seat squad code provided by your squad leader (e.g. <code>NV-2026</code>).
+        <p style="font-size: 13px; color: var(--comm-text-muted); margin: 0;">
+          Paste the 6-character squad code provided by your team lead (e.g. <code>NV-2026</code>).
         </p>
       </div>
 
       <form id="joinSquadForm" onsubmit="handleJoinSquadSubmit(event)">
         <div class="form-group">
-          <input type="text" id="joinCodeInput" class="form-input" required placeholder="NV-2026 or FE-XXXX" style="text-align: center; font-family: 'Space Grotesk', monospace; font-size: 20px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase;" />
+          <input type="text" id="joinCodeInput" class="form-input" required placeholder="NV-2026 or FE-XXXX" style="text-align: center; font-family: 'Space Grotesk', monospace; font-size: 18px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;" />
         </div>
 
-        <button type="submit" class="btn btn--solid" style="width: 100%; padding: 12px;">
-          Claim Open Seat & Join &rarr;
+        <button type="submit" class="btn btn--solid" style="width: 100%; padding: 11px;">
+          Claim Open Seat &amp; Join &rarr;
         </button>
       </form>
     </div>
@@ -1793,10 +1879,14 @@
 
   <!-- Toast Notice -->
   <div class="toast-notice" id="toastNotice">
-    <span id="toastIcon">✨</span>
+    <span id="toastIcon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </span>
     <span id="toastText">Action completed successfully.</span>
   </div>
 
-  <script src="/static/js/community.js?v=26"></script>
+  <script src="/static/js/community.js?v=28"></script>
 </body>
 </html>

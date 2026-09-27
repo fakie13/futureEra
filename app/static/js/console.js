@@ -1089,13 +1089,14 @@ function renderFutureResults(data, chosenTitle) {
             </div>
           ` : ""}
 
-          <!-- Link to 4-Person Squad War Room -->
+          <!-- Link to 4-Person Squad Workspace -->
           <div style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed rgba(20, 184, 166, 0.25); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-            <div style="font-size: 12px; color: #0d9488; font-weight: 700; display: flex; align-items: center; gap: 6px;">
-              <span>🛡️</span> <span>Build this capstone with a 4-person squad (&ge; 2 interest match)</span>
+            <div style="font-size: 12.5px; color: #0f766e; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              <span>Build this capstone with a 4-person student squad</span>
             </div>
-            <a href="/community?track=${encodeURIComponent(window.currentRenderedTrack || projTitle || 'AI & Machine Learning')}" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); color: #ffffff; text-decoration: none; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(13,148,136,0.25); transition: all 0.2s ease;">
-              <span>👥</span> Find Squad Teammates &rarr;
+            <a href="/community?track=${encodeURIComponent(window.currentRenderedTrack || projTitle || 'AI & Machine Learning')}" style="background: #0f766e; color: #ffffff; text-decoration: none; padding: 6px 14px; border-radius: 8px; font-size: 12.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(15,118,110,0.2); transition: all 0.18s ease;">
+              <span>Find Teammates &rarr;</span>
             </a>
           </div>
         </div>

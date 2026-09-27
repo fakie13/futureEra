@@ -850,6 +850,7 @@ async function handleFinalYearSynthesis(payload) {
 
 function renderFutureResults(data, chosenTitle) {
   const displayTitle = chosenTitle || (data.field_intelligence && data.field_intelligence.field_title) || (data.recommended_roles && data.recommended_roles[0]) || "Custom Architecture";
+  window.currentRenderedTrack = displayTitle;
 
   // Active Chosen Profession Banner
   const activeBanner = document.getElementById("activeProfessionBanner");
@@ -1093,7 +1094,7 @@ function renderFutureResults(data, chosenTitle) {
             <div style="font-size: 12px; color: #0d9488; font-weight: 700; display: flex; align-items: center; gap: 6px;">
               <span>🛡️</span> <span>Build this capstone with a 4-person squad (&ge; 2 interest match)</span>
             </div>
-            <a href="/community" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); color: #ffffff; text-decoration: none; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(13,148,136,0.25); transition: all 0.2s ease;">
+            <a href="/community?track=${encodeURIComponent(window.currentRenderedTrack || projTitle || 'AI & Machine Learning')}" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); color: #ffffff; text-decoration: none; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(13,148,136,0.25); transition: all 0.2s ease;">
               <span>👥</span> Find Squad Teammates &rarr;
             </a>
           </div>

@@ -30,9 +30,16 @@
         <span class="brand-title">Future<span class="brand-title-highlight">Era</span></span>
       </div>
     </a>
-    <div class="header-actions" style="display: flex; align-items: center; gap: 12px;">
-      <a href="/community" class="nav-link" style="color: #0f766e; background: #f0fdfa; border: 1.5px solid #ccfbf1; border-radius: 999px; padding: 6px 16px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; text-decoration: none; transition: all 0.2s ease;">Community</a>
-      <a href="/" class="header-link">&larr; Return Home</a>
+    <!-- Center Navigation Links -->
+    <div class="nav-links">
+      <a href="/" class="nav-link">Home</a>
+      <a href="/stage" class="nav-link active">Explore Stages</a>
+      <a href="/console" class="nav-link">Architecture Console</a>
+      <a href="/community" class="nav-link">Community</a>
+    </div>
+
+    <div class="header-actions" id="headerAuthContainer">
+      <a href="/console" class="btn btn--solid" style="padding: 9px 20px; font-size: 12px;">Enter Console &rarr;</a>
     </div>
   </header>
 
@@ -129,5 +136,6 @@
     </div>
   </footer>
 
+  <script src="/static/js/nav-auth.js?v=1"></script>
 </body>
 </html>

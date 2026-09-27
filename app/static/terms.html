@@ -3,50 +3,88 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Terms and Conditions - Future Era</title>
+  <title>Terms and Conditions — FutureEra</title>
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/css/style.css?v=13" />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css?v=26" />
 </head>
-<body style="background: #000000; color: rgba(245, 245, 245, 0.8); font-family: 'Space Grotesk', sans-serif;">
+<body>
 
-  <header style="border-bottom: 1px solid rgba(245, 245, 245, 0.1); padding: 18px 6vw; display: flex; justify-content: space-between; align-items: center;">
-    <a href="/" style="font-family: 'Audiowide', sans-serif; font-size: 14px; letter-spacing: 0.1em; color: #ffffff;">FUTURE ERA</a>
-    <div style="display: flex; gap: 20px; font-size: 12px;">
-      <a href="/" style="color: #c8ff3d;">Return to Platform</a>
-      <a href="/privacy" style="color: rgba(245, 245, 245, 0.6);">Privacy</a>
+  <!-- Floating Navigation -->
+  <header class="app-header">
+    <a href="/" class="brand-wrap" title="FutureEra Homepage">
+      <div class="brand-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <defs>
+            <linearGradient id="boltGradTerms" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ffffff" />
+              <stop offset="100%" stop-color="#ccfbf1" />
+            </linearGradient>
+          </defs>
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="url(#boltGradTerms)" stroke="#ffffff" stroke-width="1.2" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.18));"></polygon>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-title">Future<span class="brand-title-highlight">Era</span></span>
+      </div>
+    </a>
+
+    <!-- Center Navigation Links -->
+    <div class="nav-links">
+      <a href="/" class="nav-link">Home</a>
+      <a href="/stage" class="nav-link">Explore Stages</a>
+      <a href="/console" class="nav-link">Architecture Console</a>
+      <a href="/community" class="nav-link">Community</a>
+    </div>
+
+    <div class="header-actions" id="headerAuthContainer">
+      <a href="/" class="header-link">&larr; Return Home</a>
     </div>
   </header>
 
-  <main style="max-width: 800px; margin: 0 auto; padding: 60px 24px; line-height: 1.7; font-size: 14px;">
-    <h1 style="font-family: 'Audiowide', sans-serif; font-size: 28px; color: #ffffff; margin-bottom: 8px;">Terms and Conditions</h1>
-    <div style="font-size: 12px; color: rgba(245, 245, 245, 0.4); margin-bottom: 32px;">Effective Date: September 27, 2026</div>
+  <main style="max-width: 840px; margin: 40px auto 80px; padding: 0 24px;">
+    <div style="background: #ffffff; border: 1.5px solid var(--border-light); border-radius: 20px; padding: clamp(28px, 5vw, 48px); box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);">
+      <div style="display: inline-flex; align-items: center; gap: 8px; background: #fffbeb; border: 1px solid #fef3c7; color: #b45309; font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 999px; margin-bottom: 16px;">
+        TERMS OF SERVICE &amp; COMMUNITY CODE
+      </div>
+      <h1 style="font-family: 'Space Grotesk', sans-serif; font-size: clamp(28px, 4vw, 36px); font-weight: 800; color: #0f172a; margin-bottom: 8px; letter-spacing: -0.02em;">
+        Terms and Conditions
+      </h1>
+      <div style="font-size: 13px; color: #64748b; font-weight: 600; margin-bottom: 32px;">Effective Date: September 28, 2026</div>
 
-    <section style="margin-bottom: 24px;">
-      <h3 style="color: #c8ff3d; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">1. Educational Disclaimer</h3>
-      <p>All roadmaps, career trajectories, AI automation assessments, and technology recommendations delivered by Future Era are synthesized for advisory exploration only and do not constitute formal university admission contracts or employment guarantees.</p>
-    </section>
+      <section style="margin-bottom: 28px;">
+        <h3 style="color: #0f766e; font-size: 16px; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 8px;">1. Educational Advisory Disclaimer</h3>
+        <p style="font-size: 14.5px; color: #334155; line-height: 1.65; margin: 0;">All career trajectories, roadmaps, AI automation evaluations, and technical recommendations provided by FutureEra are synthesized for advisory and exploration purposes. They do not constitute formal university admission contracts, employment guarantees, or formal legal advice.</p>
+      </section>
 
-    <section style="margin-bottom: 24px;">
-      <h3 style="color: #c8ff3d; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">2. Permitted Use</h3>
-      <p>Users agree to utilize this system for career planning and technical education. Scraping or high-volume automated requests without prior written consent are strictly prohibited.</p>
-    </section>
+      <section style="margin-bottom: 28px;">
+        <h3 style="color: #0f766e; font-size: 16px; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 8px;">2. Community Code &amp; Rule of 4 Squads</h3>
+        <p style="font-size: 14.5px; color: #334155; line-height: 1.65; margin: 0;">FutureEra squads are strictly limited to a maximum capacity of 4 members to preserve high velocity and active participation. Squad members agree to uphold professional, constructive peer collaboration in squad war rooms and live meeting channels.</p>
+      </section>
 
-    <section style="margin-bottom: 24px;">
-      <h3 style="color: #c8ff3d; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">3. Limitation of Liability</h3>
-      <p>Future Era and its maintainers assume no liability for individual career or hiring outcomes resulting from the use of this software.</p>
-    </section>
+      <section style="margin-bottom: 28px;">
+        <h3 style="color: #0f766e; font-size: 16px; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 8px;">3. Permitted Platform Use</h3>
+        <p style="font-size: 14.5px; color: #334155; line-height: 1.65; margin: 0;">Users agree to utilize this system for career planning, academic exploration, and student capstone collaboration. Automated scraping, abuse of API routes, or unauthorized penetration attempts are strictly prohibited.</p>
+      </section>
+
+      <section style="margin-bottom: 28px;">
+        <h3 style="color: #0f766e; font-size: 16px; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 8px;">4. Limitation of Liability</h3>
+        <p style="font-size: 14.5px; color: #334155; line-height: 1.65; margin: 0;">FutureEra and its developers assume no liability for personal career decisions, placement outcomes, or academic selections made based on AI-generated suggestions.</p>
+      </section>
+    </div>
   </main>
 
   <footer class="future-footer">
-    <div>FUTURE ERA &copy; 2026. All rights reserved.</div>
+    <div>FUTUREERA &copy; 2026. All rights reserved.</div>
     <div style="display: flex; gap: 24px;">
+      <a href="/">Home</a>
       <a href="/terms">Terms and Conditions</a>
       <a href="/privacy">Privacy Policy</a>
     </div>
   </footer>
 
+  <script src="/static/js/nav-auth.js?v=1"></script>
 </body>
 </html>

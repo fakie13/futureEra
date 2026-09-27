@@ -239,6 +239,25 @@ function checkUrlParamsForJoin() {
   if (joinCode) {
     openJoinSquadModal(joinCode);
   }
+
+  const trackParam = urlParams.get("track");
+  if (trackParam) {
+    const searchInput = document.getElementById("peerSearchInput");
+    if (searchInput) {
+      searchInput.value = trackParam;
+      refreshPeers();
+    }
+    const squadTrackInput = document.getElementById("squadTrackInput");
+    if (squadTrackInput) {
+      squadTrackInput.value = trackParam;
+    }
+    showToast(`Filtering peers for track: "${trackParam}"`, "🎯");
+  }
+
+  const tabParam = urlParams.get("tab");
+  if (tabParam && ["matchmaking", "squad", "directory"].includes(tabParam)) {
+    switchCommTab(tabParam);
+  }
 }
 
 // ==========================================
@@ -385,8 +404,8 @@ function renderPeers(peers) {
             <span>✨</span> Intersecting Interests (${peer.overlap_count})
           </div>
           <div class="shared-interests-tags">
-            ${peer.shared_interests.map(i => `<span class="shared-tag">${escapeHtml(i)}</span>`).join("")}
-            ${peer.interests.filter(i => !peer.shared_interests.includes(i)).map(i => `<span class="other-tag">${escapeHtml(i)}</span>`).join("")}
+            ${peer.shared_interests.map(i => `<span class="shared-tag" onclick="filterByInterestTag('${escapeHtml(i)}')" style="cursor: pointer;" title="Filter peers by ${escapeHtml(i)}">${escapeHtml(i)}</span>`).join("")}
+            ${peer.interests.filter(i => !peer.shared_interests.includes(i)).map(i => `<span class="other-tag" onclick="filterByInterestTag('${escapeHtml(i)}')" style="cursor: pointer;" title="Filter peers by ${escapeHtml(i)}">${escapeHtml(i)}</span>`).join("")}
           </div>
         </div>
 
@@ -401,6 +420,15 @@ function renderPeers(peers) {
       </div>
     `;
   }).join("");
+}
+
+function filterByInterestTag(tag) {
+  const search = document.getElementById("peerSearchInput");
+  if (search) {
+    search.value = tag;
+    refreshPeers();
+    showToast(`Filtering peers by interest: "${tag}"`, "🔍");
+  }
 }
 
 function resetPeerFilters() {

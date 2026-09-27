@@ -96,6 +96,34 @@
       font-weight: 700;
     }
 
+    @media (max-width: 860px) {
+      .app-header {
+        padding: 12px 18px;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .nav-links {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        gap: 6px;
+        overflow-x: auto;
+        padding-top: 4px;
+        -webkit-overflow-scrolling: touch;
+      }
+      .nav-link {
+        font-size: 12px;
+        padding: 5px 10px;
+        white-space: nowrap;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .nav-links {
+        justify-content: flex-start;
+      }
+    }
+
     .user-pill-btn {
       background: #ffffff;
       border: 1.5px solid var(--comm-border-strong);
@@ -1557,6 +1585,21 @@
       <!-- Squad cards rendered dynamically -->
     </div>
   </main>
+
+  <!-- FutureEra Global Footer -->
+  <footer class="future-footer">
+    <div>
+      FUTUREERA &copy; 2026. All rights reserved.
+    </div>
+    <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+      <a href="/">Home</a>
+      <a href="/stage">Stages</a>
+      <a href="/console">Architecture Console</a>
+      <a href="/community">Community</a>
+      <a href="/terms">Terms and Conditions</a>
+      <a href="/privacy">Privacy Policy</a>
+    </div>
+  </footer>
 
   <!-- ===================================================
        MODAL 1: AUTH (SIGN IN / SIGN UP)

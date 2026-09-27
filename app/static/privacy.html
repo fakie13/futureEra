@@ -3,50 +3,88 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Privacy Policy - Future Era</title>
+  <title>Privacy Policy — FutureEra</title>
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/css/style.css?v=13" />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css?v=26" />
 </head>
-<body style="background: #000000; color: rgba(245, 245, 245, 0.8); font-family: 'Space Grotesk', sans-serif;">
+<body>
 
-  <header style="border-bottom: 1px solid rgba(245, 245, 245, 0.1); padding: 18px 6vw; display: flex; justify-content: space-between; align-items: center;">
-    <a href="/" style="font-family: 'Audiowide', sans-serif; font-size: 14px; letter-spacing: 0.1em; color: #ffffff;">FUTURE ERA</a>
-    <div style="display: flex; gap: 20px; font-size: 12px;">
-      <a href="/" style="color: #c8ff3d;">Return to Platform</a>
-      <a href="/terms" style="color: rgba(245, 245, 245, 0.6);">Terms</a>
+  <!-- Floating Navigation -->
+  <header class="app-header">
+    <a href="/" class="brand-wrap" title="FutureEra Homepage">
+      <div class="brand-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <defs>
+            <linearGradient id="boltGradPriv" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ffffff" />
+              <stop offset="100%" stop-color="#ccfbf1" />
+            </linearGradient>
+          </defs>
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="url(#boltGradPriv)" stroke="#ffffff" stroke-width="1.2" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.18));"></polygon>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-title">Future<span class="brand-title-highlight">Era</span></span>
+      </div>
+    </a>
+
+    <!-- Center Navigation Links -->
+    <div class="nav-links">
+      <a href="/" class="nav-link">Home</a>
+      <a href="/stage" class="nav-link">Explore Stages</a>
+      <a href="/console" class="nav-link">Architecture Console</a>
+      <a href="/community" class="nav-link">Community</a>
+    </div>
+
+    <div class="header-actions" id="headerAuthContainer">
+      <a href="/" class="header-link">&larr; Return Home</a>
     </div>
   </header>
 
-  <main style="max-width: 800px; margin: 0 auto; padding: 60px 24px; line-height: 1.7; font-size: 14px;">
-    <h1 style="font-family: 'Audiowide', sans-serif; font-size: 28px; color: #ffffff; margin-bottom: 8px;">Privacy Policy</h1>
-    <div style="font-size: 12px; color: rgba(245, 245, 245, 0.4); margin-bottom: 32px;">Effective Date: September 27, 2026</div>
+  <main style="max-width: 840px; margin: 40px auto 80px; padding: 0 24px;">
+    <div style="background: #ffffff; border: 1.5px solid var(--border-light); border-radius: 20px; padding: clamp(28px, 5vw, 48px); box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);">
+      <div style="display: inline-flex; align-items: center; gap: 8px; background: #f0fdfa; border: 1px solid #ccfbf1; color: #0f766e; font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 999px; margin-bottom: 16px;">
+        LEGAL ARCHITECTURE &amp; COMPLIANCE
+      </div>
+      <h1 style="font-family: 'Space Grotesk', sans-serif; font-size: clamp(28px, 4vw, 36px); font-weight: 800; color: #0f172a; margin-bottom: 8px; letter-spacing: -0.02em;">
+        Privacy Policy
+      </h1>
+      <div style="font-size: 13px; color: #64748b; font-weight: 600; margin-bottom: 32px;">Effective Date: September 28, 2026</div>
 
-    <section style="margin-bottom: 24px;">
-      <h3 style="color: #c8ff3d; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">1. Information Processed</h3>
-      <p>Future Era processes solely the academic inputs submitted in the evaluation console (stream, declared interests, program duration, skills, and target career role). We do not mandate user registration, names, phone numbers, or tracking identifiers.</p>
-    </section>
+      <section style="margin-bottom: 28px;">
+        <h3 style="color: #0f766e; font-size: 16px; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 8px;">1. Information Processed</h3>
+        <p style="font-size: 14.5px; color: #334155; line-height: 1.65; margin: 0;">FutureEra processes solely the academic inputs submitted in the evaluation console (stream, declared interests, program duration, skills, and target career role), as well as optional peer profiles registered for community matchmaking. We do not sell user data to advertising brokers or commercial profilers.</p>
+      </section>
 
-    <section style="margin-bottom: 24px;">
-      <h3 style="color: #c8ff3d; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">2. Model Integration and Cloud Routing</h3>
-      <p>Submitted parameters are transmitted to Google Gemini API endpoints solely to calculate career roadmaps, AI resilience scores, and technology audits. No user data is stored permanently for commercial profiling.</p>
-    </section>
+      <section style="margin-bottom: 28px;">
+        <h3 style="color: #0f766e; font-size: 16px; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 8px;">2. Model Integration and Cloud Routing</h3>
+        <p style="font-size: 14.5px; color: #334155; line-height: 1.65; margin: 0;">Submitted parameters are transmitted to Google Gemini API endpoints solely to calculate career roadmaps, AI resilience scores, and technology audits. Synthesized roadmaps are persisted in a local high-performance SQLite database vault for offline retrieval.</p>
+      </section>
 
-    <section style="margin-bottom: 24px;">
-      <h3 style="color: #c8ff3d; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">3. Local Client Storage</h3>
-      <p>Custom API keys entered via the interface are stored exclusively in temporary browser session storage (<code>sessionStorage</code>) and are never persisted to external databases.</p>
-    </section>
+      <section style="margin-bottom: 28px;">
+        <h3 style="color: #0f766e; font-size: 16px; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 8px;">3. Peer Matchmaking and Community Pods</h3>
+        <p style="font-size: 14.5px; color: #334155; line-height: 1.65; margin: 0;">Community profile data (username, display name, target role, and chosen interests) is shared within the peer discovery directory solely to enable mutual matching (&ge; 2 shared interests) and 4-member squad formation. Passwords are cryptographically hashed using PBKDF2 HMAC SHA-256 with individual cryptographic salts.</p>
+      </section>
+
+      <section style="margin-bottom: 28px;">
+        <h3 style="color: #0f766e; font-size: 16px; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 8px;">4. Local Client Storage</h3>
+        <p style="font-size: 14.5px; color: #334155; line-height: 1.65; margin: 0;">Authentication tokens and client preferences are stored securely in browser local storage (<code>localStorage</code>) to maintain seamless cross-page session continuity.</p>
+      </section>
+    </div>
   </main>
 
   <footer class="future-footer">
-    <div>FUTURE ERA &copy; 2026. All rights reserved.</div>
+    <div>FUTUREERA &copy; 2026. All rights reserved.</div>
     <div style="display: flex; gap: 24px;">
+      <a href="/">Home</a>
       <a href="/terms">Terms and Conditions</a>
       <a href="/privacy">Privacy Policy</a>
     </div>
   </footer>
 
+  <script src="/static/js/nav-auth.js?v=1"></script>
 </body>
 </html>

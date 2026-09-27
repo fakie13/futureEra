@@ -729,7 +729,7 @@ function renderActiveSquadWorkspace(squad) {
               ${ICONS.film}
               <span>Showcase Reel</span>
             </button>
-            <a href="/console" class="tool-link-card">
+            <a href="/stage" class="tool-link-card" title="Explore stages & architect career roadmap">
               ${ICONS.compass}
               <span>Career Roadmap</span>
             </a>

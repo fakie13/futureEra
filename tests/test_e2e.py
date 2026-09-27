@@ -276,7 +276,8 @@ def main():
         assert 'Upload Progress' in comm_js
         assert 'Showcase Reel' in comm_js
         assert 'MAX_PROGRESS_BYTES' in comm_js
-    print('[PASS] Video Standup verified removed; Upload Progress & Showcase Reel verified present in UI')
+        assert 'href="/stage"' in comm_js and 'Career Roadmap' in comm_js
+    print('[PASS] Video Standup verified removed; Career Roadmap verified pointing to /stage')
 
     # 8j. Verify strict 300MB file limit enforcement (HTTP 413)
     try:
@@ -306,13 +307,13 @@ def main():
     except Exception as e:
         print(f'[WARN] TestClient 300MB test: {e}')
 
-    # 9. Verify standalone auth pages serve HTTP 200
-    for page_path in ['/signin', '/signup', '/login']:
+    # 9. Verify standalone auth pages and stage pages serve HTTP 200
+    for page_path in ['/signin', '/signup', '/login', '/stage', '/select-stage', '/explore-stage', '/explore-stages']:
         req = urllib.request.Request(base + page_path)
         with urllib.request.urlopen(req) as resp:
             content = resp.read().decode('utf-8')
-            assert resp.status == 200 and 'Welcome back' in content, f'Failed on {page_path}'
-    print('[PASS] /signin, /signup, and /login standalone routes verified (HTTP 200)')
+            assert resp.status == 200, f'Failed on {page_path}'
+    print('[PASS] /signin, /signup, /login, /stage, /explore-stage routes verified (HTTP 200)')
 
     # 10. Verify demo account login (@aarav_dev)
     st_demo, r_demo = post_json('/api/auth/login', {

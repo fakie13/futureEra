@@ -99,6 +99,8 @@ async def serve_console():
 
 @app.get("/stage")
 @app.get("/select-stage")
+@app.get("/explore-stage")
+@app.get("/explore-stages")
 async def serve_stage():
     """Serves the Stage Selection middle page."""
     return FileResponse(os.path.join(STATIC_DIR, "stage.html"), headers=NO_CACHE_HEADERS)

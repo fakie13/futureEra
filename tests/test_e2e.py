@@ -133,7 +133,7 @@ def main():
         req = urllib.request.Request(base + page_path)
         with urllib.request.urlopen(req) as resp:
             content = resp.read().decode('utf-8')
-            assert resp.status == 200 and 'Student Developer Network' in content, f'Failed on {page_path}'
+            assert resp.status == 200 and 'Welcome back' in content, f'Failed on {page_path}'
     print('[PASS] /signin, /signup, and /login standalone routes verified (HTTP 200)')
 
     # 10. Verify demo account login (@aarav_dev)

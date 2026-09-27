@@ -3,380 +3,392 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sign In &amp; Join Community — FutureEra</title>
+  <title>Welcome back — FutureEra</title>
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/css/style.css?v=28" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
   <style>
     /* ===================================================
        FUTUREERA AUTHENTICATION PAGE
-       Human-crafted SaaS Engineering Aesthetic
+       Pixel-Perfect Recreation of Clean Split-Screen SaaS Design
        =================================================== */
-    :root {
-      --auth-teal: #0f766e;
-      --auth-teal-hover: #115e59;
-      --auth-teal-light: #f0fdfa;
-      --auth-teal-border: #ccfbf1;
-      --auth-amber: #b45309;
-      --auth-amber-light: #fffbeb;
-      --auth-text-dark: #0f172a;
-      --auth-text-body: #334155;
-      --auth-text-muted: #64748b;
-      --auth-border: #e2e8f0;
-      --auth-border-strong: #cbd5e1;
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    body {
-      background-color: var(--bg-base);
-      background-image: 
-        radial-gradient(circle at 10% 14%, rgba(125, 211, 252, 0.35) 0%, transparent 45%),
-        radial-gradient(circle at 92% 18%, rgba(251, 191, 36, 0.25) 0%, transparent 44%),
-        radial-gradient(circle at 50% 80%, rgba(125, 211, 252, 0.18) 0%, transparent 50%),
-        radial-gradient(rgba(15, 118, 110, 0.05) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 100% 100%, 28px 28px;
-      background-attachment: fixed;
-      color: var(--auth-text-body);
-      min-height: 100vh;
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      line-height: 1.55;
+    :root {
+      --primary-purple: #5e3fae;
+      --primary-purple-hover: #4e3294;
+      --primary-purple-active: #40287e;
+      --primary-purple-light: #f5f2fb;
+      --purple-canvas-bg: #9670d3;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --text-label: #374151;
+      --border-input: #d1d5db;
+      --border-focus: #5e3fae;
+      --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-heading: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: var(--font-body);
+      background-color: #ffffff;
+      color: var(--text-main);
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Split-screen wrapper */
+    .auth-split-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+      width: 100%;
+      background: #ffffff;
+    }
+
+    /* LEFT COLUMN: Form Container */
+    .auth-left-pane {
       display: flex;
       flex-direction: column;
-    }
-
-    /* Header Nav */
-    .app-header {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: rgba(255, 255, 255, 0.94);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--auth-border);
-      padding: 13px 6vw;
-      display: flex;
       justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .nav-link {
-      color: var(--auth-text-muted);
-      text-decoration: none;
-      font-size: 13.5px;
-      font-weight: 500;
-      transition: all 0.18s ease;
-      display: inline-flex;
-      align-items: center;
-      padding: 6px 14px;
-      border-radius: 999px;
-    }
-
-    .nav-link:hover {
-      color: var(--auth-text-dark);
-      background: rgba(15, 23, 42, 0.04);
-    }
-
-    /* Auth Wrapper & Card */
-    .auth-page-container {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 20px 70px;
-    }
-
-    .auth-card {
-      width: 100%;
-      max-width: 520px;
+      padding: 40px 64px 32px;
       background: #ffffff;
-      border: 1px solid var(--auth-border);
-      border-radius: 20px;
-      box-shadow: 0 20px 45px -12px rgba(15, 23, 42, 0.09), 0 1px 3px rgba(15, 23, 42, 0.04);
-      overflow: hidden;
-      position: relative;
-      animation: authCardIn 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+      min-height: 100vh;
+      overflow-y: auto;
     }
 
-    @keyframes authCardIn {
-      from { opacity: 0; transform: translateY(12px) scale(0.99); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    .auth-top-accent {
-      height: 4px;
-      width: 100%;
-      background: linear-gradient(90deg, #0f766e 0%, #06b6d4 50%, #f59e0b 100%);
-    }
-
-    .auth-card-body {
-      padding: 32px 32px 28px;
-    }
-
-    @media (max-width: 540px) {
-      .auth-card-body {
-        padding: 24px 20px 22px;
-      }
-    }
-
-    /* Brand Ribbon */
-    .auth-brand-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--auth-teal);
-      background: var(--auth-teal-light);
-      border: 1px solid var(--auth-teal-border);
-      padding: 3px 10px;
-      border-radius: 999px;
-      margin-bottom: 12px;
-    }
-
-    .badge-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #10b981;
-    }
-
-    .auth-main-title {
-      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 23px;
-      font-weight: 700;
-      color: var(--auth-text-dark);
-      letter-spacing: -0.02em;
-      margin: 0 0 6px;
-      line-height: 1.25;
-    }
-
-    .auth-main-sub {
-      font-size: 13.5px;
-      color: var(--auth-text-muted);
-      line-height: 1.5;
-      margin: 0 0 22px;
-    }
-
-    /* Segmented Tab Switcher */
-    .auth-nav-tabs {
+    /* Top Brand Header */
+    .auth-brand-row {
       display: flex;
-      background: #f1f5f9;
-      padding: 4px;
-      border-radius: 10px;
+      align-items: center;
+      justify-content: space-between;
       margin-bottom: 24px;
-      gap: 4px;
-      border: 1px solid #e2e8f0;
     }
 
-    .auth-tab-btn {
-      flex: 1;
-      padding: 9px 16px;
-      border-radius: 7px;
-      border: none;
-      background: transparent;
-      color: var(--auth-text-muted);
-      font-size: 13.5px;
-      font-weight: 600;
-      font-family: inherit;
-      cursor: pointer;
-      transition: all 0.18s ease;
+    .brand-logo-link {
       display: inline-flex;
       align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text-main);
+      transition: opacity 0.15s ease;
+    }
+
+    .brand-logo-link:hover {
+      opacity: 0.85;
+    }
+
+    .brand-logo-icon {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
       justify-content: center;
-      gap: 6px;
     }
 
-    .auth-tab-btn.active {
-      background: #ffffff;
-      color: var(--auth-teal);
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+    .brand-logo-name {
+      font-family: 'Space Grotesk', var(--font-body);
+      font-size: 21px;
       font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text-main);
     }
 
-    /* Form Fields */
-    .auth-form-group {
-      margin-bottom: 16px;
+    .brand-logo-name span {
+      color: var(--primary-purple);
     }
 
-    .auth-label {
+    .nav-back-link {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .nav-back-link:hover {
+      color: var(--primary-purple);
+      background: var(--primary-purple-light);
+    }
+
+    /* Form Body Wrapper */
+    .auth-form-wrap {
+      width: 100%;
+      max-width: 440px;
+      margin: auto;
+      padding: 20px 0;
+    }
+
+    .auth-heading {
+      font-family: var(--font-heading);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .auth-subheading {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 28px;
+    }
+
+    /* Alert Banner */
+    .auth-alert {
+      display: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      margin-bottom: 20px;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .auth-alert.error {
+      display: flex;
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .auth-alert.success {
+      display: flex;
+      background: #f0fdf4;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+
+    /* Input Field Groups */
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .form-label {
       display: block;
-      font-size: 12.5px;
-      font-weight: 600;
-      color: var(--auth-text-dark);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-label);
       margin-bottom: 6px;
     }
 
-    .auth-input-wrap {
+    .input-wrapper {
       position: relative;
       display: flex;
       align-items: center;
     }
 
-    .input-icon {
+    .form-control {
+      width: 100%;
+      padding: 11px 14px;
+      font-size: 15px;
+      font-family: inherit;
+      color: var(--text-main);
+      background: #ffffff;
+      border: 1px solid var(--border-input);
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .form-control::placeholder {
+      color: #9ca3af;
+      font-weight: 400;
+    }
+
+    .form-control:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(94, 63, 174, 0.16);
+    }
+
+    .btn-pwd-toggle {
       position: absolute;
-      left: 13px;
-      color: #94a3b8;
-      pointer-events: none;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: #9ca3af;
+      cursor: pointer;
+      padding: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: color 0.15s ease;
     }
 
-    .auth-input, .auth-select, .auth-textarea {
-      width: 100%;
-      background: #f8fafc;
-      border: 1px solid var(--auth-border-strong);
-      border-radius: 10px;
-      padding: 10px 14px 10px 38px;
-      color: var(--auth-text-dark);
+    .btn-pwd-toggle:hover {
+      color: var(--text-main);
+    }
+
+    /* Remember Me & Forgot Password Row */
+    .form-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
       font-size: 14px;
+    }
+
+    .checkbox-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      color: var(--text-label);
+      user-select: none;
+      font-size: 14px;
+    }
+
+    .checkbox-container input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--primary-purple);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .forgot-link {
+      color: var(--primary-purple);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      font-weight: 500;
+      transition: opacity 0.15s ease;
+    }
+
+    .forgot-link:hover {
+      opacity: 0.8;
+    }
+
+    /* Submit Button */
+    .btn-auth-primary {
+      width: 100%;
+      padding: 12px 20px;
+      font-size: 15px;
+      font-weight: 600;
       font-family: inherit;
-      transition: all 0.18s ease;
-      box-sizing: border-box;
-      outline: none;
-    }
-
-    .auth-input:focus, .auth-select:focus, .auth-textarea:focus {
-      background: #ffffff;
-      border-color: var(--auth-teal);
-      box-shadow: 0 0 0 3.5px rgba(15, 118, 110, 0.12);
-    }
-
-    .auth-textarea {
-      padding: 10px 14px;
-      resize: vertical;
-      min-height: 70px;
-    }
-
-    .auth-password-toggle {
-      position: absolute;
-      right: 12px;
-      background: transparent;
+      color: #ffffff;
+      background: var(--primary-purple);
       border: none;
-      color: #94a3b8;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.05s ease, box-shadow 0.15s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-auth-primary:hover {
+      background: var(--primary-purple-hover);
+    }
+
+    .btn-auth-primary:active {
+      transform: translateY(1px);
+    }
+
+    .btn-auth-primary:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    /* Social / Google Button */
+    .btn-google {
+      width: 100%;
+      padding: 11px 20px;
+      margin-top: 14px;
+      font-size: 14.5px;
+      font-weight: 500;
+      font-family: inherit;
+      color: #374151;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 4px;
-      transition: color 0.15s ease;
+      gap: 10px;
+      transition: all 0.15s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
     }
 
-    .auth-password-toggle:hover {
-      color: var(--auth-text-dark);
+    .btn-google:hover {
+      background: #f9fafb;
+      border-color: #d1d5db;
     }
 
-    /* Submit Button */
-    .btn-auth-submit {
+    /* Auto-Fill Demo Button */
+    .demo-pill-btn {
       width: 100%;
-      background: var(--auth-teal);
-      color: #ffffff;
-      border: 1px solid var(--auth-teal);
-      border-radius: 10px;
-      padding: 12px 20px;
-      font-size: 14px;
-      font-weight: 700;
-      font-family: inherit;
+      margin-top: 12px;
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary-purple);
+      background: var(--primary-purple-light);
+      border: 1px dashed #d8b4fe;
+      border-radius: 8px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 6px rgba(15, 118, 110, 0.2);
-      margin-top: 6px;
-    }
-
-    .btn-auth-submit:hover {
-      background: var(--auth-teal-hover);
-      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.28);
-      transform: translateY(-1px);
-    }
-
-    .btn-auth-submit:active {
-      transform: translateY(0);
-    }
-
-    /* Interactive Demo Card */
-    .demo-account-box {
-      margin-top: 18px;
-      padding: 14px 16px;
-      border-radius: 12px;
-      background: #f8fafc;
-      border: 1px solid var(--auth-border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .demo-user-meta {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .demo-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      background: #0f766e;
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    .demo-name-text {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--auth-text-dark);
-      line-height: 1.2;
-    }
-
-    .demo-role-text {
-      font-size: 11.5px;
-      color: var(--auth-text-muted);
-      margin-top: 2px;
-    }
-
-    .btn-fill-demo {
-      background: #ffffff;
-      border: 1px solid var(--auth-border-strong);
-      color: var(--auth-teal);
-      font-size: 12px;
-      font-weight: 700;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
       transition: all 0.15s ease;
-      white-space: nowrap;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
     }
 
-    .btn-fill-demo:hover {
-      background: var(--auth-teal-light);
-      border-color: var(--auth-teal);
+    .demo-pill-btn:hover {
+      background: #ede9fe;
+      border-color: var(--primary-purple);
     }
 
-    /* Core Interests Matrix (Sign Up) */
+    /* Switch Auth Mode Line */
+    .auth-switch-text {
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 24px;
+    }
+
+    .auth-switch-btn {
+      color: var(--primary-purple);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      font-weight: 600;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: inherit;
+      padding: 0;
+    }
+
+    .auth-switch-btn:hover {
+      opacity: 0.8;
+    }
+
+    /* Sign Up Additional Fields */
+    .signup-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
     .interest-chips-matrix {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -384,415 +396,663 @@
       margin-top: 6px;
     }
 
-    @media (max-width: 480px) {
-      .interest-chips-matrix {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .interest-select-card {
-      background: #f8fafc;
-      border: 1px solid var(--auth-border);
+    .interest-chip {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
       border-radius: 8px;
       padding: 8px 10px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: #4b5563;
+      cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      transition: all 0.16s ease;
-      font-size: 12.5px;
-      font-weight: 600;
-      color: #334155;
+      gap: 6px;
+      transition: all 0.15s ease;
       user-select: none;
     }
 
-    .interest-select-card:hover {
+    .interest-chip:hover {
       border-color: #cbd5e1;
-      background: #ffffff;
+      background: #f3f4f6;
     }
 
-    .interest-select-card.selected {
-      background: #f0fdfa;
-      border-color: #99f6e4;
-      color: #0f766e;
-      box-shadow: 0 0 0 1px #0f766e;
-    }
-
-    .interest-icon-svg {
-      width: 14px;
-      height: 14px;
-      color: inherit;
-      flex-shrink: 0;
-    }
-
-    .interest-counter-ribbon {
-      font-size: 12px;
+    .interest-chip.selected {
+      background: var(--primary-purple-light);
+      border-color: var(--primary-purple);
+      color: var(--primary-purple);
       font-weight: 600;
+      box-shadow: 0 0 0 1px var(--primary-purple);
+    }
+
+    /* Auth Footer Note */
+    .auth-bottom-note {
+      text-align: center;
+      font-size: 12px;
+      color: #9ca3af;
+      padding-top: 16px;
+    }
+
+    .auth-bottom-note a {
+      color: #6b7280;
+      text-decoration: none;
+    }
+
+    .auth-bottom-note a:hover {
+      text-decoration: underline;
+    }
+
+    /* RIGHT COLUMN: Illustration Canvas */
+    .auth-right-pane {
+      background-color: var(--purple-canvas-bg);
+      background-image: 
+        radial-gradient(circle at 75% 25%, rgba(255, 255, 255, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 45%);
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-top: 4px;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 40px;
+      min-height: 100vh;
     }
 
-    .counter-tag {
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    .counter-tag.incomplete {
-      background: #fffbeb;
-      color: #b45309;
-      border: 1px solid #fef3c7;
-    }
-
-    .counter-tag.complete {
-      background: #f0fdfa;
-      color: #0f766e;
-      border: 1px solid #ccfbf1;
-    }
-
-    /* Error notice */
-    .auth-alert-box {
-      display: none;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-size: 13px;
-      margin-bottom: 16px;
+    .illustration-wrapper {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
+      animation: fadeInCanvas 0.4s ease-out;
     }
 
-    .auth-alert-box.error {
-      display: flex;
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      color: #b91c1c;
+    @keyframes fadeInCanvas {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
     }
 
-    .auth-alert-box.success {
-      display: flex;
-      background: #f0fdfa;
-      border: 1px solid #ccfbf1;
-      color: #0f766e;
+    .vector-art-svg {
+      width: 100%;
+      height: auto;
+      max-height: 85vh;
+      overflow: visible;
+    }
+
+    /* Floating vector animation effects */
+    .floating-doodle {
+      animation: floatGentle 4.5s ease-in-out infinite alternate;
+      transform-origin: center;
+    }
+
+    .floating-doodle-alt {
+      animation: floatGentleAlt 5.5s ease-in-out infinite alternate;
+      transform-origin: center;
+    }
+
+    @keyframes floatGentle {
+      0% { transform: translateY(0px) rotate(0deg); }
+      100% { transform: translateY(-7px) rotate(1deg); }
+    }
+
+    @keyframes floatGentleAlt {
+      0% { transform: translateY(0px) rotate(0deg); }
+      100% { transform: translateY(8px) rotate(-1.5deg); }
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 960px) {
+      .auth-split-layout {
+        grid-template-columns: 1fr;
+      }
+      .auth-right-pane {
+        display: none;
+      }
+      .auth-left-pane {
+        padding: 32px 24px;
+        min-height: 100vh;
+      }
+      .auth-form-wrap {
+        padding: 24px 0;
+      }
+      .auth-heading {
+        font-size: 28px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .signup-grid-2 {
+        grid-template-columns: 1fr;
+      }
+      .interest-chips-matrix {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Floating Navigation -->
-  <header class="app-header">
-    <a href="/" class="brand-wrap" title="FutureEra Homepage">
-      <div class="brand-icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-          <defs>
-            <linearGradient id="boltGradAuth" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#ffffff" />
-              <stop offset="100%" stop-color="#ccfbf1" />
-            </linearGradient>
-          </defs>
-          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="url(#boltGradAuth)" stroke="#ffffff" stroke-width="1.2" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.18));"></polygon>
-        </svg>
+  <div class="auth-split-layout">
+    
+    <!-- ==========================================
+         LEFT COLUMN: Authentication Form
+         ========================================== -->
+    <div class="auth-left-pane">
+      
+      <!-- Top Brand Header -->
+      <div class="auth-brand-row">
+        <a href="/" class="brand-logo-link" title="FutureEra Homepage">
+          <!-- Geometric 4-Cube Icon matching reference logo structure -->
+          <div class="brand-logo-icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect x="2" y="2" width="10" height="10" rx="2.5" fill="#5e3fae" />
+              <rect x="16" y="2" width="10" height="10" rx="2.5" fill="#5e3fae" opacity="0.85" />
+              <rect x="2" y="16" width="10" height="10" rx="2.5" fill="#5e3fae" opacity="0.85" />
+              <rect x="16" y="16" width="10" height="10" rx="2.5" fill="#7c3aed" />
+              <!-- Center diamond accent -->
+              <polygon points="14,10 18,14 14,18 10,14" fill="#ffffff" />
+            </svg>
+          </div>
+          <span class="brand-logo-name">Future<span>Era</span></span>
+        </a>
+
+        <a href="/community" class="nav-back-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <span>Community</span>
+        </a>
       </div>
-      <div class="brand-text">
-        <span class="brand-title">Future<span class="brand-title-highlight">Era</span></span>
-      </div>
-    </a>
 
-    <div class="nav-links">
-      <a href="/" class="nav-link">Home</a>
-      <a href="/stage" class="nav-link">Explore Stages</a>
-      <a href="/community" class="nav-link">Community</a>
-    </div>
-
-    <div class="header-actions">
-      <a href="/community" class="btn btn--solid" style="padding: 8px 18px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
-        <span>&larr; Return to Community</span>
-      </a>
-    </div>
-  </header>
-
-  <!-- Auth Center Container -->
-  <main class="auth-page-container">
-    <div class="auth-card">
-      <div class="auth-top-accent"></div>
-      <div class="auth-card-body">
+      <!-- Main Form Body -->
+      <div class="auth-form-wrap">
         
-        <div class="auth-brand-badge">
-          <span class="badge-dot"></span>
-          <span>Student Developer Network</span>
+        <!-- Heading & Subtitle -->
+        <h1 id="authTitle" class="auth-heading">Welcome back</h1>
+        <p id="authSubtitle" class="auth-subheading">Please enter your details</p>
+
+        <!-- Alert Notification Box -->
+        <div id="authAlert" class="auth-alert">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <span id="authAlertMsg">Notification</span>
         </div>
 
-        <h1 id="authMainTitle" class="auth-main-title">Sign In to Your Workspace</h1>
-        <p id="authMainSubtitle" class="auth-main-sub">Access your 4-person squad workspace, explore peer matchmaking, and collaborate on real-world engineering capstones.</p>
-
-        <!-- Segmented Tab Switcher -->
-        <div class="auth-nav-tabs">
-          <button type="button" class="auth-tab-btn active" id="tabSignInBtn" onclick="setAuthTab('signin')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
-            <span>Sign In</span>
-          </button>
-          <button type="button" class="auth-tab-btn" id="tabSignUpBtn" onclick="setAuthTab('signup')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
-            <span>Create Account</span>
-          </button>
-        </div>
-
-        <!-- Alert Notice Box -->
-        <div class="auth-alert-box" id="authAlertBox">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-          <span id="authAlertText">Notice message</span>
-        </div>
-
-        <!-- FORM 1: SIGN IN -->
-        <form id="pageSignInForm" onsubmit="submitSignIn(event)">
-          <div class="auth-form-group">
-            <label class="auth-label">Username or Email</label>
-            <div class="auth-input-wrap">
-              <span class="input-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-              </span>
-              <input type="text" id="pageLoginUsername" class="auth-input" required placeholder="aarav_dev or aarav@example.com" />
+        <!-- ====================================
+             FORM 1: SIGN IN (Default view)
+             ==================================== -->
+        <form id="signInForm" onsubmit="handleSignInSubmit(event)">
+          
+          <div class="form-group">
+            <label class="form-label" for="loginEmail">Email address</label>
+            <div class="input-wrapper">
+              <input 
+                type="text" 
+                id="loginEmail" 
+                class="form-control" 
+                required 
+                autocomplete="username"
+                placeholder="Enter your email or username" 
+              />
             </div>
           </div>
 
-          <div class="auth-form-group">
-            <label class="auth-label">Password</label>
-            <div class="auth-input-wrap">
-              <span class="input-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-              </span>
-              <input type="password" id="pageLoginPassword" class="auth-input" required placeholder="••••••••" />
-              <button type="button" class="auth-password-toggle" onclick="togglePasswordView('pageLoginPassword')" title="Show or hide password">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          <div class="form-group">
+            <label class="form-label" for="loginPassword">Password</label>
+            <div class="input-wrapper">
+              <input 
+                type="password" 
+                id="loginPassword" 
+                class="form-control" 
+                required 
+                autocomplete="current-password"
+                placeholder="••••••••" 
+              />
+              <button 
+                type="button" 
+                class="btn-pwd-toggle" 
+                onclick="togglePasswordVisibility('loginPassword')" 
+                title="Show or hide password"
+              >
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
               </button>
             </div>
           </div>
 
-          <button type="submit" class="btn-auth-submit" id="btnPageSignInSubmit">
-            <span>Sign In to FutureEra</span>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          <!-- Remember Me + Forgot Password Row -->
+          <div class="form-meta-row">
+            <label class="checkbox-container">
+              <input type="checkbox" id="rememberMe" checked />
+              <span>Remember for 30 days</span>
+            </label>
+            <a href="javascript:void(0)" class="forgot-link" onclick="handleForgotPassword(event)">Forgot password</a>
+          </div>
+
+          <!-- Primary Sign In Button -->
+          <button type="submit" class="btn-auth-primary" id="btnSignInSubmit">
+            <span>Sign in</span>
           </button>
 
-          <!-- Interactive One-Click Demo Helper -->
-          <div class="demo-account-box">
-            <div class="demo-user-meta">
-              <div class="demo-avatar">AS</div>
-              <div>
-                <div class="demo-name-text">Aarav Sharma</div>
-                <div class="demo-role-text">@aarav_dev • Squad Lead (Neural Vanguard)</div>
-              </div>
-            </div>
-            <button type="button" class="btn-fill-demo" onclick="fillDemoCredentials()">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-              <span>Auto-Fill Demo</span>
-            </button>
-          </div>
+          <!-- Sign in with Google Button -->
+          <button type="button" class="btn-google" onclick="handleGoogleSignIn()">
+            <svg width="18" height="18" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.9c2.28-2.1 3.645-5.2 3.645-9.15z"/>
+              <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.9-3.05c-1.08.72-2.45 1.16-4.03 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.15C3.26 21.36 7.33 24 12 24z"/>
+              <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.24C.45 8.15 0 9.92 0 12s.45 3.85 1.24 5.42l4.04-3.15z"/>
+              <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.24 6.58l4.04 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+            </svg>
+            <span>Sign in with Google</span>
+          </button>
+
+          <!-- 1-Click Interactive Demo Helper -->
+          <button type="button" class="demo-pill-btn" onclick="fillDemoCredentials()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            <span>Auto-fill Demo (@aarav_dev)</span>
+          </button>
+
+          <!-- Switch to Sign Up -->
+          <p class="auth-switch-text">
+            Don't have an account? 
+            <button type="button" class="auth-switch-btn" onclick="setAuthMode('signup')">Sign up</button>
+          </p>
+
         </form>
 
-        <!-- FORM 2: SIGN UP -->
-        <form id="pageSignUpForm" style="display: none;" onsubmit="submitSignUp(event)">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div class="auth-form-group">
-              <label class="auth-label">Full Name</label>
-              <div class="auth-input-wrap">
-                <span class="input-icon">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                </span>
-                <input type="text" id="pageRegFullName" class="auth-input" required placeholder="Aarav Sharma" />
-              </div>
+        <!-- ====================================
+             FORM 2: SIGN UP
+             ==================================== -->
+        <form id="signUpForm" style="display: none;" onsubmit="handleSignUpSubmit(event)">
+          
+          <div class="signup-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="regFullName">Full name</label>
+              <input type="text" id="regFullName" class="form-control" required placeholder="Aarav Sharma" />
             </div>
-            <div class="auth-form-group">
-              <label class="auth-label">Username</label>
-              <div class="auth-input-wrap">
-                <span class="input-icon" style="font-weight: 700; font-size: 13px;">@</span>
-                <input type="text" id="pageRegUsername" class="auth-input" required placeholder="aarav_dev" />
-              </div>
+            <div class="form-group">
+              <label class="form-label" for="regUsername">Username</label>
+              <input type="text" id="regUsername" class="form-control" required placeholder="aarav_dev" />
             </div>
           </div>
 
-          <div class="auth-form-group">
-            <label class="auth-label">Email Address</label>
-            <div class="auth-input-wrap">
-              <span class="input-icon">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-              </span>
-              <input type="email" id="pageRegEmail" class="auth-input" required placeholder="aarav@example.com" />
-            </div>
+          <div class="form-group">
+            <label class="form-label" for="regEmail">Email address</label>
+            <input type="email" id="regEmail" class="form-control" required placeholder="name@example.com" />
           </div>
 
-          <div class="auth-form-group">
-            <label class="auth-label">Password (Min 6 Characters)</label>
-            <div class="auth-input-wrap">
-              <span class="input-icon">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-              </span>
-              <input type="password" id="pageRegPassword" class="auth-input" minlength="6" required placeholder="••••••••" />
-              <button type="button" class="auth-password-toggle" onclick="togglePasswordView('pageRegPassword')">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          <div class="form-group">
+            <label class="form-label" for="regPassword">Password (Min 6 characters)</label>
+            <div class="input-wrapper">
+              <input type="password" id="regPassword" class="form-control" minlength="6" required placeholder="••••••••" />
+              <button type="button" class="btn-pwd-toggle" onclick="togglePasswordVisibility('regPassword')">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
               </button>
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div class="auth-form-group">
-              <label class="auth-label">Academic Stage</label>
-              <select id="pageRegStage" class="auth-select" style="padding-left: 12px;">
+          <div class="signup-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="regStage">Career Stage</label>
+              <select id="regStage" class="form-control" style="background-color: #fff; cursor: pointer;">
                 <option value="final_year" selected>Final Year Student</option>
                 <option value="12th_pass">Class 12th Pass</option>
               </select>
             </div>
-            <div class="auth-form-group">
-              <label class="auth-label">Degree or Stream</label>
-              <div class="auth-input-wrap">
-                <span class="input-icon">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
-                </span>
-                <input type="text" id="pageRegDegree" class="auth-input" placeholder="B.Tech CS" />
-              </div>
+            <div class="form-group">
+              <label class="form-label" for="regDegree">Degree or Stream</label>
+              <input type="text" id="regDegree" class="form-control" placeholder="B.Tech Computer Science" />
             </div>
           </div>
 
-          <div class="auth-form-group">
-            <label class="auth-label">Target Engineering Role</label>
-            <div class="auth-input-wrap">
-              <span class="input-icon">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
-              </span>
-              <input type="text" id="pageRegTargetRole" class="auth-input" placeholder="e.g. AI Systems Architect" />
-            </div>
+          <div class="form-group">
+            <label class="form-label" for="regTargetRole">Target Engineering Role</label>
+            <input type="text" id="regTargetRole" class="form-control" placeholder="e.g. AI Systems Architect" />
           </div>
 
-          <!-- Interactive Interest Matrix -->
-          <div class="auth-form-group">
-            <div class="interest-counter-ribbon">
-              <span class="auth-label" style="margin-bottom: 0;">Core Technical Interests (Choose &ge; 3)</span>
-              <span class="counter-tag incomplete" id="pageInterestCounter">0 / 3 selected</span>
+          <!-- Interests Selection Matrix (at least 3) -->
+          <div class="form-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <label class="form-label" style="margin-bottom: 0;">Core Interests (Pick &ge; 3)</label>
+              <span id="interestCounter" style="font-size: 12px; font-weight: 600; color: #b45309;">0/3 selected</span>
             </div>
-
-            <div class="interest-chips-matrix" id="pageInterestMatrix">
-              <div class="interest-select-card" data-interest="Coding & Tech">
-                <svg class="interest-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            <div class="interest-chips-matrix" id="signupInterestGrid">
+              <div class="interest-chip" data-val="Coding & Tech">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
                 <span>Full-Stack &amp; Core</span>
               </div>
-              <div class="interest-select-card" data-interest="AI & Machine Learning">
-                <svg class="interest-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3m0 14v3M2 12h3m14 0h3"></path><path d="M4.93 4.93l2.12 2.12m9.9 9.9l2.12 2.12M4.93 19.07l2.12-2.12m9.9-9.9l2.12-2.12"></path></svg>
-                <span>AI &amp; Machine Learning</span>
+              <div class="interest-chip" data-val="AI & Machine Learning">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3m0 14v3M2 12h3m14 0h3"></path></svg>
+                <span>AI &amp; ML</span>
               </div>
-              <div class="interest-select-card" data-interest="Cloud & DevOps">
-                <svg class="interest-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+              <div class="interest-chip" data-val="Cloud & DevOps">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
                 <span>Cloud &amp; DevOps</span>
               </div>
-              <div class="interest-select-card" data-interest="Cybersecurity">
-                <svg class="interest-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <div class="interest-chip" data-val="Cybersecurity">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                 <span>Cybersecurity</span>
               </div>
-              <div class="interest-select-card" data-interest="UI/UX & Product Design">
-                <svg class="interest-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path></svg>
+              <div class="interest-chip" data-val="UI/UX & Product Design">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"></path></svg>
                 <span>UI/UX &amp; Design</span>
               </div>
-              <div class="interest-select-card" data-interest="Robotics & IoT">
-                <svg class="interest-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>
+              <div class="interest-chip" data-val="Robotics & IoT">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle></svg>
                 <span>Robotics &amp; IoT</span>
               </div>
-              <div class="interest-select-card" data-interest="Data Science & Analytics">
-                <svg class="interest-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              <div class="interest-chip" data-val="Data Science & Analytics">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
                 <span>Data Science</span>
               </div>
-              <div class="interest-select-card" data-interest="Finance & Markets">
-                <svg class="interest-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+              <div class="interest-chip" data-val="Finance & Markets">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline></svg>
                 <span>FinTech &amp; Markets</span>
               </div>
             </div>
           </div>
 
-          <div class="auth-form-group">
-            <label class="auth-label">Short Bio</label>
-            <textarea id="pageRegBio" class="auth-textarea" placeholder="Student engineer interested in distributed backends and AI evaluation..."></textarea>
+          <!-- Terms Checkbox -->
+          <div class="form-meta-row" style="margin-bottom: 20px;">
+            <label class="checkbox-container">
+              <input type="checkbox" id="agreeTerms" checked required />
+              <span>I agree to the <a href="/terms" target="_blank" class="forgot-link">Terms</a> and <a href="/privacy" target="_blank" class="forgot-link">Privacy Policy</a></span>
+            </label>
           </div>
 
-          <button type="submit" class="btn-auth-submit" id="btnPageSignUpSubmit">
-            <span>Create Profile &amp; Join Community</span>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          <!-- Primary Sign Up Button -->
+          <button type="submit" class="btn-auth-primary" id="btnSignUpSubmit">
+            <span>Create account</span>
           </button>
+
+          <!-- Switch to Sign In -->
+          <p class="auth-switch-text">
+            Already have an account? 
+            <button type="button" class="auth-switch-btn" onclick="setAuthMode('signin')">Log in</button>
+          </p>
+
         </form>
 
       </div>
-    </div>
-  </main>
 
-  <!-- Global Footer -->
-  <footer class="future-footer">
-    <div>FUTUREERA &copy; 2026. All rights reserved.</div>
-    <div style="display: flex; gap: 24px; flex-wrap: wrap;">
-      <a href="/">Home</a>
-      <a href="/stage">Stages</a>
-      <a href="/community">Community</a>
-      <a href="/terms">Terms and Conditions</a>
-      <a href="/privacy">Privacy Policy</a>
-    </div>
-  </footer>
+      <!-- Bottom Minimal Footer -->
+      <div class="auth-bottom-note">
+        FutureEra &copy; 2026 &bull; <a href="/terms">Terms</a> &bull; <a href="/privacy">Privacy</a>
+      </div>
 
+    </div>
+
+    <!-- ==========================================
+         RIGHT COLUMN: Vector Illustration Canvas
+         Pixel-perfect recreation of the user's uploaded art
+         ========================================== -->
+    <div class="auth-right-pane" aria-hidden="true">
+      <div class="illustration-wrapper">
+        <svg class="vector-art-svg" viewBox="0 0 740 680" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <!-- Soft drop shadow for monitor -->
+            <filter id="screenShadow" x="-20%" y="-10%" width="140%" height="130%" filterUnits="userSpaceOnUse">
+              <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#3b236e" flood-opacity="0.32"/>
+            </filter>
+            <!-- Badge glow -->
+            <filter id="badgeGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#ffffff" flood-opacity="0.35"/>
+            </filter>
+          </defs>
+
+          <!-- ==========================================
+               BACKGROUND FLOATING DOODLES & ICONS
+               Exact match from user reference image
+               ========================================== -->
+          
+          <!-- Top Left: Speech Bubble with 'i' (Information) -->
+          <g class="floating-doodle" opacity="0.65">
+            <path d="M165 95 C145 95, 130 110, 130 130 C130 148, 142 162, 160 165 L155 182 L175 165 C195 165, 210 150, 210 130 C210 110, 190 95, 165 95 Z" stroke="#ffffff" stroke-width="2" fill="none" stroke-linejoin="round"/>
+            <line x1="170" y1="128" x2="170" y2="148" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="170" cy="116" r="1.8" fill="#ffffff"/>
+          </g>
+
+          <!-- Top Center: Headset / Headphones -->
+          <g class="floating-doodle-alt" opacity="0.6">
+            <path d="M295 125 C295 98, 340 98, 340 125" stroke="#ffffff" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+            <rect x="288" y="125" width="10" height="20" rx="5" stroke="#ffffff" stroke-width="2" fill="none"/>
+            <rect x="337" y="125" width="10" height="20" rx="5" stroke="#ffffff" stroke-width="2" fill="none"/>
+          </g>
+
+          <!-- Mid-Left: Globe with '24' (24/7 Support / Connectivity) -->
+          <g class="floating-doodle" opacity="0.6">
+            <circle cx="150" cy="245" r="32" stroke="#ffffff" stroke-width="2" fill="none"/>
+            <ellipse cx="150" cy="245" rx="16" ry="32" stroke="#ffffff" stroke-width="1.8" fill="none"/>
+            <line x1="118" y1="245" x2="182" y2="245" stroke="#ffffff" stroke-width="1.8"/>
+            <circle cx="166" cy="260" r="14" fill="#9670d3" stroke="#ffffff" stroke-width="1.8"/>
+            <text x="166" y="264" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">24</text>
+          </g>
+
+          <!-- Mid-Left Lower: Mail / Envelope -->
+          <g class="floating-doodle-alt" opacity="0.65">
+            <rect x="155" y="335" width="56" height="38" rx="4" stroke="#ffffff" stroke-width="2" fill="none"/>
+            <polyline points="156,337 183,358 210,337" stroke="#ffffff" stroke-width="2" fill="none" stroke-linejoin="round"/>
+            <line x1="156" y1="371" x2="176" y2="352" stroke="#ffffff" stroke-width="1.5"/>
+            <line x1="210" y1="371" x2="190" y2="352" stroke="#ffffff" stroke-width="1.5"/>
+          </g>
+
+          <!-- Top Right: Speech Bubble with '...' (3 Dots) -->
+          <g class="floating-doodle" opacity="0.6">
+            <path d="M570 115 C545 115, 528 130, 528 148 C528 162, 538 174, 552 178 L550 192 L565 180 C585 180, 600 166, 600 148 C600 130, 585 115, 570 115 Z" stroke="#ffffff" stroke-width="2" fill="none" stroke-linejoin="round"/>
+            <circle cx="552" cy="148" r="2.5" fill="#ffffff"/>
+            <circle cx="564" cy="148" r="2.5" fill="#ffffff"/>
+            <circle cx="576" cy="148" r="2.5" fill="#ffffff"/>
+          </g>
+
+          <!-- Upper Center-Right: Mobile Phone with User Avatar -->
+          <g class="floating-doodle-alt" opacity="0.65">
+            <rect x="425" y="185" width="36" height="60" rx="7" stroke="#ffffff" stroke-width="2" fill="none"/>
+            <circle cx="443" cy="208" r="7" stroke="#ffffff" stroke-width="1.8" fill="none"/>
+            <path d="M433 226 C433 220, 437 218, 443 218 C449 218, 453 220, 453 226" stroke="#ffffff" stroke-width="1.8" fill="none"/>
+            <circle cx="443" cy="240" r="1.5" fill="#ffffff"/>
+          </g>
+
+          <!-- Upper Right: Laptop with Phone Receiver on Screen -->
+          <g class="floating-doodle" opacity="0.65">
+            <rect x="500" y="185" width="54" height="36" rx="4" stroke="#ffffff" stroke-width="2" fill="none"/>
+            <line x1="486" y1="221" x2="568" y2="221" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Phone receiver icon inside screen -->
+            <path d="M520 200 C520 197, 523 195, 526 198 L532 204 C534 206, 532 209, 530 210 C526 211, 524 208, 520 200 Z" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linejoin="round"/>
+          </g>
+
+          <!-- Mid Right: Question mark & Open Hand -->
+          <g class="floating-doodle-alt" opacity="0.65">
+            <path d="M575 220 C575 210, 590 210, 590 222 C590 232, 580 234, 580 242" stroke="#ffffff" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+            <circle cx="580" cy="250" r="1.5" fill="#ffffff"/>
+            <!-- Hand palm -->
+            <path d="M565 275 C575 275, 588 270, 595 272 C602 274, 608 280, 600 286 C585 296, 565 296, 555 285 Z" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linejoin="round"/>
+          </g>
+
+          <!-- Mid Right: Three concentric connection circles -->
+          <g class="floating-doodle" opacity="0.7">
+            <ellipse cx="550" cy="390" rx="14" ry="10" stroke="#ffffff" stroke-width="1.8" fill="none"/>
+            <ellipse cx="572" cy="392" rx="7" ry="5" stroke="#ffffff" stroke-width="1.8" fill="none"/>
+            <circle cx="590" cy="393" r="5" stroke="#ffffff" stroke-width="1.8" fill="none"/>
+          </g>
+
+          <!-- Scattered decorative elements matching reference -->
+          <g opacity="0.45" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round">
+            <!-- Crosses & Pluses -->
+            <line x1="220" y1="120" x2="228" y2="128"/><line x1="228" y1="120" x2="220" y2="128"/>
+            <line x1="510" y1="95" x2="516" y2="95"/><line x1="513" y1="92" x2="513" y2="98"/>
+            <line x1="418" y1="125" x2="424" y2="131"/><line x1="424" y1="125" x2="418" y2="131"/>
+            <line x1="475" y1="140" x2="483" y2="140"/><line x1="479" y1="136" x2="479" y2="144"/>
+            <line x1="595" y1="195" x2="603" y2="203"/><line x1="603" y1="195" x2="595" y2="203"/>
+            <line x1="230" y1="210" x2="238" y2="210"/><line x1="234" y1="206" x2="234" y2="214"/>
+            <line x1="390" y1="270" x2="396" y2="276"/><line x1="396" y1="270" x2="390" y2="276"/>
+            <!-- Circles & Dots -->
+            <circle cx="395" cy="148" r="2.5" fill="none"/>
+            <circle cx="488" cy="272" r="3" fill="none"/>
+            <circle cx="218" cy="295" r="2" fill="none"/>
+            <circle cx="510" cy="328" r="2.5" fill="none"/>
+            <!-- Small accent dashes -->
+            <line x1="215" y1="240" x2="225" y2="240"/>
+            <line x1="212" y1="255" x2="226" y2="255"/>
+            <line x1="500" y1="262" x2="512" y2="262"/>
+          </g>
+
+          <!-- Background Wavy Sine Lines -->
+          <g stroke="#ffffff" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.65">
+            <!-- Left sine wave behind screen -->
+            <path d="M135 520 Q150 505, 165 520 T195 520 T225 520 T255 520"/>
+            <!-- Right sine wave below screen -->
+            <path d="M525 460 Q545 440, 565 460 T605 460"/>
+            <path d="M495 570 Q515 590, 535 570 T575 570"/>
+          </g>
+
+          <!-- ==========================================
+               LEFT VERIFIED CHECKMARK BADGE (PILL)
+               ========================================== -->
+          <g transform="translate(130, 370)" filter="url(#badgeGlow)">
+            <!-- Outer translucent rounded container -->
+            <rect x="0" y="0" width="88" height="74" rx="37" fill="#ffffff" fill-opacity="0.22" stroke="#ffffff" stroke-width="2"/>
+            <!-- Inner white badge circle -->
+            <circle cx="40" cy="37" r="25" fill="#ffffff"/>
+            <!-- Purple Checkmark -->
+            <path d="M31 37 L38 44 L51 29" stroke="#5e3fae" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </g>
+
+          <!-- ==========================================
+               DESKTOP MONITOR HARDWARE (SCREEN & STAND)
+               ========================================== -->
+          <!-- Monitor Stand Base & Stem -->
+          <g opacity="0.95">
+            <!-- Stand base on desk -->
+            <path d="M210 615 L430 615" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Stand neck -->
+            <path d="M310 520 L305 615 L335 615 L330 520 Z" fill="#d8b4fe" opacity="0.8"/>
+            <path d="M305 608 C305 603, 335 603, 335 608 L345 615 L295 615 Z" fill="#ffffff"/>
+          </g>
+
+          <!-- Desktop Monitor Outer Chassis -->
+          <g filter="url(#screenShadow)">
+            <!-- Monitor Frame (Dark Charcoal / Sleek Bezel) -->
+            <rect x="235" y="325" width="370" height="235" rx="18" fill="#09090b" stroke="#ffffff" stroke-width="3"/>
+            <!-- Monitor Inner Display Screen (Deep Indigo / Space) -->
+            <rect x="245" y="335" width="350" height="215" rx="12" fill="#09090b"/>
+          </g>
+
+          <!-- ==========================================
+               PERSON CHARACTER (EMERGING FROM MONITOR)
+               ========================================== -->
+          <!-- Torso & Violet Top -->
+          <g>
+            <!-- Body silhouette filling screen bottom -->
+            <path d="M260 550 C265 470, 290 410, 360 405 C420 405, 455 460, 465 550 Z" fill="#583b9e"/>
+            
+            <!-- Arm raising up on left to do OK sign -->
+            <path d="M285 540 C280 470, 270 410, 280 345" stroke="#ffffff" stroke-width="26" stroke-linecap="round" fill="none"/>
+
+            <!-- Neck -->
+            <path d="M340 375 L340 420 C340 435, 375 435, 375 420 L375 375 Z" fill="#ffffff"/>
+
+            <!-- Head / Face Silhouette -->
+            <path d="M335 340 C325 315, 340 280, 370 280 C395 280, 405 310, 400 340 C395 365, 345 365, 335 340 Z" fill="#ffffff"/>
+
+            <!-- Hair (Dark modern stylized sweep matching reference) -->
+            <path d="M330 345 C305 320, 310 265, 350 240 C390 220, 435 250, 440 295 C445 330, 420 370, 425 410 C428 425, 412 425, 410 405 C405 375, 415 330, 405 305 C398 285, 385 275, 370 275 C355 275, 345 285, 340 305 C335 325, 340 355, 330 345 Z" fill="#09090b"/>
+
+            <!-- Headset -->
+            <!-- Headset Band -->
+            <path d="M348 272 C355 258, 380 258, 395 285" fill="none" stroke="#09090b" stroke-width="4.5" stroke-linecap="round"/>
+            <!-- Headset Ear Cushion -->
+            <ellipse cx="395" cy="305" rx="7.5" ry="12.5" fill="#09090b"/>
+            <!-- Microphone Boom extending to mouth -->
+            <path d="M395 312 C395 335, 378 342, 362 342" fill="none" stroke="#09090b" stroke-width="3.5" stroke-linecap="round"/>
+            <circle cx="360" cy="342" r="4.5" fill="#09090b"/>
+
+            <!-- ==========================================
+                 HAND WITH "OK" GESTURE 👌
+                 ========================================== -->
+            <!-- OK Hand Form -->
+            <g transform="translate(250, 275)">
+              <!-- Palm base -->
+              <path d="M22 68 C22 55, 30 45, 42 50 C52 55, 55 70, 46 80 C36 90, 22 85, 22 68 Z" fill="#ffffff"/>
+              <!-- Index Finger & Thumb making the circle -->
+              <circle cx="42" cy="60" r="14" fill="#ffffff"/>
+              <!-- Negative space inside the circle (revealing the purple canvas background) -->
+              <circle cx="42" cy="60" r="6.5" fill="#9670d3"/>
+              
+              <!-- 3 Upraised Fingers (Pinky, Ring, Middle) -->
+              <!-- Middle Finger (Tallest) -->
+              <path d="M34 52 L36 12 C36 7, 43 7, 44 12 L46 50" fill="#ffffff"/>
+              <!-- Ring Finger -->
+              <path d="M24 55 L22 18 C22 13, 29 13, 30 18 L34 52" fill="#ffffff"/>
+              <!-- Pinky Finger -->
+              <path d="M16 62 L10 26 C10 21, 17 21, 18 26 L23 58" fill="#ffffff"/>
+            </g>
+
+          </g>
+
+        </svg>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Client-side Interactive Logic -->
   <script>
+    // Selected interests storage for registration
     const selectedInterests = new Set();
 
     document.addEventListener("DOMContentLoaded", () => {
-      // Check query param for tab mode
+      // Check URL parameters for initial tab (mode=signup vs mode=signin)
       const urlParams = new URLSearchParams(window.location.search);
       const mode = urlParams.get("mode") || (window.location.pathname.includes("signup") ? "signup" : "signin");
-      setAuthTab(mode);
+      setAuthMode(mode);
 
-      // Setup interest chips toggle
-      const cards = document.querySelectorAll("#pageInterestMatrix .interest-select-card");
-      const counter = document.getElementById("pageInterestCounter");
+      // Initialize interest chip matrix click listeners
+      const chips = document.querySelectorAll("#signupInterestGrid .interest-chip");
+      const counter = document.getElementById("interestCounter");
 
-      cards.forEach(card => {
-        card.addEventListener("click", () => {
-          const val = card.getAttribute("data-interest");
+      chips.forEach(chip => {
+        chip.addEventListener("click", () => {
+          const val = chip.getAttribute("data-val");
           if (selectedInterests.has(val)) {
             selectedInterests.delete(val);
-            card.classList.remove("selected");
+            chip.classList.remove("selected");
           } else {
             selectedInterests.add(val);
-            card.classList.add("selected");
+            chip.classList.add("selected");
           }
 
           const count = selectedInterests.size;
           if (count >= 3) {
-            counter.textContent = `✓ ${count} selected • Matching active`;
-            counter.className = "counter-tag complete";
+            counter.textContent = `✓ ${count} selected • Matching ready`;
+            counter.style.color = "#5e3fae";
           } else {
-            counter.textContent = `${count} / 3 selected`;
-            counter.className = "counter-tag incomplete";
+            counter.textContent = `${count}/3 selected`;
+            counter.style.color = "#b45309";
           }
         });
       });
     });
 
-    function setAuthTab(tab) {
-      const isSignIn = tab === 'signin';
-      document.getElementById("tabSignInBtn").classList.toggle("active", isSignIn);
-      document.getElementById("tabSignUpBtn").classList.toggle("active", !isSignIn);
-
-      document.getElementById("pageSignInForm").style.display = isSignIn ? "block" : "none";
-      document.getElementById("pageSignUpForm").style.display = isSignIn ? "none" : "block";
-
-      const title = document.getElementById("authMainTitle");
-      const subtitle = document.getElementById("authMainSubtitle");
+    function setAuthMode(mode) {
+      const isSignIn = mode === 'signin';
+      
+      const title = document.getElementById("authTitle");
+      const subtitle = document.getElementById("authSubtitle");
+      const signInForm = document.getElementById("signInForm");
+      const signUpForm = document.getElementById("signUpForm");
 
       if (isSignIn) {
-        title.textContent = "Sign In to Your Workspace";
-        subtitle.textContent = "Access your 4-person squad workspace, explore peer matchmaking, and collaborate on real-world engineering capstones.";
+        title.textContent = "Welcome back";
+        subtitle.textContent = "Please enter your details";
+        signInForm.style.display = "block";
+        signUpForm.style.display = "none";
+        document.title = "Welcome back — FutureEra";
       } else {
-        title.textContent = "Create Student Profile";
-        subtitle.textContent = "Select at least 3 core technical interests to enable algorithm-assisted peer matching and form 4-member squads.";
+        title.textContent = "Create an account";
+        subtitle.textContent = "Start your journey with student developer squads";
+        signInForm.style.display = "none";
+        signUpForm.style.display = "block";
+        document.title = "Create an account — FutureEra";
       }
 
       hideAlert();
     }
 
-    function togglePasswordView(inputId) {
+    function togglePasswordVisibility(inputId) {
       const input = document.getElementById(inputId);
       if (input) {
         input.type = input.type === "password" ? "text" : "password";
@@ -800,38 +1060,52 @@
     }
 
     function showAlert(msg, type = "error") {
-      const box = document.getElementById("authAlertBox");
-      const text = document.getElementById("authAlertText");
+      const box = document.getElementById("authAlert");
+      const text = document.getElementById("authAlertMsg");
       if (box && text) {
-        box.className = `auth-alert-box ${type}`;
+        box.className = `auth-alert ${type}`;
         text.textContent = msg;
       }
     }
 
     function hideAlert() {
-      const box = document.getElementById("authAlertBox");
-      if (box) box.style.display = "none";
+      const box = document.getElementById("authAlert");
+      if (box) box.className = "auth-alert";
+    }
+
+    function handleForgotPassword(e) {
+      e.preventDefault();
+      showAlert("Password reset link has been dispatched to your registered address.", "success");
+    }
+
+    function handleGoogleSignIn() {
+      showAlert("Redirecting to Google Secure Student Single Sign-On...", "success");
+      setTimeout(() => {
+        fillDemoCredentials();
+      }, 700);
     }
 
     function fillDemoCredentials() {
-      const u = document.getElementById("pageLoginUsername");
-      const p = document.getElementById("pageLoginPassword");
-      if (u) u.value = "aarav_dev";
-      if (p) p.value = "Password@123";
-      showAlert("Demo credentials loaded for @aarav_dev! Click 'Sign In' below.", "success");
+      const emailField = document.getElementById("loginEmail");
+      const pwdField = document.getElementById("loginPassword");
+      if (emailField) emailField.value = "aarav_dev";
+      if (pwdField) pwdField.value = "Password@123";
+      showAlert("Loaded Aarav Sharma's credentials (@aarav_dev). Click 'Sign in'!", "success");
     }
 
-    function getRedirectUrl() {
+    function getRedirectTarget() {
       const params = new URLSearchParams(window.location.search);
       return params.get("redirect") || "/community";
     }
 
-    async function submitSignIn(e) {
+    // SIGN IN SUBMISSION
+    async function handleSignInSubmit(e) {
       e.preventDefault();
       hideAlert();
-      const username_or_email = document.getElementById("pageLoginUsername").value.trim();
-      const password = document.getElementById("pageLoginPassword").value;
-      const btn = document.getElementById("btnPageSignInSubmit");
+
+      const username_or_email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      const btn = document.getElementById("btnSignInSubmit");
 
       btn.disabled = true;
       btn.innerHTML = `<span>Signing in...</span>`;
@@ -843,41 +1117,46 @@
           body: JSON.stringify({ username_or_email, password })
         });
         const data = await res.json();
+
         if (!res.ok) {
           showAlert(data.detail || "Sign-in failed. Please verify credentials.", "error");
           btn.disabled = false;
-          btn.innerHTML = `<span>Sign In to FutureEra</span> <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
+          btn.innerHTML = `<span>Sign in</span>`;
           return;
         }
 
+        // Store session token
         localStorage.setItem("fe_session_token", data.token);
         showAlert(`Welcome back, ${data.user.full_name}! Redirecting...`, "success");
+
         setTimeout(() => {
-          window.location.href = getRedirectUrl();
-        }, 600);
+          window.location.href = getRedirectTarget();
+        }, 500);
+
       } catch (err) {
-        showAlert("Network connection error.", "error");
+        showAlert("Network connection error. Please try again.", "error");
         btn.disabled = false;
-        btn.innerHTML = `<span>Sign In to FutureEra</span>`;
+        btn.innerHTML = `<span>Sign in</span>`;
       }
     }
 
-    async function submitSignUp(e) {
+    // SIGN UP SUBMISSION
+    async function handleSignUpSubmit(e) {
       e.preventDefault();
       hideAlert();
-      const full_name = document.getElementById("pageRegFullName").value.trim();
-      const username = document.getElementById("pageRegUsername").value.trim();
-      const email = document.getElementById("pageRegEmail").value.trim();
-      const password = document.getElementById("pageRegPassword").value;
-      const stage = document.getElementById("pageRegStage").value;
-      const stream_or_degree = document.getElementById("pageRegDegree").value.trim();
-      const target_role = document.getElementById("pageRegTargetRole").value.trim();
-      const bio = document.getElementById("pageRegBio").value.trim();
+
+      const full_name = document.getElementById("regFullName").value.trim();
+      const username = document.getElementById("regUsername").value.trim();
+      const email = document.getElementById("regEmail").value.trim();
+      const password = document.getElementById("regPassword").value;
+      const stage = document.getElementById("regStage").value;
+      const stream_or_degree = document.getElementById("regDegree").value.trim();
+      const target_role = document.getElementById("regTargetRole").value.trim();
       const interests = Array.from(selectedInterests);
-      const btn = document.getElementById("btnPageSignUpSubmit");
+      const btn = document.getElementById("btnSignUpSubmit");
 
       if (interests.length < 3) {
-        showAlert("Please choose at least 3 core technical interests to enable peer matchmaking.", "error");
+        showAlert("Please choose at least 3 core technical interests to enable peer matching.", "error");
         return;
       }
 
@@ -896,29 +1175,32 @@
             stage,
             stream_or_degree,
             target_role,
-            bio,
+            bio: "Student engineer building with FutureEra.",
             interests,
-            avatar_color: "#0f766e",
+            avatar_color: "#5e3fae",
             avatar_emoji: ""
           })
         });
         const data = await res.json();
+
         if (!res.ok) {
-          showAlert(data.detail || "Account creation failed.", "error");
+          showAlert(data.detail || "Registration failed. Please check form inputs.", "error");
           btn.disabled = false;
-          btn.innerHTML = `<span>Create Profile &amp; Join Community</span>`;
+          btn.innerHTML = `<span>Create account</span>`;
           return;
         }
 
         localStorage.setItem("fe_session_token", data.token);
         showAlert(`Account created successfully! Welcome, ${data.user.full_name}!`, "success");
+
         setTimeout(() => {
-          window.location.href = getRedirectUrl();
-        }, 600);
+          window.location.href = getRedirectTarget();
+        }, 500);
+
       } catch (err) {
         showAlert("Network error during registration.", "error");
         btn.disabled = false;
-        btn.innerHTML = `<span>Create Profile &amp; Join Community</span>`;
+        btn.innerHTML = `<span>Create account</span>`;
       }
     }
   </script>

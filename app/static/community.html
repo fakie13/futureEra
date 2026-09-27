@@ -1481,24 +1481,42 @@
 
     /* Split-Screen Auth Modal (Recreating TheCubeFactory / Reference Design) */
     .auth-modal-card {
-      max-width: 900px;
+      max-width: 1060px;
       width: 95%;
+      height: clamp(690px, 86vh, 750px);
       padding: 0;
-      border-radius: 20px;
+      border-radius: 22px;
       overflow: hidden;
       border: 1px solid #e5e7eb;
       box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.25);
       display: grid;
-      grid-template-columns: 1.08fr 0.92fr;
+      grid-template-columns: 1.15fr 0.85fr;
       background: #ffffff;
       position: relative;
     }
 
     .auth-modal-left-pane {
-      padding: 32px 34px 28px;
+      padding: 38px 46px 34px;
       overflow-y: auto;
-      max-height: 88vh;
+      height: 100%;
       background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+
+    .auth-modal-left-pane::-webkit-scrollbar {
+      width: 6px;
+    }
+    .auth-modal-left-pane::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .auth-modal-left-pane::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px;
+    }
+    .auth-modal-left-pane::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
     }
 
     .auth-modal-right-pane {
@@ -1509,22 +1527,47 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 32px 28px;
       position: relative;
       overflow: hidden;
-      min-height: 520px;
+      height: 100%;
+      box-sizing: border-box;
     }
 
-    @media (max-width: 860px) {
+    .auth-modal-right-pane svg {
+      width: 100%;
+      height: auto;
+      max-height: 580px;
+    }
+
+    #signInForm {
+      margin: auto 0;
+      width: 100%;
+    }
+
+    #signUpForm {
+      margin: auto 0;
+      width: 100%;
+    }
+
+    @media (max-width: 900px) {
       .auth-modal-card {
         grid-template-columns: 1fr;
-        max-width: 480px;
+        max-width: 520px;
+        height: auto;
+        max-height: 92vh;
+      }
+      .auth-modal-card .modal-close-btn {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
       }
       .auth-modal-right-pane {
         display: none !important;
       }
       .auth-modal-left-pane {
-        padding: 26px 20px 22px;
+        padding: 30px 24px 26px;
+        height: auto;
+        max-height: 92vh;
       }
     }
 
@@ -2032,12 +2075,9 @@
   <!-- ===================================================
        MODAL 1: AUTH (SIGN IN / SIGN UP)
        =================================================== -->
-  <!-- ===================================================
-       MODAL 1: AUTH (SIGN IN / SIGN UP)
-       =================================================== -->
   <div class="modal-backdrop" id="authModal">
     <div class="modal-card auth-modal-card">
-      <button class="modal-close-btn" onclick="closeAuthModal()" style="top: 12px; right: 12px; z-index: 30; background: rgba(0,0,0,0.18); color: #ffffff; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 18px; border: none; cursor: pointer;">&times;</button>
+      <button class="modal-close-btn" onclick="closeAuthModal()" style="top: 16px; right: 16px; z-index: 35; background: rgba(0,0,0,0.22); color: #ffffff; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; font-size: 20px; border: none; cursor: pointer; transition: background 0.15s ease;">&times;</button>
       
       <!-- LEFT PANE: Form controls -->
       <div class="auth-modal-left-pane">
@@ -2063,12 +2103,12 @@
 
         <!-- FORM 1: SIGN IN -->
         <form id="signInForm" onsubmit="handleSignInSubmit(event)">
-          <div class="form-group" style="margin-bottom: 12px;">
+          <div class="form-group" style="margin-bottom: 14px;">
             <label class="form-label" style="font-size: 14.5px; font-weight: 500; color: #374151; margin-bottom: 5px; display: block;">Email address</label>
             <input type="text" id="loginUsername" class="modal-input-field" required placeholder="Enter your email or username" />
           </div>
 
-          <div class="form-group" style="margin-bottom: 12px;">
+          <div class="form-group" style="margin-bottom: 14px;">
             <label class="form-label" style="font-size: 14.5px; font-weight: 500; color: #374151; margin-bottom: 5px; display: block;">Password</label>
             <div style="position: relative;">
               <input type="password" id="loginPassword" class="modal-input-field" style="padding-right: 36px;" required placeholder="••••••••" />
@@ -2079,7 +2119,7 @@
           </div>
 
           <!-- Options row -->
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-size: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; font-size: 14px;">
             <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; color: #374151;">
               <input type="checkbox" id="modalRememberMe" checked style="accent-color: #5e3fae; border-radius: 4px;" />
               <span>Remember me</span>
@@ -2110,7 +2150,7 @@
           </button>
 
           <!-- Switch to sign up -->
-          <p style="text-align: center; font-size: 14px; color: #6b7280; margin-top: 14px;">
+          <p style="text-align: center; font-size: 14px; color: #6b7280; margin-top: 16px;">
             Don't have an account? 
             <button type="button" onclick="switchAuthTab('signup')" style="background: none; border: none; color: #5e3fae; text-decoration: underline; font-weight: 600; cursor: pointer; font-family: inherit; font-size: inherit;">Sign up</button>
           </p>
@@ -2118,7 +2158,7 @@
 
         <!-- FORM 2: SIGN UP -->
         <form id="signUpForm" style="display: none;" onsubmit="handleSignUpSubmit(event)">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
             <div class="form-group">
               <label class="form-label" style="font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 4px; display: block;">Full Name</label>
               <input type="text" id="regFullName" class="modal-input-field" required placeholder="Aarav Sharma" />
@@ -2129,22 +2169,23 @@
             </div>
           </div>
 
-          <div class="form-group" style="margin-bottom: 10px;">
-            <label class="form-label" style="font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 4px; display: block;">Email Address</label>
-            <input type="email" id="regEmail" class="modal-input-field" required placeholder="aarav@example.com" />
-          </div>
-
-          <div class="form-group" style="margin-bottom: 10px;">
-            <label class="form-label" style="font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 4px; display: block;">Password (Min 6 Characters)</label>
-            <div style="position: relative;">
-              <input type="password" id="regPassword" class="modal-input-field" minlength="6" style="padding-right: 36px;" required placeholder="••••••••" />
-              <button type="button" onclick="toggleModalPasswordView('regPassword')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #9ca3af; padding: 4px;">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-              </button>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+            <div class="form-group">
+              <label class="form-label" style="font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 4px; display: block;">Email Address</label>
+              <input type="email" id="regEmail" class="modal-input-field" required placeholder="aarav@example.com" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 4px; display: block;">Password (Min 6 Characters)</label>
+              <div style="position: relative;">
+                <input type="password" id="regPassword" class="modal-input-field" minlength="6" style="padding-right: 36px;" required placeholder="••••••••" />
+                <button type="button" onclick="toggleModalPasswordView('regPassword')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #9ca3af; padding: 4px;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+              </div>
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
             <div class="form-group">
               <label class="form-label" style="font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 4px; display: block;">Career Stage</label>
               <select id="regStage" class="modal-input-field" style="background-color: #fff; cursor: pointer;">
@@ -2163,7 +2204,7 @@
             <input type="text" id="regTargetRole" class="modal-input-field" placeholder="e.g. AI Systems Architect" />
           </div>
 
-          <div class="form-group" style="margin-bottom: 12px;">
+          <div class="form-group" style="margin-bottom: 14px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
               <label class="form-label" style="font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 0;">Core Technical Interests (Choose &ge; 3)</label>
               <span id="regInterestCounter" style="color: #b45309; font-size: 13px; font-weight: 700;">0/3 selected</span>
@@ -2210,7 +2251,7 @@
 
       <!-- RIGHT PANE: Vector Illustration Canvas -->
       <div class="auth-modal-right-pane" aria-hidden="true">
-        <svg viewBox="0 0 740 680" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto; max-height: 520px;">
+        <svg viewBox="0 0 740 680" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto; max-height: 580px;">
           <!-- Top Left Info Bubble -->
           <g opacity="0.65">
             <path d="M165 95 C145 95, 130 110, 130 130 C130 148, 142 162, 160 165 L155 182 L175 165 C195 165, 210 150, 210 130 C210 110, 190 95, 165 95 Z" stroke="#ffffff" stroke-width="2" fill="none" stroke-linejoin="round"/>
@@ -2520,6 +2561,6 @@
     <span id="toastText" style="font-size: 14px;">Action completed successfully.</span>
   </div>
 
-  <script src="/static/js/community.js?v=36"></script>
+  <script src="/static/js/community.js?v=37"></script>
 </body>
 </html>

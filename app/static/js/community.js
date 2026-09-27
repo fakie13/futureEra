@@ -602,21 +602,6 @@ function renderLoggedOutSquadView() {
           Browse Squad Directory
         </button>
       </div>
-
-      <div style="margin-top: 30px; padding-top: 22px; border-top: 1px solid #f1f5f9; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: center; font-size: 11.5px; color: #64748b;">
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
-          <span style="font-weight: 700; color: #0f766e; font-size: 13px;">Rule of 4</span>
-          <span>Capped Pods</span>
-        </div>
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
-          <span style="font-weight: 700; color: #0f766e; font-size: 13px;">300 MB</span>
-          <span>Demo Media</span>
-        </div>
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
-          <span style="font-weight: 700; color: #0f766e; font-size: 13px;">Live Chat</span>
-          <span>Sprint War Room</span>
-        </div>
-      </div>
     </div>
   `;
 }

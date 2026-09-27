@@ -1086,66 +1086,6 @@ def seed_community_data_if_empty(conn: sqlite3.Connection):
             "messages": [
                 ("rohan_sec", "Building automated network auditing tools for ethical hacking. Join with code CO-9023!")
             ]
-        },
-        {
-            "squad_name": "NeoRobotics Pod",
-            "invite_code": "NR-3341",
-            "track_name": "Autonomous Robotics & Edge Vision",
-            "stage": "12th_pass",
-            "creator": "karthik_robotics",
-            "sprint_goal": "Sprint 1: ROS2 SLAM Navigation Stack & On-Device Object Detection",
-            "members": [("karthik_robotics", "leader")],
-            "messages": [
-                ("karthik_robotics", "Programming ESP32 microcontrollers and ROS2 navigation nodes. 3 seats open!")
-            ]
-        },
-        {
-            "squad_name": "FinTech Pulse",
-            "invite_code": "FP-6204",
-            "track_name": "Quantitative Trading & Financial Systems",
-            "stage": "final_year",
-            "creator": "sneha_fintech",
-            "sprint_goal": "Sprint 1: High-Frequency Market Feed Ingestion & Statistical Backtesting",
-            "members": [("sneha_fintech", "leader")],
-            "messages": [
-                ("sneha_fintech", "Analyzing algorithmic market feeds with Python & Pandas. Recruiting quant enthusiasts!")
-            ]
-        },
-        {
-            "squad_name": "Mobile Matrix",
-            "invite_code": "MM-4492",
-            "track_name": "Cross-Platform Mobile Architecture",
-            "stage": "12th_pass",
-            "creator": "tanvi_mobile",
-            "sprint_goal": "Sprint 1: Offline-First SQLite Sync Engine & Custom UI Animations",
-            "members": [("tanvi_mobile", "leader")],
-            "messages": [
-                ("tanvi_mobile", "Developing fluid cross-platform apps with Flutter and Supabase. Join our squad!")
-            ]
-        },
-        {
-            "squad_name": "DevOps Engine",
-            "invite_code": "DE-1877",
-            "track_name": "Site Reliability & Kubernetes Platform",
-            "stage": "final_year",
-            "creator": "aarav_dev",
-            "sprint_goal": "Sprint 1: GitOps Multi-Cluster Delivery with ArgoCD & Prometheus Telemetry",
-            "members": [("aarav_dev", "leader")],
-            "messages": [
-                ("aarav_dev", "Focusing on SRE, automated canary deployments and Grafana dashboards. 3 seats open!")
-            ]
-        },
-        {
-            "squad_name": "Apex Innovators",
-            "invite_code": "AI-9900",
-            "track_name": "Applied GenAI & Autonomous Multi-Agent Systems",
-            "stage": "final_year",
-            "creator": "ananya_design",
-            "sprint_goal": "Sprint 1: Agentic Decision Workflows with Local Small Language Models",
-            "members": [("ananya_design", "leader")],
-            "messages": [
-                ("ananya_design", "Exploring UX for autonomous agent loops and multi-agent systems. Code AI-9900 to join!")
-            ]
         }
     ]
 

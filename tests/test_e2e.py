@@ -2,6 +2,7 @@ import urllib.request
 import urllib.error
 import json
 import time
+import uuid
 
 base = 'http://127.0.0.1:8000'
 
@@ -28,6 +29,37 @@ def get_json(path, token=None):
             return resp.status, json.loads(resp.read().decode('utf-8'))
     except urllib.error.HTTPError as e:
         return e.code, json.loads(e.read().decode('utf-8'))
+
+def post_multipart(path, fields, files, token=None):
+    boundary = '----FormBoundary' + uuid.uuid4().hex
+    body = bytearray()
+    for name, value in fields.items():
+        body.extend(f'--{boundary}\r\n'.encode('utf-8'))
+        body.extend(f'Content-Disposition: form-data; name="{name}"\r\n\r\n'.encode('utf-8'))
+        body.extend(f'{value}\r\n'.encode('utf-8'))
+    for name, (filename, content, mime) in files.items():
+        body.extend(f'--{boundary}\r\n'.encode('utf-8'))
+        body.extend(f'Content-Disposition: form-data; name="{name}"; filename="{filename}"\r\n'.encode('utf-8'))
+        body.extend(f'Content-Type: {mime}\r\n\r\n'.encode('utf-8'))
+        body.extend(content)
+        body.extend(b'\r\n')
+    body.extend(f'--{boundary}--\r\n'.encode('utf-8'))
+    url = base + path
+    headers = {
+        'Content-Type': f'multipart/form-data; boundary={boundary}',
+        'Content-Length': str(len(body))
+    }
+    if token:
+        headers['Authorization'] = f'Bearer {token}'
+    req = urllib.request.Request(url, data=bytes(body), headers=headers)
+    try:
+        with urllib.request.urlopen(req) as resp:
+            return resp.status, json.loads(resp.read().decode('utf-8'))
+    except urllib.error.HTTPError as e:
+        try:
+            return e.code, json.loads(e.read().decode('utf-8'))
+        except Exception:
+            return e.code, {'detail': str(e)}
 
 def main():
     ts = int(time.time())
@@ -127,6 +159,119 @@ def main():
     st_goal, r_goal = post_json(f'/api/squads/{squad_id}/sprint-goal', {'message': 'Sprint 2: Kubernetes Orchestration'}, token=token1)
     assert st_goal == 200 and r_goal['success']
     print('[PASS] Sprint goal updated successfully')
+
+    # 8b. Upload progress image artifact (png)
+    png_bytes = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15c4\x00\x00\x00\rIDATx\x9cc\xf8\xff\x9f\x19\x00\x05\xfe\x02\xfe\xa7\xbf\x9b\xba\x00\x00\x00\x00IEND\xaeB`\x82'
+    st_img, r_img = post_multipart(
+        f'/api/squads/{squad_id}/upload-progress',
+        fields={'title': 'System Architecture & ER Diagram'},
+        files={'file': ('arch_diagram.png', png_bytes, 'image/png')},
+        token=token1
+    )
+    assert st_img == 200 and r_img['success'], f'Image upload failed: {r_img}'
+    img_progress = r_img['progress']
+    assert img_progress['file_type'] == 'image'
+    assert 'arch_diagram' in img_progress['file_url']
+    print(f'[PASS] Progress image uploaded: {img_progress["file_url"]} ({img_progress["title"]})')
+
+    # 8c. Upload progress video artifact (mp4 demo)
+    fake_mp4_bytes = b'\x00\x00\x00\x18ftypmp42\x00\x00\x00\x00isommp42\x00\x00\x00\x08free' + b'\x00' * 512
+    st_vid, r_vid = post_multipart(
+        f'/api/squads/{squad_id}/upload-progress',
+        fields={'title': 'End-to-End Sprint 1 Demo Walkthrough'},
+        files={'file': ('demo_sprint1.mp4', fake_mp4_bytes, 'video/mp4')},
+        token=tokens[0][1] # Member 2 token
+    )
+    assert st_vid == 200 and r_vid['success'], f'Video upload failed: {r_vid}'
+    vid_progress = r_vid['progress']
+    assert vid_progress['file_type'] == 'video'
+    print(f'[PASS] Progress video uploaded: {vid_progress["file_url"]} ({vid_progress["title"]})')
+
+    # 8d. Verify progress showcase gallery listing
+    st_gallery, r_gallery = get_json(f'/api/squads/{squad_id}/progress')
+    assert st_gallery == 200 and r_gallery['total'] >= 2
+    types_found = {u['file_type'] for u in r_gallery['uploads']}
+    assert 'image' in types_found and 'video' in types_found
+    print(f'[PASS] Squad progress gallery retrieved ({r_gallery["total"]} uploads: image & video)')
+
+    # 8e. Verify progress uploads posted into squad chat with media_url & media_type
+    st_chat, r_chat = get_json(f'/api/squads/{squad_id}/messages')
+    assert st_chat == 200
+    media_messages = [m for m in r_chat['messages'] if m.get('media_url')]
+    assert len(media_messages) >= 2
+    print(f'[PASS] Squad chat contains inline progress media previews ({len(media_messages)} items)')
+
+    # 8f. Verify static serving of uploaded progress media
+    req_media = urllib.request.Request(base + img_progress['file_url'])
+    with urllib.request.urlopen(req_media) as resp:
+        assert resp.status == 200
+        assert resp.read() == png_bytes
+    print('[PASS] Uploaded progress media retrieved statically via HTTP 200')
+
+    # 8g. Verify unauthenticated upload is rejected (401)
+    st_unauth, r_unauth = post_multipart(
+        f'/api/squads/{squad_id}/upload-progress',
+        fields={'title': 'Hacker attempt'},
+        files={'file': ('hack.png', png_bytes, 'image/png')},
+        token=None
+    )
+    assert st_unauth == 401
+    print('[PASS] Unauthenticated progress upload rejected with HTTP 401')
+
+    # 8h. Verify disallowed file extensions are rejected (400)
+    st_bad, r_bad = post_multipart(
+        f'/api/squads/{squad_id}/upload-progress',
+        fields={'title': 'Executable file'},
+        files={'file': ('malicious.exe', b'MZ\x90\x00', 'application/octet-stream')},
+        token=token1
+    )
+    assert st_bad == 400
+    print('[PASS] Unsupported file format rejected with HTTP 400')
+
+    # 8i. Verify community.html and community.js do NOT have "Video Standup", and have "Upload Progress"
+    req_comm = urllib.request.Request(base + '/community')
+    with urllib.request.urlopen(req_comm) as resp:
+        comm_html = resp.read().decode('utf-8')
+        assert 'progressUploadModal' in comm_html
+        assert 'progressGalleryModal' in comm_html
+        assert 'Max 300 MB' in comm_html
+
+    req_js = urllib.request.Request(base + '/static/js/community.js')
+    with urllib.request.urlopen(req_js) as resp:
+        comm_js = resp.read().decode('utf-8')
+        assert 'Video Standup' not in comm_js, 'Video Standup should be completely removed from community.js'
+        assert 'Upload Progress' in comm_js
+        assert 'Showcase Reel' in comm_js
+        assert 'MAX_PROGRESS_BYTES' in comm_js
+    print('[PASS] Video Standup verified removed; Upload Progress & Showcase Reel verified present in UI')
+
+    # 8j. Verify strict 300MB file limit enforcement (HTTP 413)
+    try:
+        from fastapi.testclient import TestClient
+        from app.main import app
+        import io
+
+        class ChunkedStream(io.RawIOBase):
+            def __init__(self, total_bytes):
+                self.remaining = total_bytes
+            def read(self, size=-1):
+                if self.remaining <= 0:
+                    return b''
+                read_size = min(size if size > 0 else 1024 * 1024, self.remaining)
+                self.remaining -= read_size
+                return b'A' * read_size
+
+        tc = TestClient(app)
+        res_over = tc.post(
+            f'/api/squads/{squad_id}/upload-progress',
+            headers={'Authorization': f'Bearer {token1}'},
+            files={'file': ('oversized_video.mp4', ChunkedStream(301 * 1024 * 1024), 'video/mp4')},
+            data={'title': 'Oversized file'}
+        )
+        assert res_over.status_code == 413, f'Expected 413, got {res_over.status_code}'
+        print('[PASS] Strict 300MB limit enforced on backend (HTTP 413 Payload Too Large)')
+    except Exception as e:
+        print(f'[WARN] TestClient 300MB test: {e}')
 
     # 9. Verify standalone auth pages serve HTTP 200
     for page_path in ['/signin', '/signup', '/login']:

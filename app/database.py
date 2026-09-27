@@ -148,6 +148,31 @@ def init_db():
         );
         """)
 
+        # 10. Squad Progress Uploads table (Images & Videos max 300MB)
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS squad_progress_uploads (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            squad_id INTEGER NOT NULL REFERENCES squads(id) ON DELETE CASCADE,
+            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            title TEXT,
+            file_url TEXT NOT NULL,
+            file_type TEXT NOT NULL,
+            file_size INTEGER NOT NULL,
+            original_filename TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        """)
+
+        # Column migrations for squad_messages
+        try:
+            cursor.execute("ALTER TABLE squad_messages ADD COLUMN media_url TEXT;")
+        except Exception:
+            pass
+        try:
+            cursor.execute("ALTER TABLE squad_messages ADD COLUMN media_type TEXT;")
+        except Exception:
+            pass
+
         # Create search indexes
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_blueprints_lookup ON career_blueprints(lookup_key);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_blueprints_role ON career_blueprints(target_role);")
@@ -162,6 +187,8 @@ def init_db():
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_squad_members_squad ON squad_members(squad_id);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_squad_members_user ON squad_members(user_id);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_squad_msg_squad ON squad_messages(squad_id);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_progress_squad ON squad_progress_uploads(squad_id);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_progress_user ON squad_progress_uploads(user_id);")
         
         # Seed initial rich blueprints, suggestions, and community data
         seed_initial_data_if_empty(conn)
@@ -1493,7 +1520,7 @@ def send_squad_message(squad_id: int, sender_id: int, message: str) -> Tuple[boo
         return False, f"Failed to send message: {str(e)}", None
 
 
-def get_squad_messages(squad_id: int, limit: int = 50) -> List[Dict[str, Any]]:
+def get_squad_messages(squad_id: int, limit: int = 60) -> List[Dict[str, Any]]:
     """Fetches real-time conversation messages for a squad."""
     try:
         with get_db_connection() as conn:
@@ -1517,12 +1544,109 @@ def get_squad_messages(squad_id: int, limit: int = 50) -> List[Dict[str, Any]]:
                     "sender_avatar_color": r["avatar_color"],
                     "sender_avatar_emoji": r["avatar_emoji"],
                     "message": r["message"],
+                    "media_url": r["media_url"] if "media_url" in r.keys() else None,
+                    "media_type": r["media_type"] if "media_type" in r.keys() else None,
                     "created_at": str(r["created_at"])
                 }
                 for r in rows
             ]
     except Exception as e:
         print(f"[DB Error] get_squad_messages: {e}")
+        return []
+
+
+def save_squad_progress_upload(
+    squad_id: int,
+    user_id: int,
+    title: str,
+    file_url: str,
+    file_type: str,
+    file_size: int,
+    original_filename: str
+) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
+    """Records an uploaded progress image/video and notifies squad chat."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM squad_members WHERE squad_id = ? AND user_id = ?;", (squad_id, user_id))
+            if not cursor.fetchone():
+                return False, "You must be a member of this squad to upload progress.", None
+
+            cursor.execute("""
+            INSERT INTO squad_progress_uploads (squad_id, user_id, title, file_url, file_type, file_size, original_filename)
+            VALUES (?, ?, ?, ?, ?, ?, ?);
+            """, (squad_id, user_id, title, file_url, file_type, file_size, original_filename))
+            upload_id = cursor.lastrowid
+
+            # Post notification with media into squad chat
+            media_label = "video demo" if file_type == "video" else "screenshot"
+            caption_part = f": {title}" if title else ""
+            chat_msg = f"Shared progress {media_label}{caption_part}"
+
+            cursor.execute("""
+            INSERT INTO squad_messages (squad_id, sender_id, message, media_url, media_type)
+            VALUES (?, ?, ?, ?, ?);
+            """, (squad_id, user_id, chat_msg, file_url, file_type))
+
+            conn.commit()
+
+            cursor.execute("""
+            SELECT p.*, u.username, u.full_name, u.avatar_color 
+            FROM squad_progress_uploads p
+            JOIN users u ON u.id = p.user_id
+            WHERE p.id = ?;
+            """, (upload_id,))
+            r = cursor.fetchone()
+            return True, "Progress media shared successfully!", {
+                "id": r["id"],
+                "squad_id": r["squad_id"],
+                "user_id": r["user_id"],
+                "username": r["username"],
+                "full_name": r["full_name"],
+                "avatar_color": r["avatar_color"],
+                "title": r["title"],
+                "file_url": r["file_url"],
+                "file_type": r["file_type"],
+                "file_size": r["file_size"],
+                "original_filename": r["original_filename"],
+                "created_at": str(r["created_at"])
+            }
+    except Exception as e:
+        return False, f"Failed to save progress upload: {str(e)}", None
+
+
+def get_squad_progress_uploads(squad_id: int) -> List[Dict[str, Any]]:
+    """Retrieves all uploaded progress artifacts for a squad."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+            SELECT p.*, u.username, u.full_name, u.avatar_color 
+            FROM squad_progress_uploads p
+            JOIN users u ON u.id = p.user_id
+            WHERE p.squad_id = ?
+            ORDER BY p.id DESC;
+            """, (squad_id,))
+            rows = cursor.fetchall()
+            return [
+                {
+                    "id": r["id"],
+                    "squad_id": r["squad_id"],
+                    "user_id": r["user_id"],
+                    "username": r["username"],
+                    "full_name": r["full_name"],
+                    "avatar_color": r["avatar_color"],
+                    "title": r["title"],
+                    "file_url": r["file_url"],
+                    "file_type": r["file_type"],
+                    "file_size": r["file_size"],
+                    "original_filename": r["original_filename"],
+                    "created_at": str(r["created_at"])
+                }
+                for r in rows
+            ]
+    except Exception as e:
+        print(f"[DB Error] get_squad_progress_uploads: {e}")
         return []
 
 

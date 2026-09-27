@@ -1736,6 +1736,113 @@
       transform: translateY(0);
       opacity: 1;
     }
+
+    /* Squad Progress Upload & Showcase Styles */
+    .progress-dropzone {
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 22px 16px;
+      text-align: center;
+      cursor: pointer;
+      background: #f8fafc;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .progress-dropzone:hover, .progress-dropzone.dragover {
+      border-color: #6366f1;
+      background: #f5f3ff;
+    }
+    .progress-dropzone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .progress-limit-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #eef2ff;
+      border: 1px solid #e0e7ff;
+      color: #4f46e5;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .progress-gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      max-height: 60vh;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .progress-gallery-card {
+      border: 1px solid var(--comm-border);
+      border-radius: 12px;
+      background: #ffffff;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .progress-gallery-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+    }
+    .progress-media-thumb {
+      width: 100%;
+      height: 180px;
+      background: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .progress-media-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .progress-media-thumb video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #000000;
+    }
+    .progress-card-info {
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .chat-media-card {
+      margin-top: 8px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #0f172a;
+      border: 1px solid #e2e8f0;
+      max-width: 100%;
+    }
+    .chat-media-card img {
+      display: block;
+      width: 100%;
+      max-height: 280px;
+      object-fit: cover;
+      cursor: pointer;
+    }
+    .chat-media-card video {
+      display: block;
+      width: 100%;
+      max-height: 280px;
+      background: #000;
+    }
   </style>
 </head>
 <body>
@@ -2285,6 +2392,123 @@
     </div>
   </div>
 
+  <!-- ===================================================
+       MODAL 5: SQUAD PROGRESS MEDIA UPLOAD (MAX 300MB)
+       =================================================== -->
+  <div class="modal-backdrop" id="progressUploadModal">
+    <div class="modal-card" style="max-width: 520px;">
+      <button class="modal-close-btn" onclick="closeProgressUploadModal()">&times;</button>
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+        <h3 style="font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 19px; font-weight: 700; color: var(--comm-text-dark); margin: 0;">
+          Share Progress Artifact
+        </h3>
+        <span class="progress-limit-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          Max 300 MB
+        </span>
+      </div>
+      <p style="font-size: 13px; color: var(--comm-text-muted); margin: 0 0 16px;">
+        Upload a screenshot, UI mockup, system diagram, or screen demo video for your teammates.
+      </p>
+
+      <form id="progressUploadForm" onsubmit="handleProgressUploadSubmit(event)">
+        <input type="hidden" id="progressSquadId" value="" />
+
+        <div class="form-group">
+          <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: #374151; margin-bottom: 6px; display: block;">
+            Title / Milestone Caption <span style="color: #94a3b8; font-weight: 400;">(Optional)</span>
+          </label>
+          <input type="text" id="progressTitleInput" class="form-input" placeholder="e.g. Auth flow architecture diagram & video demo" maxlength="150" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: #374151; margin-bottom: 6px; display: block;">
+            Media File (Image or Video &le; 300MB)
+          </label>
+          <div class="progress-dropzone" id="progressDropzone">
+            <input type="file" id="progressFileInput" accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml,video/mp4,video/webm,video/quicktime,video/x-matroska,.png,.jpg,.jpeg,.gif,.webp,.mp4,.webm,.mov,.mkv" onchange="handleProgressFileSelected(event)" required />
+            <div id="dropzoneDefaultState">
+              <div style="width: 44px; height: 44px; border-radius: 12px; background: #e0e7ff; color: #4338ca; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+              </div>
+              <div style="font-weight: 600; font-size: 13.5px; color: #1e293b;">
+                Click to select or drag &amp; drop
+              </div>
+              <div style="font-size: 12px; color: #64748b; margin-top: 3px;">
+                PNG, JPG, WEBP, GIF or MP4, WEBM, MOV (Strict limit 300 MB)
+              </div>
+            </div>
+            <div id="dropzoneSelectedState" style="display: none; text-align: left; padding: 4px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div id="selectedFileIcon" style="width: 38px; height: 38px; border-radius: 8px; background: #ecfdf5; color: #059669; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </div>
+                <div style="flex: 1; min-width: 0;">
+                  <div id="selectedFileName" style="font-size: 13px; font-weight: 600; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                  <div id="selectedFileSize" style="font-size: 11.5px; color: #64748b;"></div>
+                </div>
+                <button type="button" onclick="clearSelectedProgressFile(event)" style="background: none; border: none; color: #94a3b8; cursor: pointer; padding: 4px; font-size: 16px;">&times;</button>
+              </div>
+            </div>
+          </div>
+          <div id="progressFileError" style="display: none; color: #ef4444; font-size: 12px; margin-top: 6px; font-weight: 500;"></div>
+        </div>
+
+        <!-- Live Upload Progress Bar -->
+        <div id="progressUploadBarContainer" style="display: none; margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 4px;">
+            <span id="uploadStatusText">Uploading to squad...</span>
+            <span id="uploadPercentText">0%</span>
+          </div>
+          <div style="height: 6px; width: 100%; background: #e2e8f0; border-radius: 999px; overflow: hidden;">
+            <div id="uploadProgressBar" style="height: 100%; width: 0%; background: #6366f1; transition: width 0.15s ease;"></div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 18px;">
+          <button type="button" class="btn btn--outline" style="flex: 1; padding: 10px;" onclick="closeProgressUploadModal()">
+            Cancel
+          </button>
+          <button type="submit" id="btnSubmitProgress" class="btn btn--solid" style="flex: 2; padding: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+            <span>Share with Squad</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================================================
+       MODAL 6: SQUAD PROGRESS SHOWCASE REEL
+       =================================================== -->
+  <div class="modal-backdrop" id="progressGalleryModal">
+    <div class="modal-card" style="max-width: 780px;">
+      <button class="modal-close-btn" onclick="closeProgressGalleryModal()">&times;</button>
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; padding-bottom: 12px; border-bottom: 1px solid var(--comm-border);">
+        <div>
+          <h3 style="font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 20px; font-weight: 700; color: var(--comm-text-dark); margin: 0 0 2px;">
+            Squad Progress Showcase
+          </h3>
+          <p style="font-size: 13px; color: var(--comm-text-muted); margin: 0;">
+            Real-time feed of screenshots, diagrams, and video demos shared by your squad.
+          </p>
+        </div>
+        <button type="button" class="btn btn--solid" style="font-size: 12px; padding: 7px 12px; display: inline-flex; align-items: center; gap: 6px;" onclick="switchFromGalleryToUpload()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Upload New
+        </button>
+      </div>
+
+      <div id="progressGalleryContainer" style="margin-top: 16px;">
+        <div style="text-align: center; color: #64748b; padding: 40px 0;">Loading progress uploads...</div>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notice -->
   <div class="toast-notice" id="toastNotice">
     <span id="toastIcon">
@@ -2295,6 +2519,6 @@
     <span id="toastText">Action completed successfully.</span>
   </div>
 
-  <script src="/static/js/community.js?v=28"></script>
+  <script src="/static/js/community.js?v=29"></script>
 </body>
 </html>

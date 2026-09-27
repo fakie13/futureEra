@@ -1,6 +1,9 @@
 import os
+import time
+import uuid
+import re
 from typing import Optional, List, Dict, Any
-from fastapi import FastAPI, HTTPException, Header, Query, Request, Response
+from fastapi import FastAPI, HTTPException, Header, Query, Request, Response, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -44,7 +47,9 @@ from app.database import (
     send_squad_message,
     get_squad_messages,
     update_squad_sprint_goal,
-    leave_squad
+    leave_squad,
+    save_squad_progress_upload,
+    get_squad_progress_uploads
 )
 
 app = FastAPI(
@@ -521,6 +526,115 @@ async def update_sprint_goal(
     if not success:
         raise HTTPException(status_code=400, detail=msg)
     return {"success": True, "message": msg}
+
+
+MAX_PROGRESS_FILE_SIZE = 300 * 1024 * 1024  # 300 MB limit
+ALLOWED_IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".bmp"}
+ALLOWED_VIDEO_EXTS = {".mp4", ".webm", ".mov", ".mkv", ".avi", ".ogv", ".m4v"}
+
+
+@app.post("/api/squads/{squad_id}/upload-progress")
+async def upload_squad_progress(
+    squad_id: int,
+    file: UploadFile = File(...),
+    title: Optional[str] = Form(None),
+    authorization: Optional[str] = Header(None),
+    x_session_token: Optional[str] = Header(None)
+):
+    """Uploads an image or video progress demo for teammates (max 300MB)."""
+    user = require_auth_user(authorization, x_session_token)
+
+    if not file or not file.filename:
+        raise HTTPException(status_code=400, detail="No file selected for upload.")
+
+    ext = os.path.splitext(file.filename)[1].lower()
+    content_type = (file.content_type or "").lower()
+
+    if ext in ALLOWED_IMAGE_EXTS or content_type.startswith("image/"):
+        file_type = "image"
+    elif ext in ALLOWED_VIDEO_EXTS or content_type.startswith("video/"):
+        file_type = "video"
+    else:
+        raise HTTPException(
+            status_code=400,
+            detail="Unsupported format. Allowed: images (png, jpg, webp, gif) or videos (mp4, webm, mov, mkv)."
+        )
+
+    uploads_dir = os.path.join(STATIC_DIR, "uploads", "progress", str(squad_id))
+    os.makedirs(uploads_dir, exist_ok=True)
+
+    safe_base = re.sub(r'[^a-zA-Z0-9_\-\.]', '_', os.path.splitext(file.filename)[0])[:30]
+    unique_filename = f"{int(time.time())}_{uuid.uuid4().hex[:8]}_{safe_base}{ext}"
+    dest_path = os.path.join(uploads_dir, unique_filename)
+
+    bytes_written = 0
+    try:
+        with open(dest_path, "wb") as f_out:
+            while True:
+                chunk = await file.read(1024 * 1024)
+                if not chunk:
+                    break
+                bytes_written += len(chunk)
+                if bytes_written > MAX_PROGRESS_FILE_SIZE:
+                    f_out.close()
+                    if os.path.exists(dest_path):
+                        os.remove(dest_path)
+                    raise HTTPException(
+                        status_code=413,
+                        detail=f"File exceeds strict maximum allowed size of 300MB."
+                    )
+                f_out.write(chunk)
+    except HTTPException:
+        raise
+    except Exception as e:
+        if os.path.exists(dest_path):
+            try:
+                os.remove(dest_path)
+            except Exception:
+                pass
+        raise HTTPException(status_code=500, detail=f"File upload failed: {str(e)}")
+
+    if bytes_written == 0:
+        if os.path.exists(dest_path):
+            os.remove(dest_path)
+        raise HTTPException(status_code=400, detail="Uploaded file cannot be empty.")
+
+    clean_title = (title or "").strip() or file.filename
+    file_url = f"/static/uploads/progress/{squad_id}/{unique_filename}"
+
+    success, msg, upload_obj = save_squad_progress_upload(
+        squad_id=squad_id,
+        user_id=user["id"],
+        title=clean_title,
+        file_url=file_url,
+        file_type=file_type,
+        file_size=bytes_written,
+        original_filename=file.filename
+    )
+
+    if not success:
+        if os.path.exists(dest_path):
+            os.remove(dest_path)
+        raise HTTPException(status_code=400, detail=msg)
+
+    return {
+        "success": True,
+        "message": msg,
+        "progress": upload_obj
+    }
+
+
+@app.get("/api/squads/{squad_id}/progress")
+async def get_progress_list(squad_id: int):
+    """Retrieves all uploaded progress artifacts for a squad."""
+    uploads = get_squad_progress_uploads(squad_id)
+    return {
+        "success": True,
+        "squad_id": squad_id,
+        "total": len(uploads),
+        "uploads": uploads
+    }
+
 
 
 

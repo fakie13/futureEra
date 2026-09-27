@@ -30,7 +30,10 @@ const ICONS = {
   compass: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>`,
   download: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>`,
   send: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`,
-  check: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`
+  check: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`,
+  upload: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>`,
+  film: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>`,
+  image: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
 };
 
 function getInitials(name) {
@@ -686,15 +689,19 @@ function renderActiveSquadWorkspace(squad, isDemoPreview = false) {
             Team Workspace Tools
           </div>
           <div class="tools-grid">
-            <a href="https://meet.jit.si/FutureEra-${escapeHtml(squad.invite_code)}" target="_blank" class="tool-link-card">
-              ${ICONS.video}
-              <span>Video Standup</span>
-            </a>
+            <button type="button" class="tool-link-card" onclick="openProgressUploadModal(${squad.id})" title="Upload project demo video or screenshot (Max 300MB)">
+              ${ICONS.upload}
+              <span>Upload Progress</span>
+            </button>
+            <button type="button" class="tool-link-card" onclick="openProgressGalleryModal(${squad.id})" title="View squad demo reel & media gallery">
+              ${ICONS.film}
+              <span>Showcase Reel</span>
+            </button>
             <a href="/console" class="tool-link-card">
               ${ICONS.compass}
               <span>Career Roadmap</span>
             </a>
-            <button class="tool-link-card" onclick="exportSquadManifest()">
+            <button type="button" class="tool-link-card" onclick="exportSquadManifest()">
               ${ICONS.download}
               <span>Export Team JSON</span>
             </button>
@@ -719,6 +726,10 @@ function renderActiveSquadWorkspace(squad, isDemoPreview = false) {
           </div>
 
           <form class="chat-compose-form" onsubmit="handleSendChatMessage(event, ${squad.id})">
+            <button type="button" class="tool-link-card" onclick="openProgressUploadModal(${squad.id})" title="Attach progress image or video (Max 300MB)" style="padding: 0 10px; height: 38px; border-radius: 8px; flex-shrink: 0; background: #f1f5f9; display: flex; align-items: center; justify-content: center; gap: 4px; border: 1px solid var(--comm-border);">
+              ${ICONS.upload}
+              <span style="font-size: 11.5px; font-weight: 600;">Media</span>
+            </button>
             <input type="text" id="squadChatInput" placeholder="Message teammates..." required />
             <button type="submit" class="btn-send-message">
               <span>Send</span>
@@ -813,6 +824,25 @@ function renderChatMessages(messages) {
     const initials = getInitials(m.sender_name);
     const color = getAvatarColor(m.sender_name, m.sender_avatar_color);
 
+    let mediaSnippet = "";
+    if (m.media_url) {
+      if (m.media_type === "video") {
+        mediaSnippet = `
+          <div class="chat-media-card">
+            <video src="${escapeHtml(m.media_url)}" controls preload="metadata"></video>
+          </div>
+        `;
+      } else {
+        mediaSnippet = `
+          <div class="chat-media-card">
+            <a href="${escapeHtml(m.media_url)}" target="_blank" rel="noopener noreferrer" title="Click to view full image">
+              <img src="${escapeHtml(m.media_url)}" alt="Progress snapshot" loading="lazy" />
+            </a>
+          </div>
+        `;
+      }
+    }
+
     return `
       <div class="chat-msg-row">
         <div class="chat-sender-avatar" style="background-color: ${color};">
@@ -824,6 +854,7 @@ function renderChatMessages(messages) {
             <span class="chat-timestamp">${formatTime(m.created_at)}</span>
           </div>
           <div class="chat-text">${escapeHtml(m.message)}</div>
+          ${mediaSnippet}
         </div>
       </div>
     `;
@@ -1361,3 +1392,322 @@ function formatTime(isoString) {
     return "";
   }
 }
+
+// ==========================================
+// SQUAD PROGRESS MEDIA UPLOAD & SHOWCASE
+// ==========================================
+const MAX_PROGRESS_BYTES = 300 * 1024 * 1024; // 300 MB
+
+function formatBytes(bytes) {
+  if (!bytes || bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+}
+
+function openProgressUploadModal(squadId) {
+  if (!STATE.token) {
+    openAuthModal("signin");
+    showToast("Please sign in to upload progress.", "error");
+    return;
+  }
+  const squadInput = document.getElementById("progressSquadId");
+  if (squadInput) {
+    squadInput.value = squadId || (STATE.currentSquad ? STATE.currentSquad.id : "");
+  }
+
+  // Clear inputs & errors
+  const titleInput = document.getElementById("progressTitleInput");
+  if (titleInput) titleInput.value = "";
+  
+  clearSelectedProgressFile();
+
+  const errEl = document.getElementById("progressFileError");
+  if (errEl) {
+    errEl.style.display = "none";
+    errEl.textContent = "";
+  }
+
+  const barContainer = document.getElementById("progressUploadBarContainer");
+  if (barContainer) barContainer.style.display = "none";
+
+  const submitBtn = document.getElementById("btnSubmitProgress");
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = `
+      <span>Share with Squad</span>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+    `;
+  }
+
+  document.getElementById("progressUploadModal")?.classList.add("open");
+}
+
+function closeProgressUploadModal() {
+  document.getElementById("progressUploadModal")?.classList.remove("open");
+  clearSelectedProgressFile();
+}
+
+function handleProgressFileSelected(e) {
+  const file = e.target.files?.[0];
+  const errEl = document.getElementById("progressFileError");
+  if (!file) {
+    clearSelectedProgressFile();
+    return;
+  }
+
+  // Strict 300 MB limit validation
+  if (file.size > MAX_PROGRESS_BYTES) {
+    if (errEl) {
+      errEl.textContent = `File size (${formatBytes(file.size)}) exceeds the strict 300MB limit. Please choose a file under 300MB.`;
+      errEl.style.display = "block";
+    }
+    showToast(`File exceeds 300MB limit (${formatBytes(file.size)}).`, "error");
+    clearSelectedProgressFile();
+    return;
+  }
+
+  if (errEl) {
+    errEl.style.display = "none";
+    errEl.textContent = "";
+  }
+
+  // Update dropzone UI
+  const defaultState = document.getElementById("dropzoneDefaultState");
+  const selectedState = document.getElementById("dropzoneSelectedState");
+  const nameEl = document.getElementById("selectedFileName");
+  const sizeEl = document.getElementById("selectedFileSize");
+  const iconEl = document.getElementById("selectedFileIcon");
+
+  if (defaultState) defaultState.style.display = "none";
+  if (selectedState) selectedState.style.display = "block";
+  if (nameEl) nameEl.textContent = file.name;
+  if (sizeEl) sizeEl.textContent = `${formatBytes(file.size)} (Limit: 300MB)`;
+
+  const isVideo = file.type.startsWith("video/") || /\.(mp4|webm|mov|mkv|avi|ogv)$/i.test(file.name);
+  if (iconEl) {
+    iconEl.innerHTML = isVideo ? ICONS.film : ICONS.image;
+    iconEl.style.color = isVideo ? "#6366f1" : "#059669";
+    iconEl.style.background = isVideo ? "#eef2ff" : "#ecfdf5";
+  }
+}
+
+function clearSelectedProgressFile(e) {
+  if (e && e.stopPropagation) e.stopPropagation();
+  const fileInput = document.getElementById("progressFileInput");
+  if (fileInput) fileInput.value = "";
+
+  const defaultState = document.getElementById("dropzoneDefaultState");
+  const selectedState = document.getElementById("dropzoneSelectedState");
+  if (defaultState) defaultState.style.display = "block";
+  if (selectedState) selectedState.style.display = "none";
+
+  const errEl = document.getElementById("progressFileError");
+  if (errEl) {
+    errEl.style.display = "none";
+    errEl.textContent = "";
+  }
+}
+
+function handleProgressUploadSubmit(e) {
+  e.preventDefault();
+  if (!STATE.token) {
+    openAuthModal("signin");
+    showToast("Please sign in to upload progress.", "error");
+    return;
+  }
+
+  const squadId = document.getElementById("progressSquadId")?.value;
+  if (!squadId) {
+    showToast("Squad identifier missing.", "error");
+    return;
+  }
+
+  const fileInput = document.getElementById("progressFileInput");
+  const file = fileInput?.files?.[0];
+  const errEl = document.getElementById("progressFileError");
+
+  if (!file) {
+    if (errEl) {
+      errEl.textContent = "Please select an image or video to upload.";
+      errEl.style.display = "block";
+    }
+    return;
+  }
+
+  if (file.size > MAX_PROGRESS_BYTES) {
+    if (errEl) {
+      errEl.textContent = `File exceeds strict 300MB limit (${formatBytes(file.size)}).`;
+      errEl.style.display = "block";
+    }
+    return;
+  }
+
+  const title = (document.getElementById("progressTitleInput")?.value || "").trim();
+
+  const formData = new FormData();
+  formData.append("file", file);
+  if (title) formData.append("title", title);
+
+  const barContainer = document.getElementById("progressUploadBarContainer");
+  const progressBar = document.getElementById("uploadProgressBar");
+  const percentText = document.getElementById("uploadPercentText");
+  const statusText = document.getElementById("uploadStatusText");
+  const submitBtn = document.getElementById("btnSubmitProgress");
+
+  if (barContainer) barContainer.style.display = "block";
+  if (progressBar) progressBar.style.width = "0%";
+  if (percentText) percentText.textContent = "0%";
+  if (statusText) statusText.textContent = "Uploading to squad...";
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<span>Uploading...</span>`;
+  }
+
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", `/api/squads/${squadId}/upload-progress`, true);
+  xhr.setRequestHeader("Authorization", `Bearer ${STATE.token}`);
+  xhr.setRequestHeader("X-Session-Token", STATE.token);
+
+  xhr.upload.onprogress = (evt) => {
+    if (evt.lengthComputable) {
+      const pct = Math.round((evt.loaded / evt.total) * 100);
+      if (progressBar) progressBar.style.width = `${pct}%`;
+      if (percentText) percentText.textContent = `${pct}%`;
+      if (pct >= 100 && statusText) {
+        statusText.textContent = "Processing & saving artifact...";
+      }
+    }
+  };
+
+  xhr.onload = () => {
+    if (xhr.status >= 200 && xhr.status < 300) {
+      showToast("Progress artifact shared with squad!", "success");
+      closeProgressUploadModal();
+      fetchChatMessages(squadId);
+    } else {
+      let errorMsg = "Upload failed.";
+      try {
+        const res = JSON.parse(xhr.responseText);
+        if (res.detail) errorMsg = res.detail;
+      } catch (err) {}
+      if (errEl) {
+        errEl.textContent = errorMsg;
+        errEl.style.display = "block";
+      }
+      showToast(errorMsg, "error");
+      if (barContainer) barContainer.style.display = "none";
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `
+          <span>Share with Squad</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        `;
+      }
+    }
+  };
+
+  xhr.onerror = () => {
+    showToast("Network error during file upload.", "error");
+    if (barContainer) barContainer.style.display = "none";
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = `
+        <span>Share with Squad</span>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+      `;
+    }
+  };
+
+  xhr.send(formData);
+}
+
+async function openProgressGalleryModal(squadId) {
+  const targetSquadId = squadId || (STATE.currentSquad ? STATE.currentSquad.id : null);
+  if (!targetSquadId) {
+    showToast("No active squad selected.");
+    return;
+  }
+
+  const modal = document.getElementById("progressGalleryModal");
+  if (!modal) return;
+  modal.classList.add("open");
+
+  const container = document.getElementById("progressGalleryContainer");
+  if (!container) return;
+  container.innerHTML = `<div style="text-align: center; color: #64748b; padding: 40px 0;">Loading squad progress reel...</div>`;
+
+  try {
+    const res = await fetch(`/api/squads/${targetSquadId}/progress`);
+    const data = await res.json();
+    if (!data.success || !data.uploads || data.uploads.length === 0) {
+      container.innerHTML = `
+        <div style="text-align: center; color: #64748b; padding: 50px 20px;">
+          <div style="width: 48px; height: 48px; border-radius: 12px; background: #f1f5f9; color: #94a3b8; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+            ${ICONS.film}
+          </div>
+          <h4 style="font-size: 15px; font-weight: 600; color: #1e293b; margin: 0 0 6px;">No Progress Artifacts Yet</h4>
+          <p style="font-size: 13px; color: #64748b; margin: 0 0 16px;">
+            Share your latest architecture diagram, UI screenshot, or demo screen recording.
+          </p>
+          <button type="button" class="btn btn--solid" style="padding: 8px 16px;" onclick="switchFromGalleryToUpload()">
+            Upload First Progress Artifact &rarr;
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = `
+      <div class="progress-gallery-grid">
+        ${data.uploads.map(item => {
+          const isVideo = item.file_type === "video";
+          const mediaHtml = isVideo
+            ? `<video src="${escapeHtml(item.file_url)}" controls preload="metadata"></video>`
+            : `<a href="${escapeHtml(item.file_url)}" target="_blank" rel="noopener noreferrer" title="Click to view full image" style="width: 100%; height: 100%; display: block;"><img src="${escapeHtml(item.file_url)}" alt="Progress snapshot" loading="lazy" /></a>`;
+
+          return `
+            <div class="progress-gallery-card">
+              <div class="progress-media-thumb">
+                ${mediaHtml}
+              </div>
+              <div class="progress-card-info">
+                <div style="font-weight: 600; font-size: 13.5px; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(item.title || item.original_filename)}">
+                  ${escapeHtml(item.title || item.original_filename)}
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11.5px; color: #64748b;">
+                  <span style="font-weight: 500;">By ${escapeHtml(item.full_name || item.username)}</span>
+                  <span>${formatBytes(item.file_size)}</span>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-top: 2px;">
+                  <span class="progress-limit-badge" style="font-size: 10px; padding: 2px 6px;">
+                    ${isVideo ? "VIDEO DEMO" : "SCREENSHOT"}
+                  </span>
+                  <span>${formatTime(item.created_at)}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    `;
+  } catch (err) {
+    console.error("Gallery fetch error:", err);
+    container.innerHTML = `<div style="text-align: center; color: #ef4444; padding: 30px;">Failed to load progress uploads.</div>`;
+  }
+}
+
+function closeProgressGalleryModal() {
+  document.getElementById("progressGalleryModal")?.classList.remove("open");
+}
+
+function switchFromGalleryToUpload() {
+  closeProgressGalleryModal();
+  if (STATE.currentSquad) {
+    openProgressUploadModal(STATE.currentSquad.id);
+  } else {
+    openProgressUploadModal();
+  }
+}
+

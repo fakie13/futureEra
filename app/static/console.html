@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FutureEra — AI-Proof Career Blueprint</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css?v=26" />
+  <style>
+    /* Critical Inline CSS for Searchable Comboboxes & Error Notice */
+    .combobox-wrapper {
+      position: relative !important;
+      width: 100% !important;
+      display: flex !important;
+      align-items: center !important;
+    }
+    .combobox-input {
+      padding-right: 44px !important;
+      width: 100% !important;
+    }
+    .combobox-toggle {
+      position: absolute !important;
+      right: 12px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      width: 28px !important;
+      height: 28px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      background: transparent !important;
+      border: none !important;
+      border-radius: 6px !important;
+      color: #94a3b8 !important;
+      font-size: 15px !important;
+      cursor: pointer !important;
+      transition: all 0.2s ease !important;
+      z-index: 5 !important;
+      padding: 0 !important;
+    }
+    .combobox-toggle:hover {
+      color: #0f766e !important;
+      background: #f0fdfa !important;
+    }
+    .combobox-wrapper.open .combobox-toggle {
+      transform: translateY(-50%) rotate(180deg) !important;
+      color: #0f766e !important;
+    }
+    .combobox-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 12px;
+      box-shadow: 0 18px 40px -6px rgba(15, 23, 42, 0.16), 0 4px 12px rgba(15, 23, 42, 0.06);
+      max-height: 260px;
+      overflow-y: auto;
+      z-index: 1000;
+      padding: 6px;
+    }
+    .combobox-wrapper.open .combobox-dropdown {
+      display: block !important;
+    }
+    .error-notice-card {
+      background: #fff1f2;
+      border: 1.5px solid #fecdd3;
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin-top: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      box-shadow: 0 6px 18px rgba(225, 29, 72, 0.08);
+      animation: alertPop 0.25s ease-out;
+    }
+    @keyframes alertPop {
+      0% { opacity: 0; transform: translateY(-6px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .error-notice-card__icon {
+      font-size: 26px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .error-notice-card__title {
+      font-size: 16.5px;
+      font-weight: 800;
+      color: #e11d48;
+      margin-bottom: 5px;
+      letter-spacing: -0.01em;
+    }
+    .error-notice-card__desc {
+      font-size: 15px;
+      color: #9f1239;
+      line-height: 1.55;
+      font-weight: 500;
+    }
+    .input-error {
+      border-color: #e11d48 !important;
+      box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.16) !important;
+      background: #fffbfa !important;
+    }
+
+    /* Profession Selection View & Cards */
+    .profession-selection-view {
+      margin-top: 36px;
+      animation: fadeIn 0.35s ease;
+    }
+    .profession-selection-header {
+      background: #ffffff;
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      padding: 24px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    }
+    .profession-selection-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-dark);
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .profession-selection-subtitle {
+      font-size: 15.5px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+    .profession-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+      margin-bottom: 36px;
+    }
+    .profession-cards-grid.single-card-view {
+      grid-template-columns: 1fr;
+      max-width: 980px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .profession-card {
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+      cursor: pointer;
+      position: relative;
+    }
+    .profession-card:hover {
+      border-color: var(--primary-teal);
+      transform: translateY(-4px);
+      box-shadow: 0 14px 30px rgba(13, 148, 136, 0.12);
+    }
+    .profession-card.selected {
+      border-color: var(--primary-teal);
+      background: linear-gradient(180deg, #f0fdfa 0%, #ffffff 100%);
+      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.25), 0 12px 28px rgba(13, 148, 136, 0.14);
+      cursor: default;
+      transform: none;
+    }
+    .profession-card__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 8px;
+    }
+    .profession-card__match {
+      font-size: 12px;
+      font-weight: 800;
+      color: #0f766e;
+      background: #ccfbf1;
+      padding: 4px 10px;
+      border-radius: 999px;
+      letter-spacing: 0.04em;
+    }
+    .profession-card__salary {
+      font-size: 12px;
+      font-weight: 800;
+      color: #92400e;
+      background: #fef3c7;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+    .profession-card__title {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--text-dark);
+      letter-spacing: -0.01em;
+      margin-bottom: 10px;
+      line-height: 1.35;
+    }
+    .profession-card__degrees {
+      font-size: 13.5px;
+      color: #475569;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      line-height: 1.45;
+    }
+    .profession-card__why {
+      font-size: 14.5px;
+      color: var(--text-body);
+      line-height: 1.55;
+      margin-bottom: 16px;
+    }
+    .profession-card__skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+    .profession-card__skill {
+      font-size: 12px;
+      font-weight: 600;
+      background: #f1f5f9;
+      color: #334155;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+    }
+    .profession-card__btn {
+      width: 100%;
+      background: #0f172a;
+      color: #ffffff;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .profession-card:hover .profession-card__btn,
+    .profession-card.selected .profession-card__btn {
+      background: var(--primary-teal);
+      box-shadow: 0 4px 14px rgba(13, 148, 136, 0.3);
+    }
+
+    /* Active Chosen Profession Banner in Results */
+    .active-profession-banner {
+      background: linear-gradient(135deg, #f0fdfa 0%, #e6fffa 100%);
+      border: 1.5px solid #99f6e4;
+      border-radius: 14px;
+      padding: 16px 22px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .active-profession-banner__left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .active-profession-banner__tag {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      color: #0d9488;
+      background: rgba(13, 148, 136, 0.12);
+      padding: 4px 9px;
+      border-radius: 6px;
+    }
+    .active-profession-banner__title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .btn-switch-profession {
+      background: #ffffff;
+      color: #0f766e;
+      border: 1.5px solid #99f6e4;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-switch-profession:hover {
+      background: #0f766e;
+      color: #ffffff;
+      border-color: #0f766e;
+    }
+    .source-badge {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      padding: 3px 10px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .source-badge--db {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+    .source-badge--ai {
+      background: #f0fdf4;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+
+    /* Responsive Styling for Console Components */
+    @media (max-width: 768px) {
+      .profession-selection-header {
+        padding: 18px 16px;
+        border-radius: 14px;
+        margin-bottom: 18px;
+      }
+      .profession-selection-title {
+        font-size: 20px;
+      }
+      .profession-selection-subtitle {
+        font-size: 14px;
+      }
+      .profession-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+      .profession-card {
+        padding: 20px 16px;
+      }
+      .profession-card__title {
+        font-size: 18px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .active-profession-banner {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 14px 16px;
+        gap: 10px;
+      }
+      .btn-switch-profession {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+      }
+      .profession-card__action-row > div {
+        flex-direction: column !important;
+        align-items: stretch !important;
+      }
+      .profession-card__action-row button,
+      .profession-card__action-row .btn-switch-profession,
+      .profession-card__action-row div {
+        width: 100% !important;
+        text-align: center !important;
+        justify-content: center !important;
+      }
+      .results-dashboard > div:first-child {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 10px !important;
+      }
+      #printBtn {
+        width: 100% !important;
+        text-align: center;
+      }
+      .error-notice-card {
+        padding: 16px 14px;
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <a href="/" class="brand-wrap" title="FutureEra Homepage">
+      <div class="brand-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <defs>
+            <linearGradient id="boltGradConsole" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ffffff" />
+              <stop offset="100%" stop-color="#ccfbf1" />
+            </linearGradient>
+          </defs>
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="url(#boltGradConsole)" stroke="#ffffff" stroke-width="1.2" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.18));"></polygon>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-title">Future<span class="brand-title-highlight">Era</span></span>
+      </div>
+    </a>
+    <div class="header-actions">
+      <a href="/" class="header-link">&larr; Return Home</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <div class="planner__hero">
+    <h1 class="hero-title" id="consoleHeroTitle">
+      Chart Your Career Path After<br />
+      <span class="hero-title__teal">Class 12th</span> <span class="hero-title__amber">Graduation</span>
+    </h1>
+  </div>
+
+  <!-- ============ MAIN CONSOLE SECTION ============ -->
+  <main class="planner">
+    <div class="planner__inner">
+      <div class="planner__console">
+        
+        <!-- Active Pathway Indicator -->
+        <div class="stage-nav-bar" id="stageNavBar">
+          <div class="stage-nav-info">
+            <span class="stage-nav-badge" id="activeStagePill">🎓 Class 12 Graduate</span>
+            <span class="stage-nav-text" id="activeStageText">Pre-college discovery mode enabled</span>
+          </div>
+          <a href="/stage" class="stage-nav-switch-btn">&larr; Change Stage</a>
+        </div>
+
+        <!-- Form -->
+        <form id="careerForm">
+          <!-- 12th Pass Section -->
+          <div id="fields12th">
+            <div class="form-group">
+              <label class="form-label">SELECT YOUR 12TH STREAM</label>
+              <div class="stream-grid" id="streamSelector">
+                <button type="button" data-stream="PCM (Physics, Chemistry, Maths)" class="stream-btn active">📐 PCM (Maths)</button>
+                <button type="button" data-stream="PCB (Physics, Chemistry, Biology)" class="stream-btn">🧬 PCB (Biology)</button>
+                <button type="button" data-stream="Commerce with Maths" class="stream-btn">📊 Commerce (Maths)</button>
+                <button type="button" data-stream="Commerce without Maths" class="stream-btn">💼 Commerce</button>
+                <button type="button" data-stream="Humanities and Social Sciences" class="stream-btn">🏛️ Humanities / Arts</button>
+              </div>
+              <input type="hidden" id="selectedStream" value="PCM (Physics, Chemistry, Maths)" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">YOUR INTERESTS, HOBBIES, OR FAVORITE SUBJECTS</label>
+              <div class="chips-container" id="interestChips">
+                <span class="chip" data-text="Coding & Tech">💻 Coding & Tech</span>
+                <span class="chip" data-text="Healthcare & Biology">🩺 Healthcare & Bio</span>
+                <span class="chip" data-text="Finance & Stock Markets">📈 Finance & Markets</span>
+                <span class="chip" data-text="Design & Creative Art">🎨 UI/UX & Design</span>
+                <span class="chip" data-text="Law & Cyber Policy">⚖️ Law & Policy</span>
+                <span class="chip" data-text="Robotics & Autonomous Hardware">🤖 Robotics & Hardware</span>
+              </div>
+              <textarea id="interests" class="form-textarea" rows="3" placeholder="e.g., I love solving logical math puzzles and gaming, but I am nervous about AI coding tools..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">PLANNED DEGREE DURATION</label>
+              <div class="duration-grid" id="durationSelector">
+                <div class="duration-option" data-years="3">
+                  <span class="duration-option__title">3 Years</span>
+                </div>
+                <div class="duration-option active" data-years="4">
+                  <span class="duration-option__title">4 Years</span>
+                </div>
+                <div class="duration-option" data-years="5">
+                  <span class="duration-option__title">5 Years</span>
+                </div>
+              </div>
+              <input type="hidden" id="selectedDuration" value="4" />
+            </div>
+          </div>
+
+          <!-- Final Year Section -->
+          <div id="fieldsFinal" style="display: none;">
+            <div class="form-row-2col">
+              <!-- Current Degree and Major Combobox -->
+              <div class="form-group">
+                <label class="form-label">CURRENT DEGREE AND MAJOR</label>
+                <div class="combobox-wrapper" id="degreeCombobox" style="position: relative; width: 100%; display: flex; align-items: center;">
+                  <input type="text" id="degreeMajor" class="form-input combobox-input" placeholder="Type or select degree (e.g., B.Tech CSE, BCA, B.Sc IT)..." autocomplete="off" />
+                  <button type="button" class="combobox-toggle" id="degreeToggle" aria-label="Toggle degree dropdown" tabindex="-1" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer; color: #94a3b8; font-size: 15px; z-index: 2;">▾</button>
+                  <div class="combobox-dropdown" id="degreeDropdown"></div>
+                </div>
+              </div>
+
+              <!-- Target Career Role Combobox -->
+              <div class="form-group">
+                <label class="form-label">TARGET CAREER ROLE</label>
+                <div class="combobox-wrapper" id="roleCombobox" style="position: relative; width: 100%; display: flex; align-items: center;">
+                  <input type="text" id="targetRole" class="form-input combobox-input" placeholder="Type or select target role (e.g., Full Stack Engineer, AI Engineer)..." autocomplete="off" />
+                  <button type="button" class="combobox-toggle" id="roleToggle" aria-label="Toggle role dropdown" tabindex="-1" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer; color: #94a3b8; font-size: 15px; z-index: 2;">▾</button>
+                  <div class="combobox-dropdown" id="roleDropdown"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Current Skills and Technologies Tagging & Combobox -->
+            <div class="form-group">
+              <label class="form-label">CURRENT SKILLS AND KNOWN TECHNOLOGIES</label>
+              <input type="hidden" id="currentSkills" value="" />
+              <div class="selected-skills-container" id="selectedSkillsContainer"></div>
+              <div class="combobox-wrapper" id="skillsCombobox" style="position: relative; width: 100%; display: flex; align-items: center;">
+                <input type="text" id="skillSearchInput" class="form-input combobox-input" placeholder="Type a skill to search or add (e.g., Python, React, SQL)..." autocomplete="off" />
+                <button type="button" class="combobox-toggle" id="skillsToggle" aria-label="Toggle skills dropdown" tabindex="-1" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer; color: #94a3b8; font-size: 15px; z-index: 2;">▾</button>
+                <div class="combobox-dropdown" id="skillsDropdown"></div>
+              </div>
+              <div class="quick-skills-tray">
+                <span class="quick-skills-label">Quick Add:</span>
+                <div class="quick-skills-pills" id="quickSkillsPills">
+                  <button type="button" class="quick-skill-pill" data-skill="Python">+ Python</button>
+                  <button type="button" class="quick-skill-pill" data-skill="JavaScript">+ JavaScript</button>
+                  <button type="button" class="quick-skill-pill" data-skill="React.js">+ React.js</button>
+                  <button type="button" class="quick-skill-pill" data-skill="Java">+ Java</button>
+                  <button type="button" class="quick-skill-pill" data-skill="C++">+ C++</button>
+                  <button type="button" class="quick-skill-pill" data-skill="SQL">+ SQL</button>
+                  <button type="button" class="quick-skill-pill" data-skill="Node.js">+ Node.js</button>
+                  <button type="button" class="quick-skill-pill" data-skill="Docker">+ Docker</button>
+                  <button type="button" class="quick-skill-pill" data-skill="Git & GitHub">+ Git &amp; GitHub</button>
+                  <button type="button" class="quick-skill-pill" data-skill="Machine Learning">+ Machine Learning</button>
+                  <button type="button" class="quick-skill-pill" data-skill="Tailwind CSS">+ Tailwind CSS</button>
+                  <button type="button" class="quick-skill-pill" data-skill="AWS">+ AWS</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <div class="submit-block">
+            <button type="submit" id="submitBtn" class="submit-btn">
+              <span>✦</span>
+              <span id="submitBtnText">Generate Blueprint</span>
+              <span>&rarr;</span>
+            </button>
+          </div>
+        </form>
+
+        <!-- Loading View -->
+        <div id="loadingView" class="loading-view">
+          <div class="loading-spinner"></div>
+          <h4 class="loading-title">Synthesizing Trajectory</h4>
+          <p class="loading-text" id="loadingTip">Querying modern market metrics and constructing milestone roadmap...</p>
+        </div>
+
+        <!-- Error View -->
+        <div id="errorView" class="error-notice-card" style="display: none;">
+          <div class="error-notice-card__icon">⚠️</div>
+          <div class="error-notice-card__body">
+            <div class="error-notice-card__title" id="errorTitle">Blueprint Doesn't Exist</div>
+            <div class="error-notice-card__desc" id="errorMessage">Please check the entered data and provide valid educational degrees, skills, or career roles.</div>
+          </div>
+        </div>
+
+        <!-- ============ PROFESSION SELECTION VIEW ============ -->
+        <div id="professionSelectionView" class="profession-selection-view" style="display: none;">
+          <div class="profession-selection-header">
+            <h3 class="profession-selection-title">Pick Your Target Profession</h3>
+            <p class="profession-selection-subtitle" id="professionSelectionSubtitle">
+              Based on your stream and favorite subjects, here are the top matching career paths. Select one to generate its comprehensive multi-year architecture blueprint.
+            </p>
+          </div>
+          <div id="professionCardsGrid" class="profession-cards-grid">
+            <!-- Dynamically populated profession cards -->
+          </div>
+        </div>
+
+        <!-- ============ RESULTS DASHBOARD ============ -->
+        <div id="resultsDashboard" class="results-dashboard">
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <span id="resSourceBadge" class="source-badge source-badge--db" style="display: none;">
+                💾 Database Vault (Offline Cache)
+              </span>
+            </div>
+            <button id="printBtn" class="btn btn--ghost" style="padding: 10px 22px; font-size: 13px; border-radius: 10px;">Print Blueprint 🖨️</button>
+          </div>
+
+          <!-- Active Chosen Profession Indicator -->
+          <div id="activeProfessionBanner" class="active-profession-banner" style="display: none;">
+            <div class="active-profession-banner__left">
+              <span class="active-profession-banner__tag">SELECTED PROFESSION</span>
+              <span class="active-profession-banner__title" id="activeProfessionTitle">Target Profession</span>
+            </div>
+            <button type="button" id="btnSwitchProfession" class="btn-switch-profession">
+              ⇄ Choose Another Profession
+            </button>
+          </div>
+
+          <!-- Panel 1: Trajectory Summary -->
+          <div class="res-panel">
+            <div class="res-panel__header">
+              <div>
+                <div style="font-size: 13.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--primary-teal); font-weight: 800; margin-bottom: 8px;">Recommended Trajectory</div>
+                <h3 class="res-panel__title" id="resTrajectoryTitle">Target Career</h3>
+              </div>
+              <div id="resRolesContainer" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+            </div>
+            <p id="resProfileSummary" style="color: var(--text-body); font-size: 18px; line-height: 1.75; font-weight: 500;"></p>
+          </div>
+
+          <!-- Panel: Field Intelligence & Domain Architecture Deep-Dive -->
+          <div class="res-panel" id="panelFieldIntelligence" style="display: none;">
+            <div class="res-panel__header">
+              <div>
+                <div style="font-size: 13.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--primary-teal); font-weight: 800; margin-bottom: 8px;">
+                  Domain Deep-Dive &bull; Chosen Field Architecture
+                </div>
+                <h3 class="res-panel__title" id="resFieldTitle">Field Architecture & Market Reality</h3>
+                <p class="res-panel__desc" id="resFieldReality" style="font-size: 17.5px; line-height: 1.75; color: var(--text-body); margin-top: 10px; font-weight: 500;"></p>
+              </div>
+            </div>
+
+            <!-- Compensation Benchmarks Section -->
+            <div style="margin-top: 24px; margin-bottom: 28px;">
+              <div style="font-size: 15px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dark); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+                <span>💰</span> 2026 Compensation & Market Scale Benchmarks
+              </div>
+              <div class="salary-grid">
+                <div class="salary-card">
+                  <span class="salary-card__tier">Entry Level (0-2 Yrs)</span>
+                  <span class="salary-card__amount" id="resSalaryEntry">—</span>
+                </div>
+                <div class="salary-card">
+                  <span class="salary-card__tier">Mid-Senior (3-6 Yrs)</span>
+                  <span class="salary-card__amount" id="resSalaryMid">—</span>
+                </div>
+                <div class="salary-card">
+                  <span class="salary-card__tier">Staff / Lead (7+ Yrs)</span>
+                  <span class="salary-card__amount" id="resSalaryStaff">—</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Split Grid 1: Top Hiring Companies & Key Specializations -->
+            <div class="res-split-grid" style="margin-bottom: 24px;">
+              <div class="res-subbox">
+                <div class="res-subbox__title">🏢 Top Hiring Companies & Ecosystem</div>
+                <div id="resHiringCompanies" class="pills-cloud"></div>
+              </div>
+              <div class="res-subbox">
+                <div class="res-subbox__title">🎯 High-Leverage Sub-Specializations</div>
+                <ul id="resSpecializationsList" class="res-list"></ul>
+              </div>
+            </div>
+
+            <!-- Split Grid 2: Core Mental Models & High-Value Certifications -->
+            <div class="res-split-grid">
+              <div class="res-subbox">
+                <div class="res-subbox__title">🧠 Core Architectural Mental Models</div>
+                <ul id="resPrinciplesList" class="res-list"></ul>
+              </div>
+              <div class="res-subbox">
+                <div class="res-subbox__title">📜 High-ROI Industry Credentials</div>
+                <ul id="resCertsList" class="res-list"></ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel 2: AI Resilience Shield -->
+          <div class="res-panel">
+            <div class="res-panel__header">
+              <div>
+                <h3 class="res-panel__title">The AI-Resilience Shield</h3>
+                <p class="res-panel__desc">Human domain resilience vs. applied AI co-pilot tools</p>
+              </div>
+              <div id="resThreatBadge" class="threat-tag threat-low">Automation Risk: Low</div>
+            </div>
+
+            <div class="res-split-grid">
+              <div class="res-subbox">
+                <div class="res-subbox__title">Where AI Fails (Human Edge)</div>
+                <ul id="resAiFailsList" class="res-list"></ul>
+              </div>
+              <div class="res-subbox">
+                <div class="res-subbox__title">Essential AI Co-Pilots to Master</div>
+                <ul id="resAiToolsList" class="res-list"></ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel 3: 2026 Market Tech Radar -->
+          <div class="res-panel">
+            <div class="res-panel__header">
+              <div>
+                <h3 class="res-panel__title">Market Tech Radar</h3>
+                <p class="res-panel__desc">High-demand industry standards vs. obsolete curriculum concepts</p>
+              </div>
+            </div>
+
+            <div class="res-split-grid">
+              <div class="res-subbox">
+                <div class="res-subbox__title">In-Demand Production Technologies</div>
+                <div id="resInDemandPills" class="pills-cloud"></div>
+              </div>
+              <div class="res-subbox">
+                <div class="res-subbox__title">Outdated / Deprioritize in 2026</div>
+                <div id="resOutdatedPills" class="pills-cloud"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel 4: Timeline Roadmap -->
+          <div class="res-panel">
+            <div class="res-panel__header">
+              <div>
+                <h3 class="res-panel__title" id="resTimelineHeading">Timeline Roadmap</h3>
+                <p class="res-panel__desc">Sequenced milestones, portfolio-worthy projects, and primary learning links</p>
+              </div>
+            </div>
+
+            <div id="resTimelineContainer" class="timeline-list"></div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="future-footer">
+    <div>
+      FUTUREERA &copy; 2026. All rights reserved.
+    </div>
+    <div style="display: flex; gap: 24px;">
+      <a href="/">Home</a>
+      <a href="/terms">Terms and Conditions</a>
+      <a href="/privacy">Privacy Policy</a>
+    </div>
+  </footer>
+
+  <script src="/static/js/console.js?v=14"></script>
+</body>
+</html>

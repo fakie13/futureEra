@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Select Your Stage — FutureEra</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css?v=23" />
+</head>
+<body>
+
+  <!-- Floating Navigation -->
+  <header class="app-header">
+    <a href="/" class="brand-wrap" title="FutureEra Homepage">
+      <div class="brand-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <defs>
+            <linearGradient id="boltGradStage" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ffffff" />
+              <stop offset="100%" stop-color="#ccfbf1" />
+            </linearGradient>
+          </defs>
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="url(#boltGradStage)" stroke="#ffffff" stroke-width="1.2" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.18));"></polygon>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-title">Future<span class="brand-title-highlight">Era</span></span>
+      </div>
+    </a>
+    <div class="header-actions">
+      <a href="/" class="header-link">&larr; Return Home</a>
+    </div>
+  </header>
+
+  <!-- Stage Selection Section -->
+  <main class="stage-section">
+    <div class="stage-container">
+      
+      <h1 class="stage-title">Where are you in your career journey?</h1>
+
+      <!-- 2 Stage Pathway Cards -->
+      <div class="stage-grid">
+
+        <!-- Card 1: Class 12th Graduate -->
+        <a href="/console?stage=12th" class="stage-card stage-card--12th">
+          <div class="stage-card__header">
+            <span class="stage-badge stage-badge--teal">PRE-COLLEGE &bull; DISCOVERY</span>
+          </div>
+          <h2 class="stage-card__title">Class 12th Graduate</h2>
+          <p class="stage-card__desc">
+            Unsure which college degree or tech path to pursue? Analyze your 12th stream (PCM, PCB, Commerce, Arts) to discover 5 high-yield 2026 careers before making a major college commitment.
+          </p>
+          <ul class="stage-card__perks">
+            <li>
+              <span class="perk-check">✓</span>
+              <span>5 Curated 2026 High-Growth Careers</span>
+            </li>
+            <li>
+              <span class="perk-check">✓</span>
+              <span>Stream-Tailored (PCM, PCB, Commerce, Arts)</span>
+            </li>
+            <li>
+              <span class="perk-check">✓</span>
+              <span>Match Score %, Salary & Degree Suggestions</span>
+            </li>
+          </ul>
+          <div class="stage-card__footer">
+            <div class="stage-card__btn stage-card__btn--teal">
+              <span>Select 12th Path</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </div>
+        </a>
+
+        <!-- Card 2: Final-Year College Student -->
+        <a href="/console?stage=final" class="stage-card stage-card--final">
+          <div class="stage-card__header">
+            <span class="stage-badge stage-badge--amber">PLACEMENT &bull; INDUSTRY ACCELERATION</span>
+          </div>
+          <h2 class="stage-card__title">Final-Year College Student</h2>
+          <p class="stage-card__desc">
+            Graduating soon or preparing for campus hiring? Map your specific degree (B.Tech, BCA, B.Sc, MCA) directly to 2026 production job roles, AI defenses, and hiring capstone milestones.
+          </p>
+          <ul class="stage-card__perks">
+            <li>
+              <span class="perk-check perk-check--amber">✓</span>
+              <span>Degree & Target Role Syllabus Audit</span>
+            </li>
+            <li>
+              <span class="perk-check perk-check--amber">✓</span>
+              <span>2026 Production Tech Stacks & Certifications</span>
+            </li>
+            <li>
+              <span class="perk-check perk-check--amber">✓</span>
+              <span>Real Industry Capstones & Milestone Roadmap</span>
+            </li>
+          </ul>
+          <div class="stage-card__footer">
+            <div class="stage-card__btn stage-card__btn--amber">
+              <span>Select Final-Year Path</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </div>
+        </a>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="future-footer">
+    <div>
+      FUTUREERA &copy; 2026. All rights reserved.
+    </div>
+    <div style="display: flex; gap: 24px;">
+      <a href="/terms">Terms and Conditions</a>
+      <a href="/privacy">Privacy Policy</a>
+    </div>
+  </footer>
+
+</body>
+</html>

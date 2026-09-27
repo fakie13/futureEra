@@ -143,6 +143,12 @@ def main():
     code = squad['invite_code']
     print(f'[PASS] Squad created: {squad["squad_name"]} (Invite Code: {code})')
 
+    # 4b. Verify user already in the team attempting to join receives "You are already in a team."
+    st_rejoin, r_rejoin = post_json('/api/squads/join', {'invite_code': code}, token=token1)
+    assert st_rejoin == 200, f'Rejoin check failed: {r_rejoin}'
+    assert r_rejoin.get('message') == "You are already in a team.", f"Expected 'You are already in a team.', got {r_rejoin.get('message')}"
+    print(f'[PASS] Re-joining existing squad correctly returns: {r_rejoin["message"]}')
+
     # 5. Create 3 more users to fill the 4-person squad
     tokens = []
     for i in range(2, 5):

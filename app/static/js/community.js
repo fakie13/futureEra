@@ -1005,7 +1005,7 @@ async function handleJoinSquadSubmit(e) {
     }
 
     closeJoinSquadModal();
-    showToast(`Joined squad '${data.squad.squad_name}'.`);
+    showToast(data.message || `Joined squad '${data.squad.squad_name}'.`);
     STATE.currentSquad = data.squad;
     if (STATE.currentUser) STATE.currentUser.squad_id = data.squad.id;
     switchCommTab("squad");
@@ -1071,6 +1071,10 @@ function handleClaimSeatClick(inviteCode) {
   if (!STATE.token) {
     openAuthModal("signin");
     showToast("Sign in to claim an open seat.");
+    return;
+  }
+  if (STATE.currentSquad || (STATE.currentUser && STATE.currentUser.squad_id)) {
+    showToast("You are already in a team.");
     return;
   }
   openJoinSquadModal(inviteCode);
@@ -1214,7 +1218,7 @@ function renderSquadsDirectory(squads) {
         </div>
 
         <div style="display: flex; gap: 8px; margin-top: auto;">
-          <button class="btn-secondary" style="flex: 1; padding: 10px 14px; font-size: 14px;" onclick="openJoinSquadModal('${s.invite_code}')" ${!isOpen ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+          <button class="btn-secondary" style="flex: 1; padding: 10px 14px; font-size: 14px;" onclick="handleClaimSeatClick('${s.invite_code}')" ${!isOpen ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
             ${isOpen ? `Claim Open Seat (${s.invite_code})` : 'Squad Full'}
           </button>
           <button class="btn-icon-subtle" onclick="copySquadCode('${s.invite_code}')" title="Copy Code">
@@ -1367,6 +1371,10 @@ function closeCreateSquadModal() {
 }
 
 function openJoinSquadModal(prefillCode = '') {
+  if (STATE.currentSquad || (STATE.currentUser && STATE.currentUser.squad_id)) {
+    showToast("You are already in a team.");
+    return;
+  }
   const modal = document.getElementById("joinSquadModal");
   if (!modal) return;
   const input = document.getElementById("joinCodeInput");

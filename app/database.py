@@ -1464,12 +1464,12 @@ def join_squad_by_code(user_id: int, invite_code: str) -> Tuple[bool, str, Optio
             
             cursor.execute("SELECT id FROM squad_members WHERE squad_id = ? AND user_id = ?;", (squad_id, user_id))
             if cursor.fetchone():
-                return True, "You are already a member of this squad.", get_squad_details(squad_id)
+                return True, "You are already in a team.", get_squad_details(squad_id)
                 
             cursor.execute("SELECT s.squad_name FROM squad_members sm JOIN squads s ON s.id = sm.squad_id WHERE sm.user_id = ?;", (user_id,))
             existing_squad = cursor.fetchone()
             if existing_squad:
-                return False, f"You are already in squad '{existing_squad['squad_name']}'. Please leave that squad first before joining another.", None
+                return False, f"You are already in a team ({existing_squad['squad_name']}). Please leave that squad first before joining another.", None
                 
             # Strictly enforce 4-member limit
             cursor.execute("SELECT COUNT(*) AS c FROM squad_members WHERE squad_id = ?;", (squad_id,))

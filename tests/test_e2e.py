@@ -128,6 +128,27 @@ def main():
     assert st_goal == 200 and r_goal['success']
     print('[PASS] Sprint goal updated successfully')
 
+    # 9. Verify standalone auth pages serve HTTP 200
+    for page_path in ['/signin', '/signup', '/login']:
+        req = urllib.request.Request(base + page_path)
+        with urllib.request.urlopen(req) as resp:
+            content = resp.read().decode('utf-8')
+            assert resp.status == 200 and 'Student Developer Network' in content, f'Failed on {page_path}'
+    print('[PASS] /signin, /signup, and /login standalone routes verified (HTTP 200)')
+
+    # 10. Verify demo account login (@aarav_dev)
+    st_demo, r_demo = post_json('/api/auth/login', {
+        'username_or_email': 'aarav_dev',
+        'password': 'Password@123'
+    })
+    assert st_demo == 200 and r_demo.get('user', {}).get('username') == 'aarav_dev', f'Demo login failed: {r_demo}'
+    demo_token = r_demo['token']
+
+    # 11. Verify /api/auth/me with session token
+    st_me, r_me = get_json('/api/auth/me', token=demo_token)
+    assert st_me == 200 and r_me.get('authenticated') is True
+    print('[PASS] Demo account login and session verification verified')
+
     print('\n========================================')
     print('ALL INTEGRATION TESTS PASSED (100% OK)')
     print('========================================')

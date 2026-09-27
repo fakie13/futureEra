@@ -294,6 +294,11 @@ function checkUrlParamsForJoin() {
   if (tabParam && ["matchmaking", "squad", "directory"].includes(tabParam)) {
     switchCommTab(tabParam);
   }
+
+  const authParam = urlParams.get("auth");
+  if (authParam && ["signin", "signup"].includes(authParam)) {
+    openAuthModal(authParam);
+  }
 }
 
 // ==========================================
@@ -1029,14 +1034,38 @@ function handlePeerInviteClick(peerId, username) {
   showToast(`Squad invite copied to clipboard for @${username}.`);
 }
 
+function copyToClipboard(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.position = "fixed";
+  ta.style.left = "-9999px";
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try {
+    document.execCommand("copy");
+  } catch (e) {
+    console.warn("Fallback copy failed:", e);
+  }
+  document.body.removeChild(ta);
+}
+
 function copySquadCode(code) {
-  navigator.clipboard.writeText(code);
+  copyToClipboard(code);
   showToast(`Invite code '${code}' copied to clipboard.`);
 }
 
 function copySquadLink(code) {
   const url = `${window.location.origin}/community?join=${code}`;
-  navigator.clipboard.writeText(url);
+  copyToClipboard(url);
   showToast("Direct squad join link copied to clipboard.");
 }
 

@@ -536,10 +536,14 @@ function renderPeers(peers) {
           <button class="btn-secondary" onclick="openPeerModal(${peer.id})">
             View Profile
           </button>
-          <button class="btn-primary-action" onclick="handlePeerInviteClick(${peer.id}, '${escapeHtml(peer.username)}')">
-            ${ICONS.userPlus}
-            <span>Invite</span>
-          </button>
+          ${((STATE.currentUser && String(STATE.currentUser.id) === String(peer.id)) ||
+             (STATE.currentUser && STATE.currentUser.username && peer.username && STATE.currentUser.username.toLowerCase() === peer.username.toLowerCase()))
+            ? `<button class="btn-secondary" style="color: #0f766e; border-color: #99f6e4; background: #f0fdfa;" onclick="openPeerModal(${peer.id})">Edit Profile</button>`
+            : `<button class="btn-primary-action" onclick="handlePeerInviteClick(${peer.id}, '${escapeHtml(peer.username)}')">
+                 ${ICONS.userPlus}
+                 <span>Invite</span>
+               </button>`
+          }
         </div>
       </div>
     `;
@@ -1296,6 +1300,13 @@ function handleClaimSeatClick(inviteCode) {
 }
 
 function handlePeerInviteClick(peerId, username) {
+  if (STATE.currentUser && (
+    String(STATE.currentUser.id) === String(peerId) ||
+    (STATE.currentUser.username && username && STATE.currentUser.username.toLowerCase() === username.toLowerCase())
+  )) {
+    showToast("You cannot invite yourself to a squad.", "error");
+    return;
+  }
   if (!STATE.token) {
     openAuthModal("signin");
     showToast("Sign in to invite peers.");
@@ -1453,7 +1464,7 @@ async function openPeerModal(peerId) {
   const content = document.getElementById("peerModalContent");
   if (!modal || !content) return;
 
-  content.innerHTML = `<div style="text-align:center; padding: 40px; color: #94a3b8;">Loading profile...</div>`;
+  content.innerHTML = `<div style="text-align:center; padding: 60px 20px; color: #94a3b8; font-size: 15px;">Loading profile...</div>`;
   modal.classList.add("open");
 
   try {
@@ -1462,96 +1473,423 @@ async function openPeerModal(peerId) {
     });
     const u = await res.json();
     if (!res.ok) {
-      content.innerHTML = `<div style="color: #ef4444;">Could not load profile.</div>`;
+      content.innerHTML = `<div style="color: #ef4444; padding: 40px; text-align: center; font-size: 15px;">Could not load profile.</div>`;
       return;
     }
+
+    const currentId = STATE.currentUser ? String(STATE.currentUser.id) : null;
+    const currentUsername = STATE.currentUser && STATE.currentUser.username ? STATE.currentUser.username.trim().toLowerCase() : null;
+    const targetId = String(u.id);
+    const targetUsername = u.username ? u.username.trim().toLowerCase() : "";
+
+    const isOwnProfile = Boolean(u.is_self) || 
+      (currentId && currentId === targetId) || 
+      (currentUsername && currentUsername === targetUsername);
 
     const stageText = u.stage === "final_year" ? "Final Year Student" : "Class 12th Graduate";
     const initials = getInitials(u.full_name);
     const color = getAvatarColor(u.full_name, u.avatar_color);
 
-    const isOwnProfile = (STATE.currentUser && STATE.currentUser.id === u.id) || u.is_self;
-    const isFriend = (STATE.friendIds && STATE.friendIds.has(u.id)) || u.is_friend;
+    if (isOwnProfile) {
+      STATE.editingProfile = u;
+    }
 
     let actionsHtml = "";
     if (isOwnProfile) {
       actionsHtml = `
-        <div style="background: #f8fafc; border: 1px dashed var(--comm-border-strong); border-radius: 10px; padding: 12px; text-align: center; color: #64748b; font-size: 14px; font-weight: 600; width: 100%;">
-          Your Personal Profile
+        <div style="display: flex; gap: 12px; width: 100%; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--comm-border);">
+          <button type="button" class="btn btn--solid" style="flex: 1; padding: 13px 22px; font-size: 15px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px;" onclick="openEditProfileView()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            <span>Edit Profile</span>
+          </button>
+          <button type="button" class="btn-secondary" style="padding: 13px 22px; font-size: 15px;" onclick="closePeerModal()">
+            Close
+          </button>
         </div>
       `;
     } else {
+      const isFriend = (STATE.friendIds && STATE.friendIds.has(u.id)) || u.is_friend;
       const friendBtn = isFriend
-        ? `<button type="button" id="modalFriendActionBtn" class="btn-remove-friend" style="flex: 1; padding: 11px; font-size: 14.5px; justify-content: center;" onclick="handleToggleFriendFromModal(${u.id}, '${escapeHtml(u.username)}', true)">
+        ? `<button type="button" id="modalFriendActionBtn" class="btn-remove-friend" style="flex: 1; padding: 13px; font-size: 15px; justify-content: center;" onclick="handleToggleFriendFromModal(${u.id}, '${escapeHtml(u.username)}', true)">
              ${ICONS.userCheck}
              <span>Remove Friend</span>
            </button>`
-        : `<button type="button" id="modalFriendActionBtn" class="btn-friend-action" style="flex: 1; padding: 11px; font-size: 14.5px; justify-content: center;" onclick="handleToggleFriendFromModal(${u.id}, '${escapeHtml(u.username)}', false)">
+        : `<button type="button" id="modalFriendActionBtn" class="btn-friend-action" style="flex: 1; padding: 13px; font-size: 15px; justify-content: center;" onclick="handleToggleFriendFromModal(${u.id}, '${escapeHtml(u.username)}', false)">
              ${ICONS.userPlus}
              <span>+ Add Friend</span>
            </button>`;
 
       actionsHtml = `
-        <div style="display: flex; gap: 10px; width: 100%;">
+        <div style="display: flex; gap: 12px; width: 100%; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--comm-border);">
           ${friendBtn}
-          <button class="btn btn--solid" style="flex: 1; padding: 11px; font-size: 14.5px;" onclick="handlePeerInviteClick(${u.id}, '${escapeHtml(u.username)}')">
-            Invite to Squad &rarr;
+          <button class="btn btn--solid" style="flex: 1; padding: 13px; font-size: 15px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px;" onclick="handlePeerInviteClick(${u.id}, '${escapeHtml(u.username)}')">
+            <span>Invite to Squad</span>
+            <span>&rarr;</span>
           </button>
         </div>
       `;
     }
 
     content.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 18px;">
-        <div style="width: 56px; height: 56px; border-radius: 12px; background-color: ${color}; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #ffffff;">
+      ${isOwnProfile ? `
+        <div style="margin-bottom: 16px;">
+          <span class="profile-own-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Your Engineer Profile
+          </span>
+        </div>
+      ` : ''}
+
+      <div style="display: flex; align-items: center; gap: 18px; margin-bottom: 24px;">
+        <div style="width: 68px; height: 68px; border-radius: 16px; background-color: ${color}; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700; color: #ffffff; flex-shrink: 0; box-shadow: 0 4px 14px rgba(0,0,0,0.12);">
           ${initials}
         </div>
-        <div>
-          <h2 style="font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 22px; font-weight: 700; color: #0f172a; line-height: 1.25; margin: 0;">
+        <div style="flex: 1; min-width: 0;">
+          <h2 style="font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 26px; font-weight: 700; color: #0f172a; line-height: 1.2; margin: 0; word-break: break-word;">
             ${escapeHtml(u.full_name)}
           </h2>
-          <div style="font-size: 14.5px; color: #64748b; font-weight: 500; margin-top: 2px;">@${escapeHtml(u.username)} • ${stageText}</div>
+          <div style="font-size: 15px; color: #64748b; font-weight: 500; margin-top: 5px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span style="font-weight: 600; color: #0284c7;">@${escapeHtml(u.username)}</span>
+            <span>&bull;</span>
+            <span style="background: #f1f5f9; color: #334155; padding: 2px 8px; border-radius: 5px; font-size: 13px; font-weight: 600;">${stageText}</span>
+            ${u.squad_name ? `<span>&bull;</span> <span style="background: #f0fdfa; color: #0f766e; border: 1px solid #ccfbf1; padding: 2px 8px; border-radius: 5px; font-size: 13px; font-weight: 600;">${escapeHtml(u.squad_name)}</span>` : ''}
+          </div>
         </div>
       </div>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px;">
-        <div style="background: #f8fafc; border: 1px solid var(--comm-border); padding: 10px 12px; border-radius: 8px;">
-          <div style="font-size: 12.5px; color: #64748b; font-weight: 600; text-transform: uppercase;">Focus Role</div>
-          <div style="font-size: 14.5px; color: #0284c7; font-weight: 600; margin-top: 3px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 22px;">
+        <div style="background: #f8fafc; border: 1px solid var(--comm-border); padding: 14px 18px; border-radius: 12px;">
+          <div style="font-size: 12px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;">Focus / Target Role</div>
+          <div style="font-size: 16px; color: #0284c7; font-weight: 700; margin-top: 4px; line-height: 1.3;">
             ${escapeHtml(u.target_role || "Engineering Track")}
           </div>
         </div>
-        <div style="background: #f8fafc; border: 1px solid var(--comm-border); padding: 10px 12px; border-radius: 8px;">
-          <div style="font-size: 12.5px; color: #64748b; font-weight: 600; text-transform: uppercase;">Academic Degree</div>
-          <div style="font-size: 14.5px; color: #0f172a; font-weight: 600; margin-top: 3px;">
+        <div style="background: #f8fafc; border: 1px solid var(--comm-border); padding: 14px 18px; border-radius: 12px;">
+          <div style="font-size: 12px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;">Academic Degree / Stream</div>
+          <div style="font-size: 16px; color: #0f172a; font-weight: 700; margin-top: 4px; line-height: 1.3;">
             ${escapeHtml(u.stream_or_degree || "Technical Sciences")}
           </div>
         </div>
       </div>
 
-      <div style="margin-bottom: 16px;">
-        <div style="font-size: 13px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 6px;">Bio</div>
-        <p style="font-size: 15px; color: #334155; line-height: 1.6; margin: 0;">
-          ${escapeHtml(u.bio || "No bio provided.")}
-        </p>
+      <div style="margin-bottom: 22px;">
+        <div style="font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px;">Bio &amp; Engineering Focus</div>
+        <div style="font-size: 15.5px; color: #334155; line-height: 1.65; background: #fbfcfe; padding: 14px 18px; border-radius: 12px; border: 1px solid var(--comm-border);">
+          ${escapeHtml(u.bio || "No personal bio provided yet.")}
+        </div>
       </div>
 
-      <div style="margin-bottom: 22px;">
-        <div style="font-size: 13px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 8px;">Skills &amp; Interests (${(u.interests || []).length})</div>
-        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-          ${(u.interests || []).map(i => `<span class="tag-shared" style="cursor: default;">${escapeHtml(i)}</span>`).join("")}
+      <div style="margin-bottom: 8px;">
+        <div style="font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px;">
+          Skills &amp; Interests (${(u.interests || []).length})
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          ${(u.interests && u.interests.length > 0)
+            ? u.interests.map(i => `<span class="tag-shared" style="cursor: default; padding: 6px 14px; font-size: 13.5px; border-radius: 8px;">${escapeHtml(i)}</span>`).join("")
+            : `<span style="color: #94a3b8; font-size: 14px;">No skills added yet.</span>`
+          }
         </div>
       </div>
 
       ${actionsHtml}
     `;
   } catch (err) {
-    content.innerHTML = `<div style="color: #ef4444;">Network error fetching profile.</div>`;
+    content.innerHTML = `<div style="color: #ef4444; padding: 40px; text-align: center;">Network error fetching profile.</div>`;
   }
 }
 
 function closePeerModal() {
   document.getElementById("peerModal")?.classList.remove("open");
+}
+
+function openEditProfileView() {
+  const content = document.getElementById("peerModalContent");
+  if (!content) return;
+
+  const u = STATE.editingProfile || STATE.currentUser;
+  if (!u) return;
+
+  STATE.editSelectedInterests = new Set(u.interests || []);
+  STATE.editSelectedColor = u.avatar_color || "#0d9488";
+
+  const colorPalette = [
+    { label: "Teal", hex: "#0d9488" },
+    { label: "Indigo", hex: "#4f46e5" },
+    { label: "Sky", hex: "#0284c7" },
+    { label: "Emerald", hex: "#059669" },
+    { label: "Violet", hex: "#7c3aed" },
+    { label: "Rose", hex: "#e11d48" },
+    { label: "Amber", hex: "#d97706" },
+    { label: "Slate", hex: "#475569" }
+  ];
+
+  const popularInterests = [
+    "Coding & Tech", "AI & Machine Learning", "Python", "Full Stack", 
+    "Distributed Systems", "Cloud & DevOps", "Next.js", "Docker", 
+    "Data Structures", "Cybersecurity", "TypeScript", "Mobile Apps"
+  ];
+
+  content.innerHTML = `
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--comm-border);">
+      <div>
+        <h2 style="font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 22px; font-weight: 700; color: #0f172a; margin: 0;">
+          Edit Profile
+        </h2>
+        <p style="font-size: 14px; color: #64748b; margin: 3px 0 0 0;">
+          Update your public profile details, role focus, academic stage, and skills.
+        </p>
+      </div>
+      <button type="button" class="btn-secondary" style="font-size: 13.5px; padding: 6px 12px;" onclick="openPeerModal(${u.id})">
+        &larr; Back
+      </button>
+    </div>
+
+    <form id="editProfileForm" onsubmit="handleSaveProfile(event)">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 14px;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Full Name *</label>
+          <input type="text" id="editFullName" class="form-input" value="${escapeHtml(u.full_name || '')}" placeholder="Your full name" required />
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Academic Stage *</label>
+          <select id="editStage" class="form-select">
+            <option value="12th_pass" ${u.stage === "12th_pass" ? "selected" : ""}>Class 12th Graduate</option>
+            <option value="final_year" ${u.stage === "final_year" ? "selected" : ""}>Final Year Student</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 14px;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Target / Focus Role</label>
+          <input type="text" id="editTargetRole" class="form-input" value="${escapeHtml(u.target_role || '')}" placeholder="e.g. Full Stack Engineer, AI Engineer" />
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Degree or Stream</label>
+          <input type="text" id="editStreamOrDegree" class="form-input" value="${escapeHtml(u.stream_or_degree || '')}" placeholder="e.g. B.Tech Computer Science" />
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label class="form-label">Bio (Brief Summary)</label>
+        <textarea id="editBio" class="form-textarea" rows="3" placeholder="Tell peers about your background, projects, and career goals...">${escapeHtml(u.bio || '')}</textarea>
+      </div>
+
+      <!-- Avatar Color Picker -->
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label class="form-label">Avatar Color</label>
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;" id="colorPickerContainer">
+          ${colorPalette.map(c => `
+            <div 
+              class="edit-color-swatch ${c.hex.toLowerCase() === (STATE.editSelectedColor || '').toLowerCase() ? 'active' : ''}" 
+              style="background-color: ${c.hex};" 
+              title="${c.label}"
+              onclick="selectEditColor('${c.hex}', this)"
+            ></div>
+          `).join("")}
+        </div>
+      </div>
+
+      <!-- Skills & Interests -->
+      <div class="form-group" style="margin-bottom: 20px;">
+        <label class="form-label" style="display: flex; justify-content: space-between; align-items: center;">
+          <span>Skills &amp; Interests (at least 1 required)</span>
+          <span style="font-size: 13px; font-weight: 500; color: #64748b;" id="editInterestsCount">${STATE.editSelectedInterests.size} selected</span>
+        </label>
+        
+        <!-- Active Selected Chips -->
+        <div id="editSelectedChipsList" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; min-height: 34px;">
+          ${renderEditSelectedChips()}
+        </div>
+
+        <!-- Add Custom Skill Input -->
+        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+          <input type="text" id="newSkillInput" class="form-input" placeholder="Type a skill and click Add..." style="flex: 1;" onkeydown="if(event.key==='Enter'){event.preventDefault();addCustomEditSkill();}" />
+          <button type="button" class="btn-secondary" style="padding: 0 16px; font-weight: 600;" onclick="addCustomEditSkill()">
+            + Add
+          </button>
+        </div>
+
+        <!-- Suggestions / quick toggles -->
+        <div style="font-size: 12.5px; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 6px;">Popular Suggestions</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+          ${popularInterests.map(item => `
+            <span 
+              class="edit-interest-chip ${STATE.editSelectedInterests.has(item) ? 'selected' : ''}" 
+              onclick="toggleEditInterest('${escapeHtml(item)}', this)"
+            >
+              ${escapeHtml(item)}
+            </span>
+          `).join("")}
+        </div>
+      </div>
+
+      <div id="editProfileError" style="color: #ef4444; font-size: 14px; font-weight: 500; margin-bottom: 14px; display: none; padding: 10px; background: #fef2f2; border-radius: 8px; border: 1px solid #fee2e2;"></div>
+
+      <div style="display: flex; gap: 12px; justify-content: flex-end; padding-top: 16px; border-top: 1px solid var(--comm-border);">
+        <button type="button" class="btn-secondary" style="padding: 12px 20px; font-size: 15px;" onclick="openPeerModal(${u.id})">
+          Cancel
+        </button>
+        <button type="submit" id="btnSaveProfile" class="btn btn--solid" style="padding: 12px 24px; font-size: 15px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Save Changes</span>
+        </button>
+      </div>
+    </form>
+  `;
+}
+
+function selectEditColor(hex, elem) {
+  STATE.editSelectedColor = hex;
+  document.querySelectorAll(".edit-color-swatch").forEach(el => el.classList.remove("active"));
+  if (elem) elem.classList.add("active");
+}
+
+function renderEditSelectedChips() {
+  if (!STATE.editSelectedInterests || STATE.editSelectedInterests.size === 0) {
+    return `<span style="font-size: 13.5px; color: #94a3b8; font-style: italic;">No skills selected yet. Click suggestions or add your own above.</span>`;
+  }
+  return Array.from(STATE.editSelectedInterests).map(skill => `
+    <span class="tag-shared" style="display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; font-size: 13.5px; border-radius: 999px;">
+      <span>${escapeHtml(skill)}</span>
+      <span style="cursor: pointer; font-size: 15px; line-height: 1; opacity: 0.7; font-weight: bold;" onclick="removeEditInterest('${escapeHtml(skill)}')" title="Remove">&times;</span>
+    </span>
+  `).join("");
+}
+
+function updateEditChipsView() {
+  const container = document.getElementById("editSelectedChipsList");
+  const countLabel = document.getElementById("editInterestsCount");
+  if (container) container.innerHTML = renderEditSelectedChips();
+  if (countLabel) countLabel.textContent = `${STATE.editSelectedInterests.size} selected`;
+}
+
+function toggleEditInterest(item, elem) {
+  if (!STATE.editSelectedInterests) STATE.editSelectedInterests = new Set();
+  if (STATE.editSelectedInterests.has(item)) {
+    STATE.editSelectedInterests.delete(item);
+    if (elem) elem.classList.remove("selected");
+  } else {
+    STATE.editSelectedInterests.add(item);
+    if (elem) elem.classList.add("selected");
+  }
+  updateEditChipsView();
+}
+
+function removeEditInterest(item) {
+  if (!STATE.editSelectedInterests) return;
+  STATE.editSelectedInterests.delete(item);
+  updateEditChipsView();
+  document.querySelectorAll(".edit-interest-chip").forEach(el => {
+    if (el.textContent.trim() === item) {
+      el.classList.remove("selected");
+    }
+  });
+}
+
+function addCustomEditSkill() {
+  const input = document.getElementById("newSkillInput");
+  if (!input) return;
+  const val = input.value.trim();
+  if (!val) return;
+  if (!STATE.editSelectedInterests) STATE.editSelectedInterests = new Set();
+  STATE.editSelectedInterests.add(val);
+  input.value = "";
+  updateEditChipsView();
+}
+
+async function handleSaveProfile(event) {
+  if (event) event.preventDefault();
+  const btn = document.getElementById("btnSaveProfile");
+  const errDiv = document.getElementById("editProfileError");
+  if (errDiv) {
+    errDiv.textContent = "";
+    errDiv.style.display = "none";
+  }
+
+  const fullName = document.getElementById("editFullName")?.value.trim();
+  const stage = document.getElementById("editStage")?.value;
+  const targetRole = document.getElementById("editTargetRole")?.value.trim();
+  const streamOrDegree = document.getElementById("editStreamOrDegree")?.value.trim();
+  const bio = document.getElementById("editBio")?.value.trim();
+  const avatarColor = STATE.editSelectedColor || (STATE.currentUser && STATE.currentUser.avatar_color) || "#0d9488";
+
+  if (!fullName) {
+    if (errDiv) {
+      errDiv.textContent = "Full name cannot be empty.";
+      errDiv.style.display = "block";
+    }
+    return;
+  }
+
+  const interests = Array.from(STATE.editSelectedInterests || []);
+  if (interests.length === 0) {
+    if (errDiv) {
+      errDiv.textContent = "Please select or add at least 1 skill or interest.";
+      errDiv.style.display = "block";
+    }
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span style="display: inline-flex; align-items: center; gap: 6px;">Saving...</span>`;
+  }
+
+  try {
+    const res = await fetch("/api/auth/profile", {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({
+        full_name: fullName,
+        stage: stage,
+        target_role: targetRole,
+        stream_or_degree: streamOrDegree,
+        bio: bio,
+        interests: interests,
+        avatar_color: avatarColor
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      if (errDiv) {
+        errDiv.textContent = data.detail || data.message || "Failed to update profile.";
+        errDiv.style.display = "block";
+      }
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Save Changes</span>`;
+      }
+      return;
+    }
+
+    // Success! Update state
+    STATE.currentUser = data.user;
+    STATE.editingProfile = data.user;
+    renderUserHeaderLoggedIn(data.user);
+    showToast("Profile updated successfully!");
+
+    // Refresh peer cards and friends
+    refreshPeers();
+    if (STATE.activeTab === "friends") {
+      loadUserFriends(false);
+    }
+
+    // Reopen updated profile modal view
+    await openPeerModal(data.user.id);
+  } catch (err) {
+    if (errDiv) {
+      errDiv.textContent = "Network error updating profile. Please try again.";
+      errDiv.style.display = "block";
+    }
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Save Changes</span>`;
+    }
+  }
 }
 
 // ==========================================

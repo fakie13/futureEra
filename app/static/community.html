@@ -1556,6 +1556,79 @@
       color: var(--comm-text-dark);
     }
 
+    .modal-card-profile {
+      max-width: 720px !important;
+      width: 95% !important;
+      min-height: 520px;
+      padding: 36px 40px !important;
+      border-radius: 20px !important;
+      box-shadow: 0 25px 65px rgba(15, 23, 42, 0.2) !important;
+    }
+
+    @media (max-width: 640px) {
+      .modal-card-profile {
+        padding: 24px 20px !important;
+        width: 96% !important;
+        min-height: auto;
+      }
+    }
+
+    .profile-own-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f0fdfa;
+      border: 1px solid #ccfbf1;
+      color: #0f766e;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .edit-color-swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.15s ease;
+      display: inline-block;
+    }
+
+    .edit-color-swatch.active {
+      border-color: #0f172a;
+      transform: scale(1.15);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    }
+
+    .edit-interest-chip {
+      background: #f1f5f9;
+      border: 1px solid var(--comm-border-strong);
+      color: #334155;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 5px 13px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .edit-interest-chip:hover {
+      background: #e2e8f0;
+    }
+
+    .edit-interest-chip.selected {
+      background: #0f766e;
+      border-color: #0f766e;
+      color: #ffffff;
+    }
+
     .modal-close-btn {
       position: absolute;
       top: 18px;
@@ -2550,7 +2623,7 @@
        MODAL 2: PEER PROFILE DETAIL MODAL
        =================================================== -->
   <div class="modal-backdrop" id="peerModal">
-    <div class="modal-card" style="max-width: 520px;">
+    <div class="modal-card modal-card-profile" id="peerModalCard">
       <button class="modal-close-btn" onclick="closePeerModal()">&times;</button>
       <div id="peerModalContent">
         <!-- Rendered dynamically -->
@@ -2761,6 +2834,6 @@
     <span id="toastText" style="font-size: 14px;">Action completed successfully.</span>
   </div>
 
-  <script src="/static/js/community.js?v=42"></script>
+  <script src="/static/js/community.js?v=43"></script>
 </body>
 </html>

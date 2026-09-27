@@ -22,7 +22,8 @@ from app.schemas import (
     SquadDetailResponse,
     SquadMessageRequest,
     SquadMessageItem,
-    AddFriendRequest
+    AddFriendRequest,
+    UpdateProfileRequest
 )
 from app.services.gemini_service import generate_career_blueprint, suggest_eligible_professions
 from app.services.validation import validate_career_request, is_gibberish_or_fake
@@ -55,7 +56,8 @@ from app.database import (
     add_friend,
     remove_friend,
     get_user_friends,
-    is_friend
+    is_friend,
+    update_user_profile
 )
 
 app = FastAPI(
@@ -352,6 +354,38 @@ async def get_me(authorization: Optional[str] = Header(None), x_session_token: O
     return {"authenticated": True, "user": user}
 
 
+@app.put("/api/auth/profile")
+@app.post("/api/auth/profile")
+async def update_profile_endpoint(
+    request: UpdateProfileRequest,
+    authorization: Optional[str] = Header(None),
+    x_session_token: Optional[str] = Header(None)
+):
+    """Updates user profile information, bio, role, stage, degree, and interests."""
+    user = require_auth_user(authorization, x_session_token)
+    user_id = user["id"]
+    
+    success, msg, updated_user = update_user_profile(
+        user_id=user_id,
+        full_name=request.full_name,
+        stage=request.stage,
+        stream_or_degree=request.stream_or_degree,
+        target_role=request.target_role,
+        bio=request.bio,
+        interests=request.interests,
+        avatar_color=request.avatar_color,
+        avatar_emoji=request.avatar_emoji
+    )
+    if not success:
+        raise HTTPException(status_code=400, detail=msg)
+        
+    return {
+        "success": True,
+        "message": msg,
+        "user": updated_user
+    }
+
+
 # ==========================================
 # PEER MATCHMAKING ENDPOINTS
 # ==========================================
@@ -407,7 +441,9 @@ async def get_user_profile(
     user["is_friend"] = False
     user["is_self"] = False
     if current_user:
-        user["is_self"] = (current_user["id"] == user_id)
+        is_same_id = str(current_user["id"]) == str(user_id)
+        is_same_user = bool(current_user.get("username") and user.get("username") and current_user["username"].strip().lower() == user["username"].strip().lower())
+        user["is_self"] = is_same_id or is_same_user
         user["is_friend"] = is_friend(current_user["id"], user_id)
     return user
 

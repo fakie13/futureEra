@@ -224,5 +224,12 @@ class AddFriendRequest(BaseModel):
     friend_id: Optional[int] = None
 
 
-
-
+class UpdateProfileRequest(BaseModel):
+    full_name: Optional[str] = None
+    stage: Optional[str] = None
+    stream_or_degree: Optional[str] = None
+    target_role: Optional[str] = None
+    bio: Optional[str] = None
+    interests: Optional[List[str]] = None
+    avatar_color: Optional[str] = None
+    avatar_emoji: Optional[str] = None

@@ -1967,4 +1967,81 @@ def is_friend(user_id: int, target_user_id: int) -> bool:
         return False
 
 
+def update_user_profile(
+    user_id: int,
+    full_name: Optional[str] = None,
+    stage: Optional[str] = None,
+    stream_or_degree: Optional[str] = None,
+    target_role: Optional[str] = None,
+    bio: Optional[str] = None,
+    interests: Optional[List[str]] = None,
+    avatar_color: Optional[str] = None,
+    avatar_emoji: Optional[str] = None
+) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
+    """Updates user profile information, stage, bio, and interests."""
+    try:
+        user = get_user_by_id(user_id)
+        if not user:
+            return False, "User not found.", None
 
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            
+            updates = []
+            params = []
+            
+            if full_name is not None:
+                clean_name = full_name.strip()
+                if not clean_name:
+                    return False, "Full name cannot be empty.", None
+                updates.append("full_name = ?")
+                params.append(clean_name)
+                
+            if stage is not None:
+                clean_stage = stage.strip()
+                if clean_stage in ["12th_pass", "final_year"]:
+                    updates.append("stage = ?")
+                    params.append(clean_stage)
+                    
+            if stream_or_degree is not None:
+                updates.append("stream_or_degree = ?")
+                params.append(stream_or_degree.strip())
+                
+            if target_role is not None:
+                updates.append("target_role = ?")
+                params.append(target_role.strip())
+                
+            if bio is not None:
+                updates.append("bio = ?")
+                params.append(bio.strip())
+                
+            if avatar_color is not None and avatar_color.strip():
+                updates.append("avatar_color = ?")
+                params.append(avatar_color.strip())
+                
+            if avatar_emoji is not None and avatar_emoji.strip():
+                updates.append("avatar_emoji = ?")
+                params.append(avatar_emoji.strip())
+                
+            if updates:
+                params.append(user_id)
+                query = f"UPDATE users SET {', '.join(updates)} WHERE id = ?;"
+                cursor.execute(query, tuple(params))
+                
+            if interests is not None:
+                cleaned_interests = [i.strip() for i in interests if i and i.strip()]
+                if cleaned_interests:
+                    cursor.execute("DELETE FROM user_interests WHERE user_id = ?;", (user_id,))
+                    for item in cleaned_interests:
+                        cursor.execute(
+                            "INSERT OR IGNORE INTO user_interests (user_id, interest) VALUES (?, ?);", 
+                            (user_id, item)
+                        )
+                        
+            conn.commit()
+            
+        updated = get_user_by_id(user_id)
+        return True, "Profile updated successfully.", updated
+    except Exception as e:
+        logger.error(f"Error updating user profile for user {user_id}: {e}")
+        return False, f"Failed to update profile: {str(e)}", None

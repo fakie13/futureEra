@@ -45,6 +45,18 @@ def post_json(path, data, token=None):
     except urllib.error.HTTPError as e:
         return e.code, json.loads(e.read().decode('utf-8'))
 
+def put_json(path, data, token=None):
+    url = base + path
+    headers = {'Content-Type': 'application/json'}
+    if token:
+        headers['Authorization'] = f'Bearer {token}'
+    req = urllib.request.Request(url, data=json.dumps(data).encode('utf-8'), headers=headers, method='PUT')
+    try:
+        with urllib.request.urlopen(req) as resp:
+            return resp.status, json.loads(resp.read().decode('utf-8'))
+    except urllib.error.HTTPError as e:
+        return e.code, json.loads(e.read().decode('utf-8'))
+
 def get_json(path, token=None):
     url = base + path
     headers = {}
@@ -472,6 +484,64 @@ def main():
         assert 'selectMention' in comm_js_latest
         assert 'mentionDropdown' in comm_js_latest
     print(f"[PASS] Frontend HTML and community.js verified with Friends tab, forms, modal actions, and @mention autocomplete")
+
+    # 15. PROFILE EDITING & MODAL EXPANSION VERIFICATION
+    # 15a. Profile update without authentication should fail (401)
+    st_noauth, r_noauth = put_json('/api/auth/profile', {'full_name': 'Hacker'})
+    assert st_noauth == 401
+    print("[PASS] Unauthenticated profile update rejected with HTTP 401")
+
+    # 15b. Profile update with invalid empty full_name should fail (400)
+    st_bad, r_bad = put_json('/api/auth/profile', {'full_name': '  '}, token=token1)
+    assert st_bad == 400
+    print("[PASS] Empty full_name update rejected with HTTP 400")
+
+    # 15c. Valid profile update
+    profile_update = {
+        'full_name': 'Aarav Updated Sharma',
+        'stage': 'final_year',
+        'stream_or_degree': 'B.Tech AI & Data Science',
+        'target_role': 'Principal AI Systems Architect',
+        'bio': 'Passionate about distributed AI and full-stack systems.',
+        'interests': ['AI & Machine Learning', 'Python', 'Distributed Systems', 'Cloud & DevOps'],
+        'avatar_color': '#4f46e5'
+    }
+    st_upd, r_upd = put_json('/api/auth/profile', profile_update, token=token1)
+    assert st_upd == 200 and r_upd['success']
+    assert r_upd['user']['full_name'] == 'Aarav Updated Sharma'
+    assert r_upd['user']['target_role'] == 'Principal AI Systems Architect'
+    assert r_upd['user']['avatar_color'] == '#4f46e5'
+    assert len(r_upd['user']['interests']) == 4
+    print(f"[PASS] User profile updated successfully via PUT /api/auth/profile")
+
+    # 15d. Verify /api/auth/me reflects the update
+    st_me_chk, r_me_chk = get_json('/api/auth/me', token=token1)
+    assert st_me_chk == 200 and r_me_chk['authenticated']
+    assert r_me_chk['user']['full_name'] == 'Aarav Updated Sharma'
+    assert r_me_chk['user']['target_role'] == 'Principal AI Systems Architect'
+    print("[PASS] /api/auth/me accurately reflects updated profile information")
+
+    # 15e. Verify /api/community/user/{id} reflects updated profile and is_self is True
+    st_self_chk, r_self_chk = get_json(f"/api/community/user/{user1_id}", token=token1)
+    assert st_self_chk == 200
+    assert r_self_chk['is_self'] is True
+    assert r_self_chk['full_name'] == 'Aarav Updated Sharma'
+    print("[PASS] /api/community/user/{id} viewing own profile confirms is_self=True and updated details")
+
+    # 15f. Verify UI files contain expanded modal and edit profile logic
+    with urllib.request.urlopen(req_comm_html) as resp:
+        html_src = resp.read().decode('utf-8')
+        assert 'modal-card-profile' in html_src
+        assert 'peerModalCard' in html_src
+        assert 'profile-own-badge' in html_src
+
+    with urllib.request.urlopen(req_comm_js_latest) as resp:
+        comm_js_latest = resp.read().decode('utf-8')
+        assert 'openEditProfileView' in comm_js_latest
+        assert 'handleSaveProfile' in comm_js_latest
+        assert 'selectEditColor' in comm_js_latest
+        assert 'You cannot invite yourself to a squad' in comm_js_latest
+    print("[PASS] Profile modal expansion (breadth/length), edit profile view, and self-invite suppression verified")
 
     # Clean up ephemeral test users and test squad so DB remains at pristine 10 peers & 10 squads
     cleanup_test_data()

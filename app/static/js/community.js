@@ -8,6 +8,8 @@ const STATE = {
   token: localStorage.getItem("fe_session_token") || "",
   currentUser: null,
   allPeers: [],
+  userFriends: [],
+  friendIds: new Set(),
   guestInterests: ["Coding & Tech", "AI & Machine Learning"],
   currentSquad: null,
   activeTab: "matchmaking",
@@ -24,6 +26,9 @@ const ICONS = {
   target: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>`,
   academic: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>`,
   userPlus: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>`,
+  userCheck: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>`,
+  userMinus: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="23" y1="11" x2="17" y2="11"></line></svg>`,
+  userFriends: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
   copy: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`,
   share: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>`,
   video: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>`,
@@ -91,12 +96,16 @@ async function checkAuthStatus() {
     if (data.authenticated && data.user) {
       STATE.currentUser = data.user;
       renderUserHeaderLoggedIn(data.user);
+      await loadUserFriends(false);
       if (data.user.squad_id) {
         if (STATE.activeTab === "squad") {
           loadUserSquad();
         }
       } else {
         renderNotInSquadView();
+      }
+      if (STATE.activeTab === "friends") {
+        renderFriendsList();
       }
     } else {
       logout(false);
@@ -172,9 +181,13 @@ async function handleSignInSubmit(e) {
     renderUserHeaderLoggedIn(data.user);
     showToast(`Signed in as ${data.user.full_name}`);
 
+    await loadUserFriends(false);
     await refreshPeers();
     if (data.user.squad_id) {
       await loadUserSquad();
+    }
+    if (STATE.activeTab === "friends") {
+      renderFriendsList();
     }
   } catch (err) {
     showToast("Network error. Please try again.", "error");
@@ -232,7 +245,11 @@ async function handleSignUpSubmit(e) {
     renderUserHeaderLoggedIn(data.user);
     showToast(`Account created. Welcome, ${data.user.full_name}!`);
 
+    await loadUserFriends(false);
     await refreshPeers();
+    if (STATE.activeTab === "friends") {
+      renderFriendsList();
+    }
   } catch (err) {
     showToast("Network error during registration.", "error");
   }
@@ -245,10 +262,16 @@ function logout(showNotice = true) {
   STATE.token = "";
   STATE.currentUser = null;
   STATE.currentSquad = null;
+  STATE.userFriends = [];
+  if (STATE.friendIds) STATE.friendIds.clear();
+  updateFriendsBadge();
   stopChatPolling();
   localStorage.removeItem("fe_session_token");
   renderUserHeaderLoggedOut();
   renderLoggedOutSquadView();
+  if (STATE.activeTab === "friends") {
+    renderLoggedOutFriendsView();
+  }
   if (showNotice) showToast("Signed out successfully.");
   refreshPeers();
 }
@@ -286,6 +309,14 @@ function switchCommTab(tabKey) {
 
   if (tabKey === "directory") {
     refreshSquadsDirectory();
+  }
+
+  if (tabKey === "friends") {
+    if (!STATE.token || !STATE.currentUser) {
+      renderLoggedOutFriendsView();
+    } else {
+      loadUserFriends(true);
+    }
   }
 }
 
@@ -1242,7 +1273,9 @@ async function openPeerModal(peerId) {
   modal.classList.add("open");
 
   try {
-    const res = await fetch(`/api/community/user/${peerId}`);
+    const res = await fetch(`/api/community/user/${peerId}`, {
+      headers: getAuthHeaders()
+    });
     const u = await res.json();
     if (!res.ok) {
       content.innerHTML = `<div style="color: #ef4444;">Could not load profile.</div>`;
@@ -1252,6 +1285,37 @@ async function openPeerModal(peerId) {
     const stageText = u.stage === "final_year" ? "Final Year Student" : "Class 12th Graduate";
     const initials = getInitials(u.full_name);
     const color = getAvatarColor(u.full_name, u.avatar_color);
+
+    const isOwnProfile = (STATE.currentUser && STATE.currentUser.id === u.id) || u.is_self;
+    const isFriend = (STATE.friendIds && STATE.friendIds.has(u.id)) || u.is_friend;
+
+    let actionsHtml = "";
+    if (isOwnProfile) {
+      actionsHtml = `
+        <div style="background: #f8fafc; border: 1px dashed var(--comm-border-strong); border-radius: 10px; padding: 12px; text-align: center; color: #64748b; font-size: 14px; font-weight: 600; width: 100%;">
+          Your Personal Profile
+        </div>
+      `;
+    } else {
+      const friendBtn = isFriend
+        ? `<button type="button" id="modalFriendActionBtn" class="btn-remove-friend" style="flex: 1; padding: 11px; font-size: 14.5px; justify-content: center;" onclick="handleToggleFriendFromModal(${u.id}, '${escapeHtml(u.username)}', true)">
+             ${ICONS.userCheck}
+             <span>Remove Friend</span>
+           </button>`
+        : `<button type="button" id="modalFriendActionBtn" class="btn-friend-action" style="flex: 1; padding: 11px; font-size: 14.5px; justify-content: center;" onclick="handleToggleFriendFromModal(${u.id}, '${escapeHtml(u.username)}', false)">
+             ${ICONS.userPlus}
+             <span>+ Add Friend</span>
+           </button>`;
+
+      actionsHtml = `
+        <div style="display: flex; gap: 10px; width: 100%;">
+          ${friendBtn}
+          <button class="btn btn--solid" style="flex: 1; padding: 11px; font-size: 14.5px;" onclick="handlePeerInviteClick(${u.id}, '${escapeHtml(u.username)}')">
+            Invite to Squad &rarr;
+          </button>
+        </div>
+      `;
+    }
 
     content.innerHTML = `
       <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 18px;">
@@ -1289,17 +1353,13 @@ async function openPeerModal(peerId) {
       </div>
 
       <div style="margin-bottom: 22px;">
-        <div style="font-size: 13px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 8px;">Skills &amp; Interests (${u.interests.length})</div>
+        <div style="font-size: 13px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 8px;">Skills &amp; Interests (${(u.interests || []).length})</div>
         <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-          ${u.interests.map(i => `<span class="tag-shared" style="cursor: default;">${escapeHtml(i)}</span>`).join("")}
+          ${(u.interests || []).map(i => `<span class="tag-shared" style="cursor: default;">${escapeHtml(i)}</span>`).join("")}
         </div>
       </div>
 
-      <div style="display: flex; gap: 8px;">
-        <button class="btn btn--solid" style="flex: 1; padding: 11px; font-size: 14.5px;" onclick="handlePeerInviteClick(${u.id}, '${escapeHtml(u.username)}')">
-          Invite to Squad &rarr;
-        </button>
-      </div>
+      ${actionsHtml}
     `;
   } catch (err) {
     content.innerHTML = `<div style="color: #ef4444;">Network error fetching profile.</div>`;
@@ -1308,6 +1368,286 @@ async function openPeerModal(peerId) {
 
 function closePeerModal() {
   document.getElementById("peerModal")?.classList.remove("open");
+}
+
+// ==========================================
+// FRIEND MANAGEMENT & NETWORKING HANDLERS
+// ==========================================
+async function handleToggleFriendFromModal(friendId, username, isAlreadyFriend) {
+  if (!STATE.token) {
+    openAuthModal("signin");
+    showToast("Sign in to add friends.");
+    return;
+  }
+
+  const btn = document.getElementById("modalFriendActionBtn");
+  if (btn) btn.disabled = true;
+
+  if (isAlreadyFriend) {
+    try {
+      const res = await fetch(`/api/friends/${friendId}/remove`, {
+        method: "POST",
+        headers: getAuthHeaders()
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.detail || "Failed to remove friend.", "error");
+        return;
+      }
+      showToast(`Removed @${username} from your friends.`);
+      if (STATE.friendIds) STATE.friendIds.delete(friendId);
+      if (STATE.userFriends) {
+        STATE.userFriends = STATE.userFriends.filter(f => f.id !== friendId);
+      }
+      updateFriendsBadge();
+      if (btn) {
+        btn.className = "btn-friend-action";
+        btn.innerHTML = `${ICONS.userPlus} <span>+ Add Friend</span>`;
+        btn.onclick = () => handleToggleFriendFromModal(friendId, username, false);
+      }
+      if (STATE.activeTab === "friends") renderFriendsList();
+    } catch (err) {
+      showToast("Network error removing friend.", "error");
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  } else {
+    try {
+      const res = await fetch("/api/friends/add", {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ friend_id: friendId })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.detail || "Failed to add friend.", "error");
+        return;
+      }
+      showToast(data.message || `Added @${username} to your friends!`);
+      if (!STATE.friendIds) STATE.friendIds = new Set();
+      STATE.friendIds.add(friendId);
+      updateFriendsBadge();
+      if (btn) {
+        btn.className = "btn-remove-friend";
+        btn.innerHTML = `${ICONS.userCheck} <span>Remove Friend</span>`;
+        btn.onclick = () => handleToggleFriendFromModal(friendId, username, true);
+      }
+      loadUserFriends(false);
+    } catch (err) {
+      showToast("Network error adding friend.", "error");
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  }
+}
+
+async function loadUserFriends(renderIfActive = true) {
+  if (!STATE.token || !STATE.currentUser) {
+    if (renderIfActive && STATE.activeTab === "friends") {
+      renderLoggedOutFriendsView();
+    }
+    return;
+  }
+
+  try {
+    const res = await fetch("/api/friends", { headers: getAuthHeaders() });
+    const data = await res.json();
+    if (data.success) {
+      STATE.userFriends = data.friends || [];
+      STATE.friendIds = new Set(STATE.userFriends.map(f => f.id));
+      updateFriendsBadge();
+      if (renderIfActive && STATE.activeTab === "friends") {
+        renderFriendsList();
+      }
+    }
+  } catch (err) {
+    console.error("Failed to load friends list:", err);
+  }
+}
+
+function updateFriendsBadge() {
+  const badge = document.getElementById("tabFriendsBadge");
+  if (!badge) return;
+  const count = STATE.userFriends ? STATE.userFriends.length : 0;
+  badge.textContent = count;
+  badge.style.display = count > 0 ? "inline-flex" : "none";
+}
+
+function renderFriendsList() {
+  const grid = document.getElementById("friendsGrid");
+  if (!grid) return;
+
+  const friends = STATE.userFriends || [];
+  if (friends.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px; background: #ffffff; border-radius: 14px; border: 1px dashed var(--comm-border-strong);">
+        <div style="width: 52px; height: 52px; border-radius: 50%; background: #f0fdfa; color: #0f766e; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 22px;">
+          ${ICONS.userFriends}
+        </div>
+        <h3 style="font-size: 19px; font-weight: 700; color: #0f172a; margin-bottom: 8px;">No Friends Added Yet</h3>
+        <p style="font-size: 14.5px; color: #64748b; max-width: 480px; margin: 0 auto 18px; line-height: 1.55;">
+          Add peers by entering their username above, or explore peers in the <strong>Find Peers</strong> tab to grow your circle.
+        </p>
+        <button class="btn btn--solid" style="padding: 10px 20px; font-size: 14px; border-radius: 8px;" onclick="switchCommTab('matchmaking')">
+          Explore Peers &rarr;
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = friends.map(friend => {
+    const stageLabel = friend.stage === "final_year" ? "Final Year" : "Class 12th";
+    const initials = getInitials(friend.full_name);
+    const color = getAvatarColor(friend.full_name, friend.avatar_color);
+
+    return `
+      <div class="peer-card">
+        <div class="peer-card-top">
+          <div class="peer-header">
+            <div class="peer-avatar-initials" style="background-color: ${color};">
+              ${initials}
+              <span class="peer-status-dot"></span>
+            </div>
+            <div class="peer-name-group">
+              <div class="peer-full-name">${escapeHtml(friend.full_name)}</div>
+              <div class="peer-meta-sub">
+                <span>@${escapeHtml(friend.username)}</span>
+                <span>•</span>
+                <span class="peer-stage-tag">${stageLabel}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="peer-detail-line">
+          <span class="peer-detail-label">Focus:</span>
+          <span class="peer-role-text">${escapeHtml(friend.target_role || "Engineering Track")}</span>
+        </div>
+
+        <div class="peer-detail-line">
+          <span class="peer-detail-label">Degree:</span>
+          <span class="peer-degree-text">${escapeHtml(friend.stream_or_degree || "Technical Sciences")}</span>
+        </div>
+
+        <div class="peer-bio-text">
+          ${escapeHtml(friend.bio || "Student engineer focused on high-yield software systems and capstone development.")}
+        </div>
+
+        <div class="peer-skills-block">
+          <div class="peer-skills-header">
+            <span>Interests &amp; Skills</span>
+          </div>
+          <div class="peer-skills-tags">
+            ${(friend.interests || []).map(i => `<span class="tag-shared" style="cursor: default;">${escapeHtml(i)}</span>`).join("")}
+          </div>
+        </div>
+
+        <div class="peer-card-actions">
+          <button class="btn-secondary" onclick="openPeerModal(${friend.id})">
+            View Profile
+          </button>
+          <button class="btn-remove-friend" style="padding: 10px 14px;" onclick="handleRemoveFriendFromList(${friend.id}, '${escapeHtml(friend.username)}')" title="Remove from friends">
+            ${ICONS.userMinus}
+            <span>Remove</span>
+          </button>
+          <button class="btn-primary-action" onclick="handlePeerInviteClick(${friend.id}, '${escapeHtml(friend.username)}')">
+            ${ICONS.userPlus}
+            <span>Invite</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderLoggedOutFriendsView() {
+  const grid = document.getElementById("friendsGrid");
+  if (!grid) return;
+  grid.innerHTML = `
+    <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: #ffffff; border-radius: 16px; border: 1px dashed var(--comm-border-strong); max-width: 580px; margin: 20px auto;">
+      <div style="width: 56px; height: 56px; border-radius: 50%; background: #f0fdfa; color: #0f766e; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 24px;">
+        ${ICONS.userFriends}
+      </div>
+      <h3 style="font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: 22px; font-weight: 700; color: #0f172a; margin-bottom: 8px;">
+        Sign In to View Friends
+      </h3>
+      <p style="font-size: 15px; color: #64748b; line-height: 1.6; margin: 0 auto 20px;">
+        Create your engineer profile or log in to manage your friends list, add classmates by username, and form 4-member project squads.
+      </p>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+        <button class="btn btn--solid" style="padding: 11px 24px; font-size: 14.5px;" onclick="openAuthModal('signin')">
+          Sign In
+        </button>
+        <button class="btn btn--outline" style="padding: 11px 24px; font-size: 14.5px;" onclick="openAuthModal('signup')">
+          Join Community
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+async function handleAddFriendSubmit(e) {
+  e.preventDefault();
+  if (!STATE.token) {
+    openAuthModal("signin");
+    showToast("Sign in to add friends.");
+    return;
+  }
+  const input = document.getElementById("addFriendUsernameInput");
+  const username = input?.value.trim();
+  if (!username) return;
+
+  const btn = document.getElementById("addFriendSubmitBtn");
+  if (btn) btn.disabled = true;
+
+  try {
+    const res = await fetch("/api/friends/add", {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ username })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      showToast(data.detail || "Failed to add friend.", "error");
+      return;
+    }
+    showToast(data.message || `Added @${username} to your friends!`);
+    if (input) input.value = "";
+    if (data.friend) {
+      if (!STATE.friendIds) STATE.friendIds = new Set();
+      STATE.friendIds.add(data.friend.id);
+    }
+    await loadUserFriends(true);
+  } catch (err) {
+    showToast("Network error adding friend.", "error");
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+async function handleRemoveFriendFromList(friendId, username) {
+  if (!confirm(`Are you sure you want to remove @${username} from your friend list?`)) return;
+  try {
+    const res = await fetch(`/api/friends/${friendId}/remove`, {
+      method: "POST",
+      headers: getAuthHeaders()
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      showToast(data.detail || "Failed to remove friend.", "error");
+      return;
+    }
+    showToast(`Removed @${username} from your friends.`);
+    if (STATE.friendIds) STATE.friendIds.delete(friendId);
+    if (STATE.userFriends) {
+      STATE.userFriends = STATE.userFriends.filter(f => f.id !== friendId);
+    }
+    updateFriendsBadge();
+    renderFriendsList();
+  } catch (err) {
+    showToast("Network error removing friend.", "error");
+  }
 }
 
 function openAuthModal(mode = 'signin') {

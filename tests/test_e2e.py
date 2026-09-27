@@ -23,6 +23,7 @@ def cleanup_test_data():
         for r in c.fetchall():
             c.execute("DELETE FROM user_sessions WHERE user_id = ?;", (r[0],))
             c.execute("DELETE FROM user_interests WHERE user_id = ?;", (r[0],))
+            c.execute("DELETE FROM user_friends WHERE user_id = ? OR friend_id = ?;", (r[0], r[0]))
             c.execute("DELETE FROM squad_members WHERE user_id = ?;", (r[0],))
             c.execute("DELETE FROM squad_messages WHERE sender_id = ?;", (r[0],))
             c.execute("DELETE FROM users WHERE id = ?;", (r[0],))
@@ -380,6 +381,87 @@ def main():
         assert 'isDemoPreview' not in comm_js_src, 'isDemoPreview fallback should be completely removed'
         assert 'renderLoggedOutSquadView' in comm_js_src, 'renderLoggedOutSquadView must be implemented'
         assert 'Squad Workspaces are Private to Teams' in comm_js_src
+    # 14. Friend Management & Peer Network Endpoints
+    # 14a. Add friend by username
+    st_fa1, r_fa1 = post_json('/api/friends/add', {'username': u_solo}, token=token1)
+    assert st_fa1 == 200 and r_fa1['success'], f"Failed to add friend by username: {r_fa1}"
+    assert f"Added @{u_solo}" in r_fa1['message']
+    print(f"[PASS] Added friend by username: {r_fa1['message']}")
+
+    # 14b. User cannot add themselves
+    st_fa_self, r_fa_self = post_json('/api/friends/add', {'username': u1}, token=token1)
+    assert st_fa_self == 400
+    print(f"[PASS] Adding self as friend rejected with HTTP 400: {r_fa_self.get('detail')}")
+
+    # 14c. User cannot add non-existent user
+    st_fa_none, r_fa_none = post_json('/api/friends/add', {'username': 'non_existent_ghost_999'}, token=token1)
+    assert st_fa_none == 400
+    print(f"[PASS] Non-existent user rejected with HTTP 400: {r_fa_none.get('detail')}")
+
+    # 14d. Duplicate add is rejected
+    st_fa_dup, r_fa_dup = post_json('/api/friends/add', {'username': u_solo}, token=token1)
+    assert st_fa_dup == 400
+    print(f"[PASS] Duplicate friend add rejected with HTTP 400: {r_fa_dup.get('detail')}")
+
+    # 14e. List friends for user
+    st_fl, r_fl = get_json('/api/friends', token=token1)
+    assert st_fl == 200 and r_fl['success']
+    assert r_fl['total_friends'] == 1
+    assert r_fl['friends'][0]['username'] == u_solo
+    print(f"[PASS] Friends list retrieved ({r_fl['total_friends']} friend: @{r_fl['friends'][0]['username']})")
+
+    # 14f. Profile endpoint friendship context
+    # token1 viewing u_solo's profile -> is_friend == True, is_self == False
+    st_prof, r_prof = get_json(f"/api/community/user/{r_solo['user']['id']}", token=token1)
+    assert st_prof == 200
+    assert r_prof['is_friend'] is True
+    assert r_prof['is_self'] is False
+    print(f"[PASS] Viewing other's profile indicates is_friend=True, is_self=False")
+
+    # token1 viewing own profile -> is_friend == False, is_self == True
+    st_myprof, r_myprof = get_json(f"/api/community/user/{user1_id}", token=token1)
+    assert st_myprof == 200
+    assert r_myprof['is_friend'] is False
+    assert r_myprof['is_self'] is True
+    print(f"[PASS] Viewing own profile indicates is_friend=False, is_self=True")
+
+    # u_solo viewing token1's profile -> is_friend == False (directional friend list)
+    st_othprof, r_othprof = get_json(f"/api/community/user/{user1_id}", token=r_solo['token'])
+    assert st_othprof == 200
+    assert r_othprof['is_friend'] is False
+    assert r_othprof['is_self'] is False
+    print(f"[PASS] Other user viewing profile indicates is_friend=False (can click Add Friend)")
+
+    # 14g. Add friend by user ID (u_solo adds token1)
+    st_fa_id, r_fa_id = post_json('/api/friends/add', {'friend_id': user1_id}, token=r_solo['token'])
+    assert st_fa_id == 200 and r_fa_id['success']
+    print(f"[PASS] Added friend by friend_id: {r_fa_id['message']}")
+
+    # 14h. Remove friend (token1 removes u_solo)
+    st_frem, r_frem = post_json(f"/api/friends/{r_solo['user']['id']}/remove", {}, token=token1)
+    assert st_frem == 200 and r_frem['success']
+    print(f"[PASS] Removed friend successfully: {r_frem['message']}")
+
+    # 14i. Verify list updated after removal
+    st_fl2, r_fl2 = get_json('/api/friends', token=token1)
+    assert st_fl2 == 200 and r_fl2['total_friends'] == 0
+    print(f"[PASS] Friends list confirmed empty after removal ({r_fl2['total_friends']} friends)")
+
+    # 14j. Verify frontend assets contain Friends tab and logic
+    req_comm_html = urllib.request.Request(base + '/community')
+    with urllib.request.urlopen(req_comm_html) as resp:
+        html_src = resp.read().decode('utf-8')
+        assert "switchCommTab('friends')" in html_src
+        assert 'tab-friends' in html_src
+        assert 'addFriendUsernameInput' in html_src
+        assert 'tabFriendsBadge' in html_src
+    assert 'handleToggleFriendFromModal' in comm_js_src
+    assert 'handleAddFriendSubmit' in comm_js_src
+    assert 'handleRemoveFriendFromList' in comm_js_src
+    assert 'loadUserFriends' in comm_js_src
+    assert 'modalFriendActionBtn' in comm_js_src
+    print(f"[PASS] Frontend HTML and community.js verified with Friends tab, forms, and modal actions")
+
     # Clean up ephemeral test users and test squad so DB remains at pristine 10 peers & 10 squads
     cleanup_test_data()
 

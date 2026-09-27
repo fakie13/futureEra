@@ -21,7 +21,8 @@ from app.schemas import (
     JoinSquadRequest,
     SquadDetailResponse,
     SquadMessageRequest,
-    SquadMessageItem
+    SquadMessageItem,
+    AddFriendRequest
 )
 from app.services.gemini_service import generate_career_blueprint, suggest_eligible_professions
 from app.services.validation import validate_career_request, is_gibberish_or_fake
@@ -38,6 +39,7 @@ from app.database import (
     get_user_by_session,
     delete_session,
     get_user_by_id,
+    get_user_by_username,
     get_matched_peers,
     create_squad,
     join_squad_by_code,
@@ -49,7 +51,11 @@ from app.database import (
     update_squad_sprint_goal,
     leave_squad,
     save_squad_progress_upload,
-    get_squad_progress_uploads
+    get_squad_progress_uploads,
+    add_friend,
+    remove_friend,
+    get_user_friends,
+    is_friend
 )
 
 app = FastAPI(
@@ -387,12 +393,84 @@ async def list_matched_peers(
 
 
 @app.get("/api/community/user/{user_id}")
-async def get_user_profile(user_id: int):
-    """Retrieves full profile of a peer."""
+async def get_user_profile(
+    user_id: int,
+    authorization: Optional[str] = Header(None),
+    x_session_token: Optional[str] = Header(None)
+):
+    """Retrieves full profile of a peer with viewer friendship context."""
     user = get_user_by_id(user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found.")
+        
+    current_user = extract_auth_user(authorization, x_session_token)
+    user["is_friend"] = False
+    user["is_self"] = False
+    if current_user:
+        user["is_self"] = (current_user["id"] == user_id)
+        user["is_friend"] = is_friend(current_user["id"], user_id)
     return user
+
+
+# ==========================================
+# FRIEND MANAGEMENT & PEER NETWORK ENDPOINTS
+# ==========================================
+
+@app.get("/api/friends")
+async def list_friends_endpoint(
+    authorization: Optional[str] = Header(None),
+    x_session_token: Optional[str] = Header(None)
+):
+    """Returns the authenticated user's friend list."""
+    user = require_auth_user(authorization, x_session_token)
+    friends = get_user_friends(user["id"])
+    return {
+        "success": True,
+        "total_friends": len(friends),
+        "friends": friends
+    }
+
+
+@app.post("/api/friends/add")
+async def add_friend_endpoint(
+    request: AddFriendRequest,
+    authorization: Optional[str] = Header(None),
+    x_session_token: Optional[str] = Header(None)
+):
+    """Adds a friend to authenticated user's friend list by username or user ID."""
+    user = require_auth_user(authorization, x_session_token)
+    target = request.username.strip() if (request.username and request.username.strip()) else request.friend_id
+    if target is None or target == "":
+        raise HTTPException(status_code=400, detail="Please provide a valid username or friend_id.")
+        
+    success, msg, friend = add_friend(user["id"], target)
+    if not success:
+        raise HTTPException(status_code=400, detail=msg)
+        
+    return {
+        "success": True,
+        "message": msg,
+        "friend": friend
+    }
+
+
+@app.delete("/api/friends/{friend_id}")
+@app.post("/api/friends/{friend_id}/remove")
+async def remove_friend_endpoint(
+    friend_id: int,
+    authorization: Optional[str] = Header(None),
+    x_session_token: Optional[str] = Header(None)
+):
+    """Removes a friend from authenticated user's friend list."""
+    user = require_auth_user(authorization, x_session_token)
+    success, msg = remove_friend(user["id"], friend_id)
+    if not success:
+        raise HTTPException(status_code=400, detail=msg)
+    return {
+        "success": True,
+        "message": msg
+    }
+
 
 
 # ==========================================

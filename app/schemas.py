@@ -219,4 +219,10 @@ class SquadMessageItem(BaseModel):
     created_at: str
 
 
+class AddFriendRequest(BaseModel):
+    username: Optional[str] = None
+    friend_id: Optional[int] = None
+
+
+
 

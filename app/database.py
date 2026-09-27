@@ -173,6 +173,17 @@ def init_db():
         except Exception:
             pass
 
+        # 11. User Friends table (Peer Network)
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS user_friends (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            friend_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(user_id, friend_id)
+        );
+        """)
+
         # Create search indexes
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_blueprints_lookup ON career_blueprints(lookup_key);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_blueprints_role ON career_blueprints(target_role);")
@@ -189,6 +200,8 @@ def init_db():
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_squad_msg_squad ON squad_messages(squad_id);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_progress_squad ON squad_progress_uploads(squad_id);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_progress_user ON squad_progress_uploads(user_id);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_user_friends_user ON user_friends(user_id);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_user_friends_friend ON user_friends(friend_id);")
         
         # Seed initial rich blueprints, suggestions, and community data
         seed_initial_data_if_empty(conn)
@@ -1821,6 +1834,137 @@ def leave_squad(user_id: int, squad_id: int) -> Tuple[bool, str]:
             return True, "Successfully left the squad."
     except Exception as e:
         return False, f"Failed to leave squad: {str(e)}"
+
+
+# ==========================================
+# FRIEND MANAGEMENT & PEER NETWORK
+# ==========================================
+
+def get_user_by_username(username: str) -> Optional[Dict[str, Any]]:
+    """Retrieves full user profile by username (case-insensitive)."""
+    clean_username = username.strip().lstrip("@")
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM users WHERE LOWER(username) = LOWER(?);", (clean_username,))
+            row = cursor.fetchone()
+            if not row:
+                return None
+            return get_user_by_id(row["id"])
+    except Exception as e:
+        logger.error(f"Error fetching user by username '{username}': {e}")
+        return None
+
+
+def add_friend(user_id: int, friend_identifier: Union[int, str]) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
+    """Adds a friend to user's friend list by ID or username."""
+    try:
+        target_user = None
+        if isinstance(friend_identifier, int) or (isinstance(friend_identifier, str) and friend_identifier.isdigit()):
+            target_user = get_user_by_id(int(friend_identifier))
+        else:
+            target_user = get_user_by_username(str(friend_identifier))
+            
+        if not target_user:
+            clean_name = str(friend_identifier).strip()
+            return False, f"User '{clean_name}' not found.", None
+            
+        friend_id = target_user["id"]
+        if friend_id == user_id:
+            return False, "You cannot add yourself as a friend.", None
+            
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM user_friends WHERE user_id = ? AND friend_id = ?;", (user_id, friend_id))
+            if cursor.fetchone():
+                return False, f"@{target_user['username']} is already in your friend list.", target_user
+                
+            cursor.execute("""
+            INSERT INTO user_friends (user_id, friend_id)
+            VALUES (?, ?);
+            """, (user_id, friend_id))
+            conn.commit()
+            
+            return True, f"Added @{target_user['username']} to your friends!", target_user
+    except Exception as e:
+        logger.error(f"Error adding friend {friend_identifier} for user {user_id}: {e}")
+        return False, f"Failed to add friend: {str(e)}", None
+
+
+def remove_friend(user_id: int, friend_id: int) -> Tuple[bool, str]:
+    """Removes a friend from user's friend list."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM user_friends WHERE user_id = ? AND friend_id = ?;", (user_id, friend_id))
+            conn.commit()
+            if cursor.rowcount == 0:
+                return False, "User is not in your friend list."
+            return True, "Friend removed successfully."
+    except Exception as e:
+        logger.error(f"Error removing friend {friend_id} for user {user_id}: {e}")
+        return False, f"Failed to remove friend: {str(e)}"
+
+
+def get_user_friends(user_id: int) -> List[Dict[str, Any]]:
+    """Returns list of friends for the specified user."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+            SELECT u.id, u.username, u.full_name, u.stage, u.stream_or_degree, u.target_role, 
+                   u.bio, u.avatar_color, u.avatar_emoji, uf.created_at as friended_at
+            FROM user_friends uf
+            JOIN users u ON u.id = uf.friend_id
+            WHERE uf.user_id = ?
+            ORDER BY uf.id DESC;
+            """, (user_id,))
+            rows = cursor.fetchall()
+            
+            friends = []
+            for r in rows:
+                f_id = r["id"]
+                cursor.execute("SELECT interest FROM user_interests WHERE user_id = ? ORDER BY id;", (f_id,))
+                interests = [ir["interest"] for ir in cursor.fetchall()]
+                
+                cursor.execute("""
+                SELECT s.id, s.squad_name, sm.role 
+                FROM squad_members sm 
+                JOIN squads s ON s.id = sm.squad_id 
+                WHERE sm.user_id = ? LIMIT 1;
+                """, (f_id,))
+                squad_row = cursor.fetchone()
+                
+                friends.append({
+                    "id": f_id,
+                    "username": r["username"],
+                    "full_name": r["full_name"],
+                    "stage": r["stage"],
+                    "stream_or_degree": r["stream_or_degree"],
+                    "target_role": r["target_role"],
+                    "bio": r["bio"],
+                    "avatar_color": r["avatar_color"],
+                    "avatar_emoji": r["avatar_emoji"],
+                    "interests": interests,
+                    "squad_id": squad_row["id"] if squad_row else None,
+                    "squad_name": squad_row["squad_name"] if squad_row else None,
+                    "friended_at": str(r["friended_at"])
+                })
+            return friends
+    except Exception as e:
+        logger.error(f"Error retrieving friends for user {user_id}: {e}")
+        return []
+
+
+def is_friend(user_id: int, target_user_id: int) -> bool:
+    """Checks if target_user_id is in user_id's friend list."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT 1 FROM user_friends WHERE user_id = ? AND friend_id = ? LIMIT 1;", (user_id, target_user_id))
+            return cursor.fetchone() is not None
+    except Exception:
+        return False
 
 
 

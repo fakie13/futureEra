@@ -256,7 +256,7 @@ function setupConsoleEvents() {
       if (fields12th) fields12th.style.display = "none";
       if (submitBtnText) submitBtnText.textContent = "Generate Blueprint";
       if (activeStagePill) {
-        activeStagePill.innerHTML = "🚀 Final-Year College Student";
+        activeStagePill.innerHTML = '<span class="badge-status-dot" style="background:var(--accent-amber);"></span> Final-Year College Student';
         activeStagePill.style.color = "var(--accent-amber)";
         activeStagePill.style.borderColor = "#fde68a";
       }
@@ -278,7 +278,7 @@ function setupConsoleEvents() {
       if (fieldsFinal) fieldsFinal.style.display = "none";
       if (submitBtnText) submitBtnText.textContent = "Generate Blueprint";
       if (activeStagePill) {
-        activeStagePill.innerHTML = "🎓 Class 12 Graduate";
+        activeStagePill.innerHTML = '<span class="badge-status-dot" style="background:var(--primary-teal);"></span> Class 12 Graduate';
         activeStagePill.style.color = "var(--primary-teal)";
         activeStagePill.style.borderColor = "var(--border-light)";
       }
@@ -618,12 +618,12 @@ function renderProfessionSuggestions(data, originalPayload) {
     card.innerHTML = `
       <div>
         <div class="profession-card__header">
-          <span class="profession-card__match">🌟 ${escapeHtml(item.match_score || "Top Match")}</span>
+          <span class="profession-card__match"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 4px;"><circle cx="12" cy="12" r="5"></circle></svg> ${escapeHtml(item.match_score || "Top Match")}</span>
           <span class="profession-card__salary">${escapeHtml(item.salary_range || "High Growth")}</span>
         </div>
         <div class="profession-card__title">${escapeHtml(item.title)}</div>
         <div class="profession-card__degrees">
-          <span>🎓</span>
+          <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg></span>
           <span><strong>Degrees:</strong> ${(item.recommended_degrees || []).map(d => escapeHtml(d)).join(", ")}</span>
         </div>
         <div class="profession-card__why">${escapeHtml(item.why_it_fits)}</div>
@@ -883,11 +883,11 @@ function renderFutureResults(data, chosenTitle) {
   if (sourceBadge) {
     if (data.data_source === "database_cache" || data._cached_from_db) {
       sourceBadge.className = "source-badge source-badge--db";
-      sourceBadge.textContent = "💾 Database Vault (Instant Offline Match)";
+      sourceBadge.innerHTML = '<span class="source-badge-dot"></span> Offline Blueprint Cache (Instant)';
       sourceBadge.style.display = "inline-flex";
     } else {
       sourceBadge.className = "source-badge source-badge--ai";
-      sourceBadge.textContent = "⚡ AI Synthesized & Stored in DB";
+      sourceBadge.innerHTML = '<span class="source-badge-dot" style="background:#0f766e;"></span> AI Synthesized Blueprint';
       sourceBadge.style.display = "inline-flex";
     }
   }
@@ -940,7 +940,7 @@ function renderFutureResults(data, chosenTitle) {
     principlesList.innerHTML = "";
     (fi.critical_architectural_principles || []).forEach(p => {
       const li = document.createElement("li");
-      li.innerHTML = `<span class="bullet">⚡</span> <span>${escapeHtml(p)}</span>`;
+      li.innerHTML = `<span class="bullet" style="color: #d97706;">✦</span> <span>${escapeHtml(p)}</span>`;
       principlesList.appendChild(li);
     });
 
@@ -948,7 +948,7 @@ function renderFutureResults(data, chosenTitle) {
     certsList.innerHTML = "";
     (fi.high_value_certifications || []).forEach(c => {
       const li = document.createElement("li");
-      li.innerHTML = `<span class="bullet">📜</span> <span>${escapeHtml(c)}</span>`;
+      li.innerHTML = `<span class="bullet" style="color: #0284c7;">✦</span> <span>${escapeHtml(c)}</span>`;
       certsList.appendChild(li);
     });
   } else if (fieldPanel) {
@@ -982,7 +982,7 @@ function renderFutureResults(data, chosenTitle) {
   aiToolsList.innerHTML = "";
   (data.ai_analysis?.ai_tools_to_master || []).forEach((item) => {
     const li = document.createElement("li");
-    li.innerHTML = `<span class="bullet">⚡</span> <span>${escapeHtml(item)}</span>`;
+    li.innerHTML = `<span class="bullet" style="color: #0f766e;">✦</span> <span>${escapeHtml(item)}</span>`;
     aiToolsList.appendChild(li);
   });
 
@@ -1043,7 +1043,7 @@ function renderFutureResults(data, chosenTitle) {
       <!-- Milestone Goals Checklist -->
       ${item.milestone_goals && item.milestone_goals.length > 0 ? `
         <div class="timeline-section">
-          <div class="timeline-section__label">🎯 Core Milestone Goals:</div>
+          <div class="timeline-section__label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>Core Milestone Goals:</div>
           <ul class="timeline-checklist">
             ${item.milestone_goals.map(g => `<li><span class="check-icon">✓</span> <span>${escapeHtml(g)}</span></li>`).join("")}
           </ul>
@@ -1052,7 +1052,7 @@ function renderFutureResults(data, chosenTitle) {
 
       <!-- Skills Matrix -->
       <div class="timeline-section">
-        <div class="timeline-section__label">⚡ Target Technical Stack:</div>
+        <div class="timeline-section__label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>Target Technical Stack:</div>
         <div class="timeline-card__skills">
           ${(item.skills_to_acquire || []).map((s) => `<span class="timeline-card__skill">${escapeHtml(s)}</span>`).join("")}
         </div>
@@ -1062,7 +1062,7 @@ function renderFutureResults(data, chosenTitle) {
       ${projDesc || projTitle ? `
         <div class="timeline-project-box">
           <div class="timeline-project-box__header">
-            <span class="timeline-project-box__badge">🛠️ APPLIED CAPSTONE ARCHITECTURE</span>
+            <span class="timeline-project-box__badge"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>Applied Capstone Architecture</span>
             <div class="timeline-project-box__title">${escapeHtml(projTitle)}</div>
           </div>
           <div class="timeline-project-box__desc">${escapeHtml(projDesc)}</div>
@@ -1085,7 +1085,7 @@ function renderFutureResults(data, chosenTitle) {
 
           ${projOutcome ? `
             <div class="timeline-project-box__outcome">
-              <span>🚀</span> <span><strong>Portfolio Outcome:</strong> ${escapeHtml(projOutcome)}</span>
+              <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg></span> <span><strong>Portfolio Outcome:</strong> ${escapeHtml(projOutcome)}</span>
             </div>
           ` : ""}
 
@@ -1107,13 +1107,13 @@ function renderFutureResults(data, chosenTitle) {
         <div class="timeline-split-row">
           ${item.career_action_item ? `
             <div class="timeline-action-card">
-              <div class="timeline-action-card__label">💼 Career & Placement Move</div>
+              <div class="timeline-action-card__label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>Career &amp; Placement Move</div>
               <div>${escapeHtml(item.career_action_item)}</div>
             </div>
           ` : ""}
           ${item.ai_copilot_workflow ? `
             <div class="timeline-action-card timeline-action-card--ai">
-              <div class="timeline-action-card__label">🤖 AI Co-Pilot Workflow</div>
+              <div class="timeline-action-card__label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>AI Co-Pilot Workflow</div>
               <div>${escapeHtml(item.ai_copilot_workflow)}</div>
             </div>
           ` : ""}
@@ -1123,7 +1123,7 @@ function renderFutureResults(data, chosenTitle) {
       <!-- Curated Free Learning Resources -->
       ${item.free_learning_resources && item.free_learning_resources.length > 0 ? `
         <div class="timeline-card__resources">
-          <span class="timeline-resources__label">📚 Primary Curated References:</span>
+          <span class="timeline-resources__label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>Primary Curated References:</span>
           <div class="timeline-resources__links">
             ${item.free_learning_resources.map(r => `<span class="timeline-res-link">${escapeHtml(r)}</span>`).join("")}
           </div>
@@ -1341,7 +1341,7 @@ function setupStandardCombobox({ wrapperId, inputId, dropdownId, toggleId, data,
     if (q && !filtered.some(d => d.title.toLowerCase() === q)) {
       html += `
         <div class="combobox-custom-action" data-custom="${escapeHtml(query.trim())}">
-          <span>✦ ${escapeHtml(placeholderAction)}:</span> <strong>"${escapeHtml(query.trim())}"</strong>
+          <span>+ ${escapeHtml(placeholderAction)}:</span> <strong>"${escapeHtml(query.trim())}"</strong>
         </div>
       `;
     }
@@ -1553,7 +1553,7 @@ function setupSkillsSelector() {
     if (q && !hasSkill(query) && !filtered.some(item => item.title.toLowerCase() === q)) {
       html += `
         <div class="combobox-custom-action" data-custom="${escapeHtml(query.trim())}">
-          <span>✦ Add custom skill:</span> <strong>"${escapeHtml(query.trim())}"</strong>
+          <span>+ Add custom skill:</span> <strong>"${escapeHtml(query.trim())}"</strong>
         </div>
       `;
     }

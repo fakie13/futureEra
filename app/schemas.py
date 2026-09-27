@@ -119,7 +119,7 @@ class UserSignUpRequest(BaseModel):
     bio: Optional[str] = ""
     interests: List[str] = Field(..., min_length=3, description="At least 3 core interests required")
     avatar_color: Optional[str] = "#0d9488"
-    avatar_emoji: Optional[str] = "🚀"
+    avatar_emoji: Optional[str] = ""
 
 
 class UserLoginRequest(BaseModel):

@@ -419,7 +419,7 @@
     </div>
 
     <div class="header-actions" id="headerAuthContainer">
-      <a href="/community" class="btn btn--solid" style="padding: 9px 18px; font-size: 12px;">👥 Squad War Room &rarr;</a>
+      <a href="/community" class="btn btn--solid" style="padding: 9px 18px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Community &rarr;</a>
     </div>
   </header>
 
@@ -439,7 +439,7 @@
         <!-- Active Pathway Indicator -->
         <div class="stage-nav-bar" id="stageNavBar">
           <div class="stage-nav-info">
-            <span class="stage-nav-badge" id="activeStagePill">🎓 Class 12 Graduate</span>
+            <span class="stage-nav-badge" id="activeStagePill"><span class="badge-status-dot"></span> Class 12 Graduate</span>
             <span class="stage-nav-text" id="activeStageText">Pre-college discovery mode enabled</span>
           </div>
           <a href="/stage" class="stage-nav-switch-btn">&larr; Change Stage</a>
@@ -452,11 +452,11 @@
             <div class="form-group">
               <label class="form-label">SELECT YOUR 12TH STREAM</label>
               <div class="stream-grid" id="streamSelector">
-                <button type="button" data-stream="PCM (Physics, Chemistry, Maths)" class="stream-btn active">📐 PCM (Maths)</button>
-                <button type="button" data-stream="PCB (Physics, Chemistry, Biology)" class="stream-btn">🧬 PCB (Biology)</button>
-                <button type="button" data-stream="Commerce with Maths" class="stream-btn">📊 Commerce (Maths)</button>
-                <button type="button" data-stream="Commerce without Maths" class="stream-btn">💼 Commerce</button>
-                <button type="button" data-stream="Humanities and Social Sciences" class="stream-btn">🏛️ Humanities / Arts</button>
+                <button type="button" data-stream="PCM (Physics, Chemistry, Maths)" class="stream-btn active">PCM (Maths &amp; Computing)</button>
+                <button type="button" data-stream="PCB (Physics, Chemistry, Biology)" class="stream-btn">PCB (Bio &amp; Healthcare)</button>
+                <button type="button" data-stream="Commerce with Maths" class="stream-btn">Commerce (Maths &amp; Analytics)</button>
+                <button type="button" data-stream="Commerce without Maths" class="stream-btn">Commerce &amp; Management</button>
+                <button type="button" data-stream="Humanities and Social Sciences" class="stream-btn">Humanities &amp; Social Sciences</button>
               </div>
               <input type="hidden" id="selectedStream" value="PCM (Physics, Chemistry, Maths)" />
             </div>
@@ -464,12 +464,12 @@
             <div class="form-group">
               <label class="form-label">YOUR INTERESTS, HOBBIES, OR FAVORITE SUBJECTS</label>
               <div class="chips-container" id="interestChips">
-                <span class="chip" data-text="Coding & Tech">💻 Coding & Tech</span>
-                <span class="chip" data-text="Healthcare & Biology">🩺 Healthcare & Bio</span>
-                <span class="chip" data-text="Finance & Stock Markets">📈 Finance & Markets</span>
-                <span class="chip" data-text="Design & Creative Art">🎨 UI/UX & Design</span>
-                <span class="chip" data-text="Law & Cyber Policy">⚖️ Law & Policy</span>
-                <span class="chip" data-text="Robotics & Autonomous Hardware">🤖 Robotics & Hardware</span>
+                <span class="chip" data-text="Coding & Tech">Coding &amp; Tech</span>
+                <span class="chip" data-text="Healthcare & Biology">Healthcare &amp; Bio</span>
+                <span class="chip" data-text="Finance & Stock Markets">Finance &amp; Markets</span>
+                <span class="chip" data-text="Design & Creative Art">UI/UX &amp; Design</span>
+                <span class="chip" data-text="Law & Cyber Policy">Law &amp; Policy</span>
+                <span class="chip" data-text="Robotics & Autonomous Hardware">Robotics &amp; Hardware</span>
               </div>
               <textarea id="interests" class="form-textarea" rows="3" placeholder="e.g., I love solving logical math puzzles and gaming, but I am nervous about AI coding tools..."></textarea>
             </div>
@@ -548,7 +548,7 @@
           <!-- Submit -->
           <div class="submit-block">
             <button type="submit" id="submitBtn" class="submit-btn">
-              <span>✦</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
               <span id="submitBtnText">Generate Blueprint</span>
               <span>&rarr;</span>
             </button>
@@ -564,7 +564,9 @@
 
         <!-- Error View -->
         <div id="errorView" class="error-notice-card" style="display: none;">
-          <div class="error-notice-card__icon">⚠️</div>
+          <div class="error-notice-card__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          </div>
           <div class="error-notice-card__body">
             <div class="error-notice-card__title" id="errorTitle">Blueprint Doesn't Exist</div>
             <div class="error-notice-card__desc" id="errorMessage">Please check the entered data and provide valid educational degrees, skills, or career roles.</div>
@@ -590,10 +592,13 @@
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
             <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
               <span id="resSourceBadge" class="source-badge source-badge--db" style="display: none;">
-                💾 Database Vault (Offline Cache)
+                <span class="source-badge-dot"></span> Offline Blueprint Cache
               </span>
             </div>
-            <button id="printBtn" class="btn btn--ghost" style="padding: 10px 22px; font-size: 13px; border-radius: 10px;">Print Blueprint 🖨️</button>
+            <button id="printBtn" class="btn btn--ghost" style="padding: 9px 18px; font-size: 13px; border-radius: 10px; display: inline-flex; align-items: center; gap: 7px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+              <span>Print Blueprint</span>
+            </button>
           </div>
 
           <!-- Active Chosen Profession Indicator -->
@@ -633,8 +638,9 @@
 
             <!-- Compensation Benchmarks Section -->
             <div style="margin-top: 24px; margin-bottom: 28px;">
-              <div style="font-size: 15px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dark); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
-                <span>💰</span> 2026 Compensation & Market Scale Benchmarks
+              <div style="font-size: 13.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-dark); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary-teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                <span>2026 Compensation &amp; Market Scale Benchmarks</span>
               </div>
               <div class="salary-grid">
                 <div class="salary-card">
@@ -655,11 +661,11 @@
             <!-- Split Grid 1: Top Hiring Companies & Key Specializations -->
             <div class="res-split-grid" style="margin-bottom: 24px;">
               <div class="res-subbox">
-                <div class="res-subbox__title">🏢 Top Hiring Companies & Ecosystem</div>
+                <div class="res-subbox__title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22.01"></line><line x1="15" y1="22" x2="15" y2="22.01"></line><line x1="9" y1="6" x2="9.01" y2="6"></line><line x1="15" y1="6" x2="15.01" y2="6"></line><line x1="9" y1="10" x2="9.01" y2="10"></line><line x1="15" y1="10" x2="15.01" y2="10"></line><line x1="9" y1="14" x2="9.01" y2="14"></line><line x1="15" y1="14" x2="15.01" y2="14"></line></svg>Top Hiring Companies &amp; Ecosystem</div>
                 <div id="resHiringCompanies" class="pills-cloud"></div>
               </div>
               <div class="res-subbox">
-                <div class="res-subbox__title">🎯 High-Leverage Sub-Specializations</div>
+                <div class="res-subbox__title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>High-Leverage Sub-Specializations</div>
                 <ul id="resSpecializationsList" class="res-list"></ul>
               </div>
             </div>
@@ -667,11 +673,11 @@
             <!-- Split Grid 2: Core Mental Models & High-Value Certifications -->
             <div class="res-split-grid">
               <div class="res-subbox">
-                <div class="res-subbox__title">🧠 Core Architectural Mental Models</div>
+                <div class="res-subbox__title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>Core Architectural Mental Models</div>
                 <ul id="resPrinciplesList" class="res-list"></ul>
               </div>
               <div class="res-subbox">
-                <div class="res-subbox__title">📜 High-ROI Industry Credentials</div>
+                <div class="res-subbox__title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>High-ROI Industry Credentials</div>
                 <ul id="resCertsList" class="res-list"></ul>
               </div>
             </div>
@@ -743,14 +749,17 @@
     <div>
       FUTUREERA &copy; 2026. All rights reserved.
     </div>
-    <div style="display: flex; gap: 24px;">
+    <div style="display: flex; gap: 24px; flex-wrap: wrap;">
       <a href="/">Home</a>
+      <a href="/stage">Stages</a>
+      <a href="/console">Architecture Console</a>
+      <a href="/community">Community</a>
       <a href="/terms">Terms and Conditions</a>
       <a href="/privacy">Privacy Policy</a>
     </div>
   </footer>
 
-  <script src="/static/js/console.js?v=15"></script>
+  <script src="/static/js/console.js?v=16"></script>
   <script src="/static/js/nav-auth.js?v=1"></script>
 </body>
 </html>

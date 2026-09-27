@@ -201,7 +201,7 @@ async function handleSignUpSubmit(e) {
         bio,
         interests,
         avatar_color: color,
-        avatar_emoji: "🚀"
+        avatar_emoji: ""
       })
     });
     const data = await res.json();

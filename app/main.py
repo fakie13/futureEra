@@ -265,6 +265,7 @@ def require_auth_user(authorization: Optional[str] = Header(None), x_session_tok
 # ==========================================
 
 @app.post("/api/auth/signup")
+@app.post("/api/auth/register")
 async def signup(request: UserSignUpRequest):
     """Registers a new student user with their core interests."""
     success, msg, user = create_user(

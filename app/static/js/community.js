@@ -553,11 +553,6 @@ function renderPeers(peers) {
           ` : ''}
         </div>
 
-        <div class="peer-teaser-prompt" onclick="openPeerModal(${peer.id})" title="View full profile">
-          <span>View profile for bio, degree &amp; details</span>
-          <span style="font-weight: 700;">&rarr;</span>
-        </div>
-
         <div class="peer-card-actions">
           <button class="btn-secondary" onclick="openPeerModal(${peer.id})">
             View Profile
@@ -2086,11 +2081,6 @@ function renderFriendsList() {
               +${extraSkillsCount} more
             </span>
           ` : ''}
-        </div>
-
-        <div class="peer-teaser-prompt" onclick="openPeerModal(${friend.id})" title="View full profile">
-          <span>View profile for bio, degree &amp; details</span>
-          <span style="font-weight: 700;">&rarr;</span>
         </div>
 
         <div class="peer-card-actions">

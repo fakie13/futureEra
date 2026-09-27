@@ -544,20 +544,20 @@ def main():
     print("[PASS] Profile modal expansion (breadth/length), edit profile view, and self-invite suppression verified")
 
     # 16. FRONT-PAGE CARD PRIVACY & TEASER VERIFICATION
-    # Ensure full bio, academic degree, and massive skills dumps are NOT exposed on front cards
+    # Ensure full bio, academic degree, massive skills dumps, and redundant prompt box are NOT on front cards
     with urllib.request.urlopen(req_comm_html) as resp:
         html_src = resp.read().decode('utf-8')
         assert 'peer-teaser-skills' in html_src
-        assert 'peer-teaser-prompt' in html_src
+        assert '.peer-teaser-prompt' not in html_src
 
     with urllib.request.urlopen(req_comm_js_latest) as resp:
         comm_js_latest = resp.read().decode('utf-8')
         assert 'peer-teaser-skills' in comm_js_latest
-        assert 'peer-teaser-prompt' in comm_js_latest
+        assert 'peer-teaser-prompt' not in comm_js_latest
         # Verify renderPeerCards doesn't leak peer-bio-text or peer-skills-block
         assert 'class="peer-bio-text"' not in comm_js_latest
         assert 'class="peer-skills-block"' not in comm_js_latest
-    print("[PASS] Front cards streamlined into teasers: bio, degree, and complete skills hidden until opening profile")
+    print("[PASS] Front cards streamlined: bio, degree, full skills, and dashed prompt box removed")
 
     # Clean up ephemeral test users and test squad so DB remains at pristine 10 peers & 10 squads
     cleanup_test_data()

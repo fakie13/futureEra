@@ -452,19 +452,12 @@ function renderPeers(peers) {
   }
 
   grid.innerHTML = peers.map(peer => {
-    const isStrong = peer.is_strong_match;
-    const matchTag = isStrong
-      ? `<span class="peer-match-pill strong"><span class="match-indicator-dot"></span> ${peer.match_percentage}% match • ${peer.overlap_count} shared</span>`
-      : peer.overlap_count > 0
-        ? `<span class="peer-match-pill"><span class="match-indicator-dot muted"></span> ${peer.match_percentage}% match • 1 shared</span>`
-        : `<span class="peer-match-pill">Available</span>`;
-
     const stageLabel = peer.stage === "final_year" ? "Final Year" : "Class 12th";
     const initials = getInitials(peer.full_name);
     const color = getAvatarColor(peer.full_name, peer.avatar_color);
 
     return `
-      <div class="peer-card ${isStrong ? 'strong-match' : ''}">
+      <div class="peer-card">
         <div class="peer-card-top">
           <div class="peer-header">
             <div class="peer-avatar-initials" style="background-color: ${color};">
@@ -480,7 +473,6 @@ function renderPeers(peers) {
               </div>
             </div>
           </div>
-          ${matchTag}
         </div>
 
         <div class="peer-detail-line">
@@ -500,7 +492,6 @@ function renderPeers(peers) {
         <div class="peer-skills-block">
           <div class="peer-skills-header">
             <span>Interests &amp; Skills</span>
-            <span style="color: #0f766e;">${peer.overlap_count} matching</span>
           </div>
           <div class="peer-skills-tags">
             ${peer.shared_interests.map(i => `<span class="tag-shared" onclick="filterByInterestTag('${escapeHtml(i)}')" title="Filter by ${escapeHtml(i)}">${escapeHtml(i)}</span>`).join("")}

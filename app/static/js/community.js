@@ -489,6 +489,23 @@ function renderPeers(peers) {
     const initials = getInitials(peer.full_name);
     const color = getAvatarColor(peer.full_name, peer.avatar_color);
 
+    // Teaser: show at most 2 top skills as preview
+    const allSkills = (peer.shared_interests && peer.shared_interests.length > 0)
+      ? [...peer.shared_interests, ...peer.interests.filter(i => !peer.shared_interests.includes(i))]
+      : (peer.interests || []);
+    const previewSkills = allSkills.slice(0, 2);
+    const extraSkillsCount = Math.max(0, allSkills.length - previewSkills.length);
+
+    const isSelfPeer = (STATE.currentUser && String(STATE.currentUser.id) === String(peer.id)) ||
+      (STATE.currentUser && STATE.currentUser.username && peer.username && STATE.currentUser.username.toLowerCase() === peer.username.toLowerCase());
+
+    const peerActionBtn = isSelfPeer
+      ? `<button class="btn-secondary" style="color: #0f766e; border-color: #99f6e4; background: #f0fdfa;" onclick="openPeerModal(${peer.id})">Edit Profile</button>`
+      : `<button class="btn-primary-action" onclick="handlePeerInviteClick(${peer.id}, '${escapeHtml(peer.username)}')">
+           ${ICONS.userPlus}
+           <span>Invite</span>
+         </button>`;
+
     return `
       <div class="peer-card">
         <div class="peer-card-top">
@@ -506,44 +523,46 @@ function renderPeers(peers) {
               </div>
             </div>
           </div>
+          ${peer.is_strong_match ? `
+            <span class="peer-match-pill strong" title="${peer.overlap_count} shared interests">
+              <span class="match-indicator-dot"></span>
+              <span>Match</span>
+            </span>
+          ` : (peer.in_squad ? `
+            <span class="peer-match-pill" style="color: #0284c7; background: #f0f9ff; border-color: #bae6fd;">
+              <span>In Squad</span>
+            </span>
+          ` : '')}
         </div>
 
-        <div class="peer-detail-line">
-          <span class="peer-detail-label">Focus:</span>
-          <span class="peer-role-text">${escapeHtml(peer.target_role || "Engineering Track")}</span>
+        <div class="peer-focus-row">
+          <span class="peer-focus-label">Focus:</span>
+          <span class="peer-focus-text">${escapeHtml(peer.target_role || "Engineering Track")}</span>
         </div>
 
-        <div class="peer-detail-line">
-          <span class="peer-detail-label">Degree:</span>
-          <span class="peer-degree-text">${escapeHtml(peer.stream_or_degree || "Technical Sciences")}</span>
+        <div class="peer-teaser-skills">
+          ${previewSkills.map(s => `
+            <span class="tag-teaser" onclick="filterByInterestTag('${escapeHtml(s)}')" title="Filter by ${escapeHtml(s)}">
+              ${escapeHtml(s)}
+            </span>
+          `).join("")}
+          ${extraSkillsCount > 0 ? `
+            <span class="tag-more-pill" onclick="openPeerModal(${peer.id})" title="Click to view full skills in profile">
+              +${extraSkillsCount} more
+            </span>
+          ` : ''}
         </div>
 
-        <div class="peer-bio-text">
-          ${escapeHtml(peer.bio || "Student engineer focused on high-yield software systems and capstone development.")}
-        </div>
-
-        <div class="peer-skills-block">
-          <div class="peer-skills-header">
-            <span>Interests &amp; Skills</span>
-          </div>
-          <div class="peer-skills-tags">
-            ${peer.shared_interests.map(i => `<span class="tag-shared" onclick="filterByInterestTag('${escapeHtml(i)}')" title="Filter by ${escapeHtml(i)}">${escapeHtml(i)}</span>`).join("")}
-            ${peer.interests.filter(i => !peer.shared_interests.includes(i)).map(i => `<span class="tag-other" onclick="filterByInterestTag('${escapeHtml(i)}')" title="Filter by ${escapeHtml(i)}">${escapeHtml(i)}</span>`).join("")}
-          </div>
+        <div class="peer-teaser-prompt" onclick="openPeerModal(${peer.id})" title="View full profile">
+          <span>View profile for bio, degree &amp; details</span>
+          <span style="font-weight: 700;">&rarr;</span>
         </div>
 
         <div class="peer-card-actions">
           <button class="btn-secondary" onclick="openPeerModal(${peer.id})">
             View Profile
           </button>
-          ${((STATE.currentUser && String(STATE.currentUser.id) === String(peer.id)) ||
-             (STATE.currentUser && STATE.currentUser.username && peer.username && STATE.currentUser.username.toLowerCase() === peer.username.toLowerCase()))
-            ? `<button class="btn-secondary" style="color: #0f766e; border-color: #99f6e4; background: #f0fdfa;" onclick="openPeerModal(${peer.id})">Edit Profile</button>`
-            : `<button class="btn-primary-action" onclick="handlePeerInviteClick(${peer.id}, '${escapeHtml(peer.username)}')">
-                 ${ICONS.userPlus}
-                 <span>Invite</span>
-               </button>`
-          }
+          ${peerActionBtn}
         </div>
       </div>
     `;
@@ -2023,6 +2042,10 @@ function renderFriendsList() {
     const initials = getInitials(friend.full_name);
     const color = getAvatarColor(friend.full_name, friend.avatar_color);
 
+    const allSkills = friend.interests || [];
+    const previewSkills = allSkills.slice(0, 2);
+    const extraSkillsCount = Math.max(0, allSkills.length - previewSkills.length);
+
     return `
       <div class="peer-card">
         <div class="peer-card-top">
@@ -2040,29 +2063,34 @@ function renderFriendsList() {
               </div>
             </div>
           </div>
+          ${friend.squad_name ? `
+            <span class="peer-match-pill" style="color: #0f766e; background: #f0fdfa; border-color: #ccfbf1;">
+              ${escapeHtml(friend.squad_name)}
+            </span>
+          ` : ''}
         </div>
 
-        <div class="peer-detail-line">
-          <span class="peer-detail-label">Focus:</span>
-          <span class="peer-role-text">${escapeHtml(friend.target_role || "Engineering Track")}</span>
+        <div class="peer-focus-row">
+          <span class="peer-focus-label">Focus:</span>
+          <span class="peer-focus-text">${escapeHtml(friend.target_role || "Engineering Track")}</span>
         </div>
 
-        <div class="peer-detail-line">
-          <span class="peer-detail-label">Degree:</span>
-          <span class="peer-degree-text">${escapeHtml(friend.stream_or_degree || "Technical Sciences")}</span>
+        <div class="peer-teaser-skills">
+          ${previewSkills.map(s => `
+            <span class="tag-teaser" style="cursor: default;">
+              ${escapeHtml(s)}
+            </span>
+          `).join("")}
+          ${extraSkillsCount > 0 ? `
+            <span class="tag-more-pill" onclick="openPeerModal(${friend.id})" title="Click to view full skills in profile">
+              +${extraSkillsCount} more
+            </span>
+          ` : ''}
         </div>
 
-        <div class="peer-bio-text">
-          ${escapeHtml(friend.bio || "Student engineer focused on high-yield software systems and capstone development.")}
-        </div>
-
-        <div class="peer-skills-block">
-          <div class="peer-skills-header">
-            <span>Interests &amp; Skills</span>
-          </div>
-          <div class="peer-skills-tags">
-            ${(friend.interests || []).map(i => `<span class="tag-shared" style="cursor: default;">${escapeHtml(i)}</span>`).join("")}
-          </div>
+        <div class="peer-teaser-prompt" onclick="openPeerModal(${friend.id})" title="View full profile">
+          <span>View profile for bio, degree &amp; details</span>
+          <span style="font-weight: 700;">&rarr;</span>
         </div>
 
         <div class="peer-card-actions">
